@@ -1,0 +1,1129 @@
+<template>
+  <div class="home">
+    <MainLayout @content-scroll="infiniteScrolling">
+      <PageHeader>
+        <template #title>
+          <div class="row m-0">
+            <div class="col">
+              <span class="fw-bolder font-size-18">
+                {{ pageInfo.title }}
+              </span>
+              <button
+                type="button"
+                class="btn noti-icon right-bar-toggle toggle-right px-1 py-0"
+                @click="showKeywordGroupModal.list = true"
+              >
+                <i
+                  class="bx bx-cog toggle-right"
+                  :class="{
+                    'bx-spin': !showKeywordGroupModal.list,
+                  }"
+                ></i>
+              </button>
+            </div>
+          </div>
+        </template>
+        <template #right>
+          <button
+            class="btn btn-outline-danger px-2 py-1 font-size-12"
+            @click="handleSettingClick(2)"
+          >
+            <i class="mdi mdi-bell-outline"></i>
+            <span class="d-none d-sm-inline"> 알림 설정 </span>
+          </button>
+        </template>
+      </PageHeader>
+
+      <!-- 키워드 그룹 Header -->
+      <div v-if="selectedKeywordGroup" class="row justify-content-start m-0">
+        <div class="card-title col-auto col-sm-12 text-start">
+          <i :class="`bx bx-folder`"></i>
+          <span
+            @click="showKeywordGroupModal.list = true"
+            class="mx-1"
+            style="cursor: pointer"
+          >
+            {{ selectedKeywordGroup.group_name }}
+          </span>
+          <!-- 키워드 그룹 수정 -->
+          <button
+            type="button"
+            class="btn font-size-20 right-bar-toggle toggle-right px-1 py-0"
+            :disabled="!selectedKeywordGroup || loading"
+            @click="showKeywordGroupModal.info = true"
+          >
+            <i class="bx bx-pencil"></i>
+          </button>
+
+          <!-- 키워드 그룹 추가 -->
+          <button
+            type="button"
+            class="btn font-size-20 right-bar-toggle toggle-right px-1 py-0"
+            @click="showKeywordGroupModal.create = true"
+          >
+            <i class="bx bxs-plus-square"></i>
+          </button>
+        </div>
+
+        <div class="col-12 row justify-content-start pa-0 pb-1 g-1 mt-0">
+          <span
+            v-for="(keyword, idx) in filteredSelectedKeywords"
+            :key="idx"
+            class="col-auto badge rounded-pill font-size-11 badge-soft-secondary ms-2"
+          >
+            {{ keyword.keyword }}
+            <i
+              class="bx bx-x-circle"
+              style="margin-left: 4px"
+              @click="
+                handleKeywordClick(
+                  selectedKeywordGroup.group_no,
+                  keyword.keyword_no
+                )
+              "
+            ></i>
+          </span>
+
+          <!-- <span @click="addKeywordModal(selectedKeywordGroup.group_no)">키워드 추가</span> -->
+        </div>
+      </div>
+
+      <!-- 키워드 조회  필터 (포함, 불포함, 기간) -->
+      <h5 class="font-size-14 p-2 text-dark text-start">
+        <i class="mdi mdi-filter-outline align-middle"></i>
+        필터
+      </h5>
+      <div class="filter-wrap px-4">
+        <dl class="row align-items-center mb-0 text-start">
+          <dt class="col-sm-2 py-2 text-sm-center">키워드</dt>
+          <dd class="col-sm-10 px-1 px-sm-2 mb-0">
+            <SearchBarCustom
+              v-if="keywordType == 'include'"
+              title="키워드"
+              id="in_keyword"
+              :default-selected="filterObj.in_keyword"
+              :max-count="10"
+              :cur-count="searchKeyword.length"
+              :placeholder="`최대 10개까지 복수 분석가능`"
+              type="include"
+              :hide-selected-item="true"
+              @set-item="(val:any) => handleSearch('keyword', val)"
+            >
+              <template #prepend>
+                <select
+                  v-model="keywordType"
+                  :class="`col-auto form-control w-auto ${keywordType}`"
+                >
+                  <option value="include">포함</option>
+                  <option value="exclude">제외</option>
+                </select>
+              </template>
+            </SearchBarCustom>
+            <SearchBarCustom
+              v-if="keywordType == 'exclude'"
+              title="키워드"
+              id="not_keyword"
+              :default-selected="filterObj.not_keyword"
+              :max-count="10"
+              :cur-count="searchKeyword.length"
+              :placeholder="`최대 10개까지 복수 분석가능`"
+              type="exclude"
+              :hide-selected-item="true"
+              @set-item="(val:any) => handleSearch('keyword', val)"
+            >
+              <template #prepend>
+                <select
+                  v-model="keywordType"
+                  :class="`col-auto form-control w-auto ${keywordType}`"
+                >
+                  <option value="include">포함</option>
+                  <option value="exclude">제외</option>
+                </select>
+              </template>
+            </SearchBarCustom>
+            <!---------- 선택한 키워드 목록 ---------->
+            <div class="row m-0 align-center" v-if="searchKeyword.length">
+              <div class="col row align-items-center m-0 ps-1">
+                <hr class="my-auto col me-2" />
+                <span
+                  class="col-auto badge rounded-pill font-size-11 ms-2 badge-soft-info"
+                >
+                  {{ searchKeyword.length }}개 적용
+                </span>
+              </div>
+              <div class="col-auto ps-0">
+                <i
+                  :class="`bx bx-${
+                    showFilterList.press_no ? 'up' : 'down'
+                  }-arrow`"
+                  style="margin-left: 4px"
+                  @click="showFilterList.press_no = !showFilterList.press_no"
+                ></i>
+              </div>
+              <div
+                class="col-12 row justify-content-start m-0 mb-1 pe-0 g-1"
+                v-show="showFilterList.press_no"
+              >
+                <span
+                  v-for="(item, pIdx) in searchKeyword"
+                  :key="pIdx"
+                  class="col-auto badge rounded-pill font-size-11 me-2"
+                  :class="{
+                    'badge-soft-primary': item.type == 'include',
+                    'badge-soft-danger': item.type != 'include',
+                  }"
+                >
+                  {{ item.name }}
+                  <i
+                    class="bx bx-x-circle"
+                    style="margin-left: 4px"
+                    @click="removeKeyword(item, index)"
+                  ></i>
+                </span>
+              </div>
+            </div>
+          </dd>
+
+          <dt class="col-sm-2 py-2 text-sm-center">언론사</dt>
+          <dd class="col-sm-10 px-1 px-sm-2 mb-0">
+            <SearchBarCustom
+              v-if="processKeywordType == 'exclude'"
+              title="미디어"
+              id="not_press_no"
+              :default-selected="filterObj.not_press_no"
+              :autocomplate-list="pressList"
+              :max-count="10"
+              :cur-count="searchPress.length"
+              :placeholder="`최대 10개까지 복수 분석가능`"
+              type="exclude"
+              :hide-selected-item="true"
+              @set-item="(val:any) => handleSearch('press_no', val)"
+            >
+              <template #prepend>
+                <select
+                  v-model="processKeywordType"
+                  :class="`col-auto form-control w-auto ${processKeywordType}`"
+                >
+                  <option value="include">포함</option>
+                  <option value="exclude">제외</option>
+                </select>
+              </template>
+            </SearchBarCustom>
+            <SearchBarCustom
+              v-if="processKeywordType == 'include'"
+              title="미디어"
+              id="in_press_no"
+              :default-selected="filterObj.in_press_no"
+              :autocomplate-list="pressList"
+              :max-count="10"
+              :cur-count="searchPress.length"
+              :placeholder="`최대 10개까지 복수 분석가능`"
+              type="include"
+              :hide-selected-item="true"
+              @set-item="(val:any) => handleSearch('press_no', val)"
+            >
+              <template #prepend>
+                <select
+                  v-model="processKeywordType"
+                  :class="`col-auto form-control w-auto ${processKeywordType}`"
+                >
+                  <option value="include">포함</option>
+                  <option value="exclude">제외</option>
+                </select>
+              </template>
+            </SearchBarCustom>
+            <!---------- 선택한 언론사 목록 ---------->
+            <div class="row m-0 align-center" v-if="searchPress.length">
+              <div class="col row align-items-center m-0 ps-1">
+                <hr class="my-auto col me-2" />
+                <span
+                  class="col-auto badge rounded-pill font-size-11 ms-2 badge-soft-info"
+                >
+                  {{ searchPress.length }}개 적용
+                </span>
+              </div>
+              <div class="col-auto ps-0">
+                <i
+                  :class="`bx bx-${
+                    showFilterList.press_no ? 'up' : 'down'
+                  }-arrow`"
+                  style="margin-left: 4px"
+                  @click="showFilterList.press_no = !showFilterList.press_no"
+                ></i>
+              </div>
+              <div
+                class="col-12 row justify-content-start m-0 mb-1 pe-0 g-1"
+                v-show="showFilterList.press_no"
+              >
+                <span
+                  v-for="(item, pIdx) in searchPress"
+                  :key="pIdx"
+                  class="col-auto badge rounded-pill font-size-11 me-2"
+                  :class="{
+                    'badge-soft-primary': item.type == 'include',
+                    'badge-soft-danger': item.type != 'include',
+                  }"
+                >
+                  {{ item.name }}
+                  <i
+                    class="bx bx-x-circle"
+                    style="margin-left: 4px"
+                    @click="removePress(item, index)"
+                  ></i>
+                </span>
+              </div>
+            </div>
+          </dd>
+
+          <dt class="col-sm-2 py-2 text-sm-center">기간</dt>
+          <dd class="d-flex col-sm-10 px-1 px-sm-2 m-0 align-items-center py-1">
+            <div class="col">
+              <DatePicker
+                :class="'form-control date-picker'"
+                v-model="tempData.start_date"
+                :first-day-of-week="1"
+                format="YYYY-MM-DD"
+                lang="kr"
+                placeholder="시작일"
+                confirm
+                @update:model-value="
+                  () =>
+                    (filterObj.start_date = moment(tempData.start_date).format(
+                      'YYYY-MM-DD'
+                    ))
+                "
+              ></DatePicker>
+            </div>
+            <span class="p-1 p-sm-2"> ~ </span>
+            <div class="col">
+              <DatePicker
+                class="form-control col date-picker"
+                v-model="tempData.end_date"
+                :first-day-of-week="1"
+                lang="kr"
+                placeholder="종료일"
+                confirm
+                @update:model-value="
+                  () =>
+                    (filterObj.end_date = moment(tempData.end_date).format(
+                      'YYYY-MM-DD'
+                    ))
+                "
+              ></DatePicker>
+            </div>
+          </dd>
+        </dl>
+
+        <button
+          class="btn btn-outline-secondary ms-auto mt-2"
+          style="width: 100px"
+          :disabled="loading"
+          @click="initFilter"
+        >
+          초기화
+        </button>
+
+        <button
+          class="btn btn-secondary ms-3 mt-2"
+          :disabled="!selectedKeywordGroup || loading"
+          style="width: 100px"
+          @click="
+            () => {
+              showLoading();
+              pagenation.isMax = false;
+              fetchNewsList();
+            }
+          "
+        >
+          조회
+        </button>
+      </div>
+
+      <div class="row m-0 mt-4">
+        <template v-if="newsList.length">
+          <NewsCardItem
+            v-for="(news, index) in newsList"
+            :key="index"
+            :index="index"
+            :news-data="news"
+            :id="news.news_no"
+          />
+        </template>
+        <div class="col" v-else>
+          <div class="card" style="min-height: calc(100vh - 560px)">
+            <div
+              class="card-body row justify-content-center align-items-center"
+            >
+              <h4 class="card-title">
+                <img
+                  src="@/assets/img/no-data.png"
+                  style="max-width: 250px"
+                  class="mb-4"
+                />
+                <br />
+                모니터링 뉴스가 존재하지 않습니다.
+              </h4>
+            </div>
+          </div>
+        </div>
+        <!-- end col -->
+      </div>
+    </MainLayout>
+
+    <GroupManageModal
+      v-if="showKeywordGroupModal.info"
+      :id="selectedKeywordGroup ? selectedKeywordGroup.group_no : ''"
+      :name="selectedKeywordGroup ? selectedKeywordGroup.group_name : ''"
+      @close="showKeywordGroupModal.info = false"
+      @refresh="refreshList()"
+    />
+    <GroupManageModal
+      v-if="showKeywordGroupModal.create"
+      @close="showKeywordGroupModal.create = false"
+      @refresh="refreshList()"
+    />
+    <b-modal
+      v-model="showKeywordGroupModal.list"
+      size="sm"
+      centered
+      title="키워드 그룹 관리"
+      hide-footer
+      no-close-on-esc
+      no-close-on-backdrop
+      @close="
+        () => {
+          showKeywordGroupModal.list = false;
+        }
+      "
+    >
+      <ul class="group_manage_modal px-0">
+        <li
+          v-for="(group, gIdx) in keywordsGroupList"
+          :key="gIdx"
+          class="row align-items-center"
+          :class="{
+            'bg-body': gIdx % 2 == 0,
+          }"
+          @click.stop="handleKeywordGroupClick(group.group_no)"
+        >
+          <div class="col-auto">
+            <button
+              type="button"
+              class="btn font-size-20 text-primary px-1 py-0"
+              @click.stop="handleKeywordGroupClick(group.group_no)"
+            >
+              <i
+                class="bx"
+                :class="{
+                  'bx-check-square':
+                    group.group_no == selectedKeywordGroup.group_no,
+                  'bx-square': group.group_no != selectedKeywordGroup.group_no,
+                }"
+              ></i>
+            </button>
+          </div>
+          <div class="col ps-0 overflow-text fw-bold">
+            {{ group.group_name }}
+            <span class="font-size-11 fw-light">
+              ({{ group.keyword_list.length }})</span
+            >
+          </div>
+          <div class="col-auto">
+            <button
+              type="button"
+              class="btn font-size-20 text-danger px-1 py-0"
+              @click.stop="keywordGroupDelete(group.group_no)"
+            >
+              <i class="bx bx bx-trash-alt"></i>
+            </button>
+          </div>
+        </li>
+      </ul>
+    </b-modal>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { computed, ref, reactive } from "vue";
+import { useRouter } from "vue-router";
+import moment from "moment";
+import Swal from "sweetalert2";
+import { floor } from "lodash";
+
+import PageHeader from "@/components/layouts/page-header.vue";
+import SearchBarCustom from "@/components/search/SearchBarCustom.vue";
+import NewsCardItem from "@/components/monitoring/CardItem.vue";
+import GroupManageModal from "@/components/monitoring/GroupManageModal.vue";
+import MainLayout from "@/layouts/MainLayout.vue";
+import DatePicker from "vue3-datepicker";
+
+import { ScrapKeyword, ScrapKeywordGroup } from "@/models/scrap";
+import { useCommonStore } from "@/store/common";
+import { OptionItemProps } from "@/utils/CommonUtils";
+
+import { KeywordAPI } from "@/api/keyword";
+import { ModulesAPI } from "@/api/module";
+
+interface IFilterObj {
+  keyword_no: number[];
+  in_keyword: string[];
+  not_keyword: string[];
+  in_press_no: number[];
+  not_press_no: number[];
+  start_date: string;
+  end_date: string;
+}
+const pageInfo = {
+  title: "모니터링",
+  // items: [
+  //   {
+  //     text: "Dashboards",
+  //     href: "/",
+  //   },
+  //   {
+  //     text: "Default",
+  //     active: true,
+  //   },
+  // ],
+};
+const { loading, showLoading, hideLoading, showNoti } = useCommonStore();
+const router = useRouter();
+const showKeywordGroupModal = reactive({
+  info: false,
+  list: false,
+  keyword: false,
+  create: false,
+});
+const inputBoxObj = reactive({
+  default_id: "",
+  default_value: "",
+  title: "",
+  placeholder: "",
+  submit_event: (val?: any) => {},
+  delete_event: (val?: any) => {},
+});
+const showFilterList = reactive({
+  keyword: true,
+  press_no: true,
+}); // 필터 펼침 여부
+const openKeywordGroups = ref<string[]>([]);
+const pressList = ref<OptionItemProps[]>([]);
+const keywordsGroupList = ref<ScrapKeywordGroup[]>([]);
+const selectedKeywordGroup = ref<ScrapKeywordGroup>();
+const searchKeywords = ref<string[]>([]); // 좌측 선택된 키워드 목록
+const searchPress = ref<any[]>([]); //언론사 필터
+const searchKeyword = ref<any[]>([]); //언론사 필터
+const newsList = ref<any[]>([]);
+const keywordType = ref("include");
+const processKeywordType = ref("include");
+const showMenu = reactive({
+  start_date: false,
+  end_date: false,
+});
+const filterObj = reactive<IFilterObj>({
+  keyword_no: [],
+  in_keyword: [],
+  not_keyword: [],
+  in_press_no: [],
+  not_press_no: [],
+  start_date: moment().subtract(7, "d").format("YYYY-MM-DD"),
+  end_date: moment().format("YYYY-MM-DD"),
+});
+
+const tempData = reactive({
+  start_date: new Date(filterObj.start_date),
+  end_date: new Date(filterObj.end_date),
+});
+
+const pagenation = reactive({
+  current: 1,
+  limit: 100,
+  isMax: false,
+});
+const timeLoading = ref(false);
+
+const initFilter = () => {
+  filterObj.keyword_no =
+    selectedKeywordGroup.value?.keyword_list.map((item) =>
+      Number(item.keyword_no)
+    ) ?? [];
+  filterObj.in_keyword =
+    filterObj.not_keyword =
+    filterObj.in_press_no =
+    filterObj.not_press_no =
+      [];
+  filterObj.start_date = moment().subtract(7, "d").format("YYYY-MM-DD");
+  filterObj.end_date = moment().format("YYYY-MM-DD");
+  tempData.start_date = new Date(filterObj.start_date);
+  tempData.end_date = new Date(filterObj.end_date);
+};
+// 키워드 그룹 하단 - 필터링 된 키워드 목록
+const filteredSelectedKeywords = computed(() => {
+  return selectedKeywordGroup.value?.keyword_list.filter((item) =>
+    searchKeywords.value.includes(item.keyword_no)
+  );
+});
+
+/**@description: 언론사 목록 조회 */
+const fetchPressList = async () => {
+  const response = await ModulesAPI.getPressList();
+
+  const { press_list } = response?.data ?? [];
+
+  if (press_list && press_list.length > 0) {
+    pressList.value = press_list.map((item: any) => ({
+      id: item.press_no,
+      name: item.press_name,
+    }));
+  }
+};
+
+/**@description: 키워드 그룹 목록 조회 */
+const fetchKeywordGroupList = async (group_no?: string) => {
+  const response = await KeywordAPI.getKeyWordGroups();
+
+  const { data } = response;
+
+  if (data && data.length > 0) {
+    keywordsGroupList.value = data.map(
+      (item: any) => new ScrapKeywordGroup(item)
+    );
+  }
+  openKeywordGroups.value = [];
+
+  if (keywordsGroupList.value.length > 0) {
+    handleKeywordGroupClick(
+      group_no ? group_no : keywordsGroupList.value[0].group_no
+    );
+  }
+};
+
+/**@description: 키워드 그룹 선택시 */
+const handleKeywordGroupClick = async (group_no: string) => {
+  showKeywordGroupModal.list = false;
+  const keywordGrooup = keywordsGroupList.value.find(
+    (item) => item.group_no === group_no
+  );
+
+  if (
+    keywordGrooup &&
+    !openKeywordGroups.value.includes(keywordGrooup.group_no)
+  ) {
+    openKeywordGroups.value = [keywordGrooup.group_no];
+  } else {
+    openKeywordGroups.value = [];
+  }
+
+  // 동일한 조건이면 return
+  if (
+    keywordGrooup &&
+    selectedKeywordGroup.value?.group_no === group_no &&
+    searchKeywords.value.length === keywordGrooup.keyword_list.length
+  )
+    return;
+
+  pagenation.current = 1;
+  pagenation.isMax = false;
+  newsList.value = [];
+
+  selectedKeywordGroup.value = keywordGrooup;
+
+  showLoading();
+  searchKeywords.value =
+    selectedKeywordGroup.value?.keyword_list.map((item) => item.keyword_no) ??
+    [];
+
+  await fetchNewsList();
+};
+/**@description: 키워드 선택시 */
+const handleKeywordClick = async (group_no: string, keyword_no: string) => {
+  // 동일한 조건이면 return
+  if (
+    !selectedKeywordGroup.value ||
+    (selectedKeywordGroup.value?.group_no === group_no &&
+      searchKeywords.value.length === 1 &&
+      searchKeywords.value[0] === keyword_no)
+  )
+    return;
+
+  pagenation.current = 1;
+  pagenation.isMax = false;
+
+  if (selectedKeywordGroup.value.group_no !== group_no) {
+    searchKeywords.value = [];
+  }
+
+  openKeywordGroups.value = [group_no];
+
+  const keywordGrooup = keywordsGroupList.value.find(
+    (item) => item.group_no === group_no
+  );
+
+  selectedKeywordGroup.value = keywordGrooup;
+
+  let keywordIdx = searchKeywords.value.findIndex(
+    (item) => item === keyword_no
+  );
+  if (keywordIdx < 0) {
+    searchKeywords.value.push(keyword_no);
+  } else {
+    searchKeywords.value.splice(keywordIdx, 1);
+  }
+};
+
+/**@description: 기사 목록 조회 */
+const fetchNewsList = async () => {
+  timeLoading.value = true;
+
+  if (pagenation.current === 1) {
+    newsList.value = [];
+  }
+
+  if (!searchKeywords.value.length) {
+    hideLoading();
+    timeLoading.value = false;
+    return;
+  }
+
+  if (pagenation.isMax) {
+    hideLoading();
+    timeLoading.value = false;
+    return;
+  }
+
+  const skip = (pagenation.current - 1) * pagenation.limit;
+
+  const response = await KeywordAPI.fetchScrapKeyWord({
+    ...filterObj,
+    keyword_no: searchKeywords.value,
+    skip: skip,
+    limit: pagenation.limit,
+  });
+
+  const { newslist } = response?.data ?? [];
+
+  if (newslist && newslist.length) {
+    newsList.value = [
+      ...newsList.value,
+      ...newslist.map((item: any) => ({
+        ...item,
+        keyword: decodeURIComponent(item.keyword),
+      })),
+    ];
+    pagenation.isMax = newslist.length < pagenation.limit;
+  } else {
+    pagenation.isMax = true;
+  }
+  // newsList.value = newsList.value.sort((a, b) => (a.pub_date = b.pub_date));
+
+  hideLoading();
+  timeLoading.value = false;
+};
+
+const infiniteScrolling = async ({ target }: Event) => {
+  if (!target || pagenation.isMax || loading.value) return;
+  const currentTarget = target as HTMLElement;
+  // offsetHeight
+  if (timeLoading.value) return;
+  const DOC_HEIGHT = Number(currentTarget.clientHeight || 0);
+  const SCROLL_HEIGHT = Number(currentTarget.scrollHeight || 0);
+  const IS_BOTTOM =
+    SCROLL_HEIGHT - DOC_HEIGHT * pagenation.current <= currentTarget.scrollTop;
+
+  if (IS_BOTTOM) {
+    showLoading();
+    pagenation.current++;
+
+    setTimeout(async () => {
+      await fetchNewsList();
+    }, 500);
+  }
+};
+
+const getDurationTime = (date: string) => {
+  const now = moment();
+  const before = moment(date);
+  if (now.format("YYYY-MM-DD") === before.format("YYYY-MM-DD")) {
+    const h = floor(moment.duration(now.diff(before)).asHours());
+    const m = floor(moment.duration(now.diff(before)).asMinutes());
+    const s = floor(moment.duration(now.diff(before)).asSeconds());
+
+    return m < 60 ? (m < 1 ? `${s}초 전` : `${m}분 전`) : `${h}시간 전`;
+  } else if (moment.duration(now.diff(before)).asDays() <= 31) {
+    return moment.duration(now.diff(before)).asDays() + "일 전";
+  } else {
+    return moment.duration(now.diff(before)).asMonths() + "달 전";
+  }
+};
+
+const handleSearch = async (key: string, data: any) => {
+  const { selected_id, selected, type } = data;
+  switch (key) {
+    case "keyword": {
+      if (searchKeyword.value.length >= 10) {
+        showNoti({
+          message: "10개 이상 등록 불가.",
+        });
+        return;
+      }
+
+      // 검색하려는 조건이 이미 세팅 되어있으면 스킵
+      if (JSON.stringify(selected) === JSON.stringify(searchKeyword.value))
+        return;
+      const keywordOrgCnt = searchKeyword.value.length;
+      let filterKey = data.type === "include" ? "in_keyword" : "not_keyword";
+
+      const filterKeywordName = searchKeyword.value.map((item) => item.name);
+      let tempKeywordNameList = [];
+
+      for (const idx in selected) {
+        const item = selected[idx];
+
+        if (!filterKeywordName.includes(item.name)) {
+          tempKeywordNameList.push(item);
+        }
+      }
+      const keywordFilterObj = filterObj as any;
+
+      if (keywordFilterObj[filterKey].length < selected_id.length) {
+        searchKeyword.value = Array.from(
+          new Set([
+            ...searchKeyword.value,
+            ...tempKeywordNameList.map((item) => ({
+              ...item,
+              type: type,
+            })),
+          ])
+        );
+      } else {
+        const removeIdIdx = searchKeyword.value.findIndex(
+          (item) => !selected_id.includes(item.id)
+        );
+        searchKeyword.value.splice(removeIdIdx, 1);
+      }
+
+      if (keywordOrgCnt === searchKeyword.value.length) return;
+      keywordFilterObj[filterKey] = [...selected_id];
+
+      break;
+    }
+    case "press_no": {
+      if (searchPress.value.length >= 10) {
+        showNoti({
+          message: "10개 이상 등록 불가.",
+        });
+        return;
+      }
+      // 검색하려는 조건이 이미 세팅 되어있으면 스킵
+      if (JSON.stringify(selected) === JSON.stringify(searchPress.value))
+        return;
+      const orgCnt = searchPress.value?.length || 0;
+      let filterPressKey =
+        data.type === "include" ? "in_press_no" : "not_press_no";
+      const filterPressName = searchPress.value.map((item) => item.name);
+      let tempNameList = [];
+
+      for (const idx in selected) {
+        const item = selected[idx];
+
+        if (!filterPressName.includes(item.name)) {
+          tempNameList.push(item);
+        }
+      }
+      let pressFilterObj = filterObj as any;
+
+      if (pressFilterObj[filterPressKey].length < selected_id.length) {
+        searchPress.value = Array.from(
+          new Set([
+            ...searchPress.value,
+            ...tempNameList.map((item) => ({
+              ...item,
+              type: type,
+            })),
+          ])
+        );
+      } else {
+        const removeIdIdx = searchPress.value.findIndex(
+          (item) => !selected_id.includes(item.id)
+        );
+        searchPress.value.splice(removeIdIdx, 1);
+      }
+
+      if (orgCnt === searchPress.value.length) return;
+      pressFilterObj[filterPressKey] = [...selected_id];
+      break;
+    }
+  }
+};
+
+/**@description: 초기화 및 데이터 재 조회 */
+const refreshList = () => {
+  keywordsGroupList.value = [];
+  pressList.value = [];
+  // topNewsList.value = [];
+  Promise.all([
+    fetchPressList(),
+    fetchKeywordGroupList(
+      selectedKeywordGroup.value
+        ? selectedKeywordGroup.value?.group_no
+        : undefined
+    ),
+  ]);
+  // fetchTopNewsList();
+};
+// 키워드 삭제
+const deleteKeyWord = async (keywordInfo: ScrapKeyword, group_no: string) => {
+  if (!keywordInfo || !group_no) return;
+
+  showLoading();
+  const response = await KeywordAPI.deleteKeyWord(
+    keywordInfo.keyword_no,
+    group_no
+  );
+
+  const { result, message } = response.data;
+  hideLoading();
+
+  showNoti({
+    message: message,
+  });
+
+  if (result) {
+    showKeywordGroupModal.keyword = false;
+    inputBoxObjInit();
+    fetchKeywordGroupList(
+      selectedKeywordGroup.value
+        ? selectedKeywordGroup.value?.group_no
+        : undefined
+    );
+  }
+};
+// 날짜 선택
+const setDate = (key: "start_date" | "end_date") => {
+  if (!tempData[key]) {
+    (tempData as any)[key] = filterObj[key];
+    showMenu[key] = false;
+    return;
+  }
+
+  filterObj[key] = moment(tempData[key]).format("YYYY-MM-DD");
+  showMenu[key] = false;
+};
+
+// 키워드 등록 누른 경우
+const addKeywordModal = (group_no: string) => {
+  if (group_no) {
+    inputBoxObj.default_id = group_no || "";
+  }
+
+  inputBoxObj.title = "키워드 등록";
+  inputBoxObj.placeholder = "키워드명 입력";
+  inputBoxObj.submit_event = (val) => keywordSave(val);
+  showKeywordGroupModal.keyword = true;
+};
+
+const keywordSave = async (props?: any) => {
+  if (!props?.id || !props?.input) {
+    showNoti({
+      message: "필수 입력값을 입력해 주세요.",
+    });
+    return;
+  }
+  showLoading();
+
+  const response = await KeywordAPI.createKeyWord(props.input, props.id);
+
+  const { result, message } = response.data;
+
+  hideLoading();
+
+  showNoti({
+    message: message,
+  });
+
+  if (result) {
+    await KeywordAPI.scrapKeyWord(props.input);
+    showKeywordGroupModal.info = false;
+    inputBoxObjInit();
+    fetchKeywordGroupList(selectedKeywordGroup.value?.group_no);
+  }
+};
+// 키워드 그룹  등록 &수정 누른 경우
+const editKeywordGroupModal = (data?: any) => {
+  showKeywordGroupModal.info = true;
+  // if (data) {
+  //   inputBoxObj.default_id = data.group_no || "";
+  //   inputBoxObj.default_value = data.group_name || "";
+  // }
+  // inputBoxObj.title = "키워드 그룹등록";
+  // inputBoxObj.placeholder = "키워드 그룹명 입력";
+  // inputBoxObj.submit_event = (val) => keywordGroupSave(val);
+  // inputBoxObj.delete_event = (val) => keywordGroupDelete(val);
+};
+// 입력 박스 초기화
+const inputBoxObjInit = () => {
+  inputBoxObj.default_id = "";
+  inputBoxObj.title = "";
+  inputBoxObj.placeholder = "";
+  inputBoxObj.submit_event = (val) => {};
+  inputBoxObj.delete_event = (val) => {};
+};
+
+// 키워드 제거
+const removeKeyword = (item: any, index: number) => {
+  let filterKey = item.type === "include" ? "in_keyword" : "not_keyword";
+  const curFilterObj = (filterObj as any)[filterKey];
+  const keyword_idx = curFilterObj.findIndex((obj: any) => item.id == obj);
+  searchKeyword.value.splice(index, 1);
+
+  if (keyword_idx < 0) return;
+
+  curFilterObj.splice(keyword_idx, 1);
+};
+// 언론사 제거
+const removePress = (item: any, index: number) => {
+  let filterKey = item.type === "include" ? "in_press_no" : "not_press_no";
+  const curFilterObj = (filterObj as any)[filterKey];
+  const press_no_idx = curFilterObj.findIndex((obj: any) => item.id == obj);
+  searchPress.value.splice(index, 1);
+
+  if (press_no_idx < 0) return;
+
+  curFilterObj.splice(press_no_idx, 1);
+};
+
+// 키워드 그룹이름 저장
+const keywordGroupSave = async (props: any) => {
+  showLoading();
+
+  const resGroup = props.id
+    ? await KeywordAPI.updateKeyWordGroup({
+        division: "modify",
+        group_no: props.id,
+        group_name: props.input,
+      })
+    : await KeywordAPI.createKeyWordGroup({
+        division: "regist",
+        group_name: props.input,
+      });
+
+  const { result, message } = resGroup.data;
+  hideLoading();
+  showNoti({
+    message: message,
+  });
+
+  if (result) {
+    showKeywordGroupModal.info = false;
+    inputBoxObjInit();
+    fetchKeywordGroupList(selectedKeywordGroup.value?.group_no);
+  }
+};
+
+const keywordGroupDelete = async (group_no: string) => {
+  Swal.fire({
+    text: "그룹의 하위 키워드도 함께 삭제 됩니다. 키워드 그룹을 삭제하시겠습니까?",
+    icon: "info",
+    showCancelButton: true,
+    confirmButtonText: "확인",
+    cancelButtonText: "취소",
+  }).then(async (res) => {
+    if (res.value) {
+      showLoading();
+
+      const resGroup = await KeywordAPI.deleteKeyWordGroup(group_no);
+
+      const { result, message } = resGroup.data;
+
+      hideLoading();
+
+      if (result) {
+        showKeywordGroupModal.info = false;
+        inputBoxObjInit();
+        fetchKeywordGroupList();
+      }
+
+      showNoti({
+        message: message,
+      });
+    }
+  });
+};
+
+const handleSettingClick = (idx: number) => {
+  router.push({
+    name: "setting",
+    query: {
+      tabIdx: idx ? idx : 0,
+    },
+  });
+};
+
+refreshList();
+</script>
+<style lang="scss">
+.group_manage_modal {
+  .btn-primary {
+    background-color: #556ee6 !important;
+  }
+  ul {
+    max-height: 300px;
+    overflow: auto;
+  }
+  li {
+    cursor: pointer;
+    transition: all 0.4s;
+    &:hover div:first-child i {
+      transform: scale(1.2);
+    }
+  }
+}
+
+.filter-wrap {
+  $primary: #556ee6;
+  $danger: #f46a6a;
+
+  span.badge.font-size-11 {
+    i {
+      vertical-align: bottom;
+    }
+  }
+  select {
+    text-align: center;
+    letter-spacing: 1.5px;
+    font-weight: 900;
+    &.include {
+      color: rgba($primary, 0.8);
+    }
+    &.exclude {
+      color: rgba($danger, 0.8);
+    }
+  }
+  .date-picker {
+    font-weight: 900;
+    color: rgba(#2a3042, 0.8);
+  }
+  dl {
+    border: 2px solid #e2e6e9;
+    border-radius: 4px;
+    background-color: #e2e6e9;
+    overflow: hidden;
+    hr {
+      border-width: 2px;
+      border-color: #fff;
+    }
+
+    dt {
+      border-radius: 4px;
+    }
+    dd {
+      background-color: #fff;
+      hr {
+        border-width: 1px;
+        border-color: #999;
+        border-style: dashed;
+      }
+    }
+  }
+}
+</style>

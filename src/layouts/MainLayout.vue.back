@@ -1,0 +1,337 @@
+<template>
+  <v-layout class="main-layout-wrap">
+    <v-app-bar dense flat outlined shaped>
+      <v-btn flat close icon="mdi-menu" @click="toggleLeftDrawer"> </v-btn>
+      <img
+        src="@/assets/img/main_logo.png"
+        alt="정음 로고"
+        class="mx-auto px-4"
+        style="min-width: auto; max-width: 120px; height: 30px"
+      />
+
+      <v-spacer />
+
+      <!-- 회원 -->
+      <template v-if="user && user.name">
+        <div class="ma-0 pr-1 items-center text-white d-flex align-center">
+          <v-menu transition="slide-y-transition">
+            <template v-slot:activator="{ props }">
+              <div v-bind="props">
+                <v-btn
+                  class="status_filter_btn pr-3 active"
+                  flat
+                  style="width: 150px; border-color: #000"
+                >
+                  <v-row class="ma-0" style="width: 100%">
+                    <v-col cols="auto" class="py-0 pr-2">
+                      <v-icon>mdi-account-outline</v-icon>
+                    </v-col>
+                    <v-col class="pa-0 overflow-text text-left">
+                      {{ user.name }}
+                    </v-col>
+
+                    <v-col cols="auto" class="pa-0">
+                      <v-icon>mdi-menu-down</v-icon>
+                    </v-col>
+                  </v-row>
+                </v-btn>
+              </div>
+            </template>
+            <v-list class="py-0" style="width: 100vw; max-width: 300px">
+              <li class="">
+                <v-row class="ma-0 align-center">
+                  <v-col>
+                    <div class="text-subtitle-2">
+                      {{ user.name }}
+                    </div>
+                    <div class="text-caption" v-if="!user.name">
+                      {{ user.id }}
+                    </div>
+                  </v-col>
+                  <v-col cols="auto">
+                    <v-icon
+                      @click="handleSettingClick(1)"
+                      class="mr-3"
+                      color="#000"
+                    >
+                      mdi-cog-outline
+                    </v-icon>
+                  </v-col>
+                </v-row>
+              </li>
+              <!-- <li>
+                <v-row class="ma-0">
+                  <v-col class="text-subtitle-2">이메일 알림</v-col>
+                  <v-col cols="auto">
+                    <v-chip></v-chip>
+                  </v-col>
+                </v-row>
+              </li> -->
+              <li
+                class="v-row ma-0 py-4"
+                style="border-top: 1px solid gray"
+                @click="handleLogOut"
+              >
+                <v-icon class="mr-2">mdi-power</v-icon>
+                로그아웃
+              </li>
+            </v-list>
+          </v-menu>
+        </div>
+      </template>
+      <template v-else>
+        <v-btn> 로그인 </v-btn>
+      </template>
+    </v-app-bar>
+
+    <v-navigation-drawer rail v-model="leftDrawerOpen">
+      <ul density="compact" nav class="left-icon-navigation">
+        <li
+          v-for="(menu, mIdx) in allMenus"
+          @click="() => onMenuClick(menu)"
+          :key="mIdx"
+          :vlaue="menu.key"
+          :active="activeMenu ? activeMenu.link === menu.link : false"
+        >
+          <span icon flat text class="pa-0 pa-0">
+            <img v-if="menu.img" :src="`/img/menu/${menu.img}`" />
+            <v-icon v-else> mdi-{{ menu.icon }} </v-icon>
+            <v-tooltip activator="parent" location="start">{{
+              menu.name
+            }}</v-tooltip>
+          </span>
+        </li>
+      </ul>
+    </v-navigation-drawer>
+
+    <v-main style="min-height: 300px; padding-top: 50px">
+      <router-view
+        :active-menu="activeMenu ? activeMenu.key : route.name"
+        :is-active-menu="leftDrawerOpen"
+      />
+    </v-main>
+    <CommonLoading v-if="loading" />
+  </v-layout>
+</template>
+
+<script setup lang="ts">
+import { computed, onBeforeMount, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
+
+import { UserMenu } from "@/models/User";
+import { useSessionStore } from "@/store/session";
+
+import CommonLoading from "@/components/common/CommonLoading.vue";
+import { useCommonStore } from "@/store/common";
+
+const route = useRoute();
+const router = useRouter();
+// 화면 사이즈
+// const { xs, mdAndUp } = useDisplay();
+
+// const user = computed(() => store.getters['user/getUserInfo']);
+const { user, setUserInfo, logout } = useSessionStore();
+const { loading, showNoti } = useCommonStore();
+const allMenus = [
+  {
+    name: "모니터링",
+    key: "monitoring",
+    link: "/monitoring",
+    icon: "clipboard-text-search-outline",
+    order: 0,
+  },
+  {
+    name: "저장 뉴스",
+    key: "save-news",
+    link: "/save-news",
+    // icon: "clipboard-text-outline",
+    icon: "file-star-outline",
+    order: 0,
+  },
+  {
+    name: "브리핑",
+    key: "briefing",
+    link: "/briefing",
+    // icon: "clipboard-text-outline",
+    icon: "newspaper-variant-outline",
+    order: 0,
+  },
+  {
+    name: "집계 분석",
+    key: "analyze",
+    link: "/analyze",
+    icon: "finance",
+    order: 0,
+  },
+  // {
+  //   name: "뉴스 TOP 5",
+  //   key: "top-news",
+  //   link: "/top-news",
+  //   icon: "newspaper",
+  //   order: 0,
+  // },
+  // {
+  //   name: "뉴스 TOP 5",
+  //   key: "top-news",
+  //   link: "/top-news",
+  //   icon: "trophy-outline",
+  //   badge: "5",
+  //   order: 0,
+  // },
+
+  {
+    name: "뉴스 보도",
+    key: "distribute",
+    link: "/distribute",
+    icon: "email-fast-outline",
+    order: 0,
+  },
+  {
+    name: "METAVEY",
+    key: "metavey",
+    link: "/metavey",
+    // icon: "alpha-m-circle-outline",
+    img: "metavey_icon.svg",
+    order: 0,
+  },
+];
+const activeMenu = computed(() => {
+  let mIdx = allMenus.findIndex((item) => item.link === route.path);
+  return mIdx < 0 ? null : allMenus[mIdx];
+});
+const leftDrawerOpen = ref(window.innerWidth > 1280);
+
+onBeforeMount(() => {
+  const userId = localStorage.getItem("user") ?? "";
+  const userName = localStorage.getItem("user_name") ?? "";
+  const accountType = localStorage.getItem("user_account_type") ?? "";
+
+  setUserInfo({
+    id: userId ? JSON.parse(userId) : "",
+    name: userName ? JSON.parse(userName) : "",
+    type: accountType ? JSON.parse(accountType) : "",
+  });
+});
+
+const onMenuClick = (menu: UserMenu) => {
+  if (!menu.link || menu.link === route.path) return;
+  router.push(menu.link);
+};
+// 좌측 메뉴 Drawer
+const toggleLeftDrawer = () => {
+  leftDrawerOpen.value = !leftDrawerOpen.value;
+};
+
+/**@description: 로그아웃 */
+const handleLogOut = () => {
+  logout().then((res) => {
+    let msg = "";
+    if (res) {
+      showNoti({
+        message: res.message,
+      });
+    }
+    router.replace({ name: "login" });
+  });
+};
+
+const handleSettingClick = (idx: number) => {
+  router.push({
+    name: "setting",
+    query: {
+      tabIdx: idx ? idx : 0,
+    },
+  });
+};
+</script>
+<style lang="scss">
+// @import url("@/assets/css/common.css");
+
+.main-layout-wrap {
+  .v-main {
+    height: 100vh;
+    & #commconPageTemplate {
+      height: calc(100vh - 50px) !important;
+    }
+  }
+  .v-app-bar {
+    box-sizing: border-box;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+
+    .v-toolbar__content {
+      height: 50px !important;
+    }
+  }
+  nav.v-navigation-drawer {
+    top: 50px !important;
+    height: calc(100% - 50px) !important;
+  }
+
+  .my-custom-toggle {
+    button {
+      flex: 10000 1 0%;
+      span {
+        font-weight: 600;
+        font-size: 16px;
+        color: #97a6ff;
+      }
+
+      &[aria-pressed="true"] {
+        span {
+          color: white;
+        }
+      }
+      span.block {
+        // overflow: hidden;
+        // text-overflow: ellipsis;
+        // white-space: nowrap;
+      }
+
+      // min-width: 100px;
+    }
+  }
+  @media screen {
+  }
+  .main-text {
+    font-weight: 300x;
+    font-size: 16px;
+  }
+
+  .left-icon-navigation {
+    i {
+      color: #999;
+    }
+    img {
+      filter: invert(0.5);
+    }
+
+    .li--active {
+      .li__overlay {
+        background: transparent;
+      }
+
+      .li__prepend {
+        i {
+          color: #ef4118;
+        }
+        img {
+          filter: invert(49%) sepia(94%) saturate(4352%) hue-rotate(347deg)
+            brightness(97%) contrast(93%);
+        }
+      }
+      .v-badge__badge {
+        color: #ef4118;
+      }
+    }
+    .v-badge__badge {
+      min-width: 15px;
+      height: 6px;
+      padding: 0;
+      background-color: transparent;
+      font-size: 7px;
+      font-weight: 900;
+      color: #000;
+    }
+  }
+}
+</style>

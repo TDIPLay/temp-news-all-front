@@ -1,0 +1,308 @@
+<template>
+  <v-app class="blank-layout-wrap">
+    <div class="wrap" :style="{ height: '100%' }">
+      <router-view />
+    </div>
+  </v-app>
+</template>
+
+<script setup lang="ts">
+import { computed, ref } from "vue";
+import { useRouter, useRoute } from "vue-router";
+
+const route = useRoute();
+const router = useRouter();
+const leftDrawerOpen = ref(false);
+// 좌측 메뉴 Drawer
+const toggleLeftDrawer = () => {
+  leftDrawerOpen.value = !leftDrawerOpen.value;
+};
+const isLoginPage = computed(() => {
+  return route.name === "login";
+});
+</script>
+
+<style lang="scss">
+.blank-layout-wrap {
+  .theme--light.v-application {
+    background-color: transparent !important;
+  }
+  .v-application .header_gnb-text a {
+    color: inherit;
+  }
+
+  .v-application__wrap,
+  body {
+    background-color: #f7f9fb;
+  }
+  body {
+    cursor: unset;
+    height: auto;
+  }
+  #searchBar {
+    height: 42px;
+  }
+  #searchBar
+    .theme--light.v-text-field
+    > .v-input__control
+    > .v-input__slot:before {
+    border: none;
+  }
+  #searchBar
+    .v-text-field.v-input--is-focused
+    > .v-input__control
+    > .v-input__slot:after {
+    display: none;
+  }
+  .ant-calendar-picker-input.ant-input[disabled] {
+    background-color: #f1f4f8 !important;
+    color: #bac0c6;
+    font-size: 14px;
+  }
+  .ant-calendar-picker-input.ant-input {
+    padding: 0 20px;
+  }
+  .v-application--is-ltr #searchBar .v-text-field .v-label {
+    color: #d6dce2 !important;
+  }
+
+  /* ant-design setting */
+
+  .ant-calendar td {
+    width: auto;
+    min-width: none;
+  }
+  .ant-calendar-month .ant-calendar-month-header-wrap {
+    height: 312px !important;
+  }
+  .ant-calendar-picker-input.ant-input {
+    text-align: right;
+  }
+  .ant-calendar-picker-icon {
+    left: 20px;
+    top: 9px !important;
+    margin: 0 !important;
+    color: #111 !important;
+    font-size: 14px;
+    font-weight: normal;
+  }
+  .ant-calendar-picker-clear {
+    top: 20px !important;
+    left: 15px;
+  }
+  .v-snack__content {
+    color: white !important;
+  }
+
+  #keywordManage
+    .theme--light.v-text-field
+    > .v-input__control
+    > .v-input__slot:before,
+  #keywordManage
+    .v-text-field.v-input--is-focused
+    > .v-input__control
+    > .v-input__slot:after {
+    border: none !important;
+  }
+  .ant-calendar-year-panel-last-decade-cell .ant-calendar-year-panel-year,
+  .ant-calendar-year-panel-next-decade-cell .ant-calendar-year-panel-year {
+    color: #188fffab !important;
+  }
+
+  .ant-calendar-year-panel-cell-disabled .ant-calendar-year-panel-year {
+    color: #bac0c6 !important;
+  }
+  #not_style label {
+    color: #111;
+    font-weight: bold;
+  }
+
+  #event_flooting .v-overlay--active .v-overlay__scrim {
+    opacity: 0.8 !important;
+  }
+  #event_flooting .theme--dark.v-overlay {
+    z-index: 1001 !important;
+  }
+  #event_flooting .v-overlay__content {
+    width: 100%;
+  }
+
+  .v-list-item .v-list-item__title,
+  .v-list-item .v-list-item__subtitle {
+    font-size: 14px;
+  }
+
+  .ant-modal-body {
+    max-height: 82vh;
+    overflow: auto;
+  }
+
+  .theme--light.v-chip:not(.v-chip--active) {
+    background: transparent !important;
+    border: solid 1px #eaeef3 !important;
+    /* padding: 0px 16px;
+    height: 42px; */
+    box-sizing: border-box;
+  }
+
+  @media all and (max-width: 1440px) {
+    .date_filter-btn.search_btn button.active {
+      width: 100%;
+    }
+    .date_filter-btn:not(.search_btn) button {
+      display: none;
+    }
+    .date_filter-btn:not(.search_btn) {
+      margin-bottom: 0;
+    }
+    .date_filter-btn select {
+      display: block;
+    }
+    .ant-modal-body {
+      overflow: auto;
+      height: 550px;
+      max-height: 90% !important;
+    }
+
+    /*  */
+
+    .ant-calendar-picker-clear {
+      top: 27px !important;
+    }
+    .date_filter-date > span:nth-child(2n-1) .ant-calendar-picker-icon {
+      display: block;
+      top: 13px !important;
+      width: 200px;
+    }
+    .date_filter-date > span:nth-child(2n) {
+      display: none;
+    }
+
+    /*  */
+    #not_style {
+      justify-content: end;
+      margin-right: 20px;
+    }
+    #not_style .v-messages {
+      display: none;
+    }
+  }
+
+  .v-input--selection-controls .v-input__slot > .v-label {
+    font-size: 14px;
+    /* color: #111; */
+  }
+  #feeds
+    .theme--light.v-text-field
+    > .v-input__control
+    > .v-input__slot:before {
+    display: none !important;
+  }
+
+  #newsSearchBar
+    .v-text-field.v-text-field--solo:not(.v-text-field--solo-flat)
+    > .v-input__control
+    > .v-input__slot {
+    box-shadow: none;
+    padding-left: 0;
+  }
+  #newsSearchBar
+    .theme--light.v-text-field--solo
+    > .v-input__control
+    > .v-input__slot {
+    background-color: transparent;
+  }
+  #newsSearchBar .v-list-item__title {
+    font-size: 14px;
+  }
+  #newsSearchBar .mdi-close {
+    font-size: 14px;
+  }
+  #newsSearchBar .theme--light.v-chip:not(.v-chip--active) {
+    background: transparent;
+    border: solid 1px #e4e9f0;
+    font-size: 14px;
+  }
+  #newsSearchBar .v-text-field.v-text-field--solo .v-label {
+    font-size: 14px;
+    color: #d6dce2;
+  }
+  #newsSearchBar .v-text-field.v-text-field--solo .v-input__control {
+    min-height: 42px;
+  }
+  #newsSearchBar .v-select__slot {
+    bottom: 3px;
+  }
+
+  #searchBar .mdi-menu-down::before {
+    display: none;
+  }
+
+  .v-autocomplete__content.v-menu__content {
+    box-shadow: 0 40px 40px 0 rgba(0, 65, 162, 0.2) !important;
+    border-radius: 8px !important;
+    border: solid 1px #e4e9f0;
+  }
+  .v-application--is-ltr #searchBar .v-text-field .v-label {
+    font-size: 14px !important;
+  }
+
+  .mdi-checkbox-marked::before {
+    content: "";
+    width: 26px;
+    height: 26px;
+    background-image: url(@/assets/img/check_icon.svg);
+    background-size: "50%";
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: #ef4118;
+    border-radius: 50%;
+    box-sizing: border-box;
+  }
+  .mdi-checkbox-blank-outline::before {
+    content: "";
+    width: 26px;
+    height: 26px;
+    background: #fff;
+    border-radius: 50%;
+    border: solid 1px #e4e9f0;
+    box-sizing: border-box;
+  }
+  .theme--light.v-list-item--active::before {
+    background-color: #f7fbff !important;
+    opacity: 1 !important;
+  }
+  .theme--light.v-list-item--active .v-list-item__title {
+    z-index: 1;
+  }
+  .theme--light.v-list-item:hover::before,
+  .theme--light.v-list-item:focus::before {
+    background-color: #f7fbff !important;
+    opacity: 1 !important;
+  }
+  .v-list-item--link:before {
+    background-color: unset !important;
+  }
+  .theme--light.v-list-item:hover .v-list-item__title {
+    z-index: 1;
+  }
+  .theme--light.v-list-item .v-list-item__title {
+    z-index: 1;
+  }
+  .v-list-item {
+    height: 50px;
+  }
+  .theme--light.v-chip--active::before {
+    background-color: #f7f9fb;
+    opacity: 1 !important;
+  }
+  .theme--light.v-chip--active span {
+    z-index: 1;
+  }
+  @media screen and (max-width: 1024px) {
+    #newsSearchBar .v-autocomplete__content.v-menu__content {
+      left: 40px !important;
+    }
+  }
+}
+</style>

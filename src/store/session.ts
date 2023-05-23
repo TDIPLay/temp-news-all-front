@@ -136,6 +136,7 @@ export const useSessionStore = defineStore("session", () => {
   return {
     isLogin: computed(() => !!user.value),
     user: computed(() => user),
+    userName: computed(() => user),
     login,
     snsLogin,
     logout,

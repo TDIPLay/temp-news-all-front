@@ -1,29 +1,29 @@
 <template>
   <!-- default -->
   <article v-if="defult" :class="{ default: snackbar }">
-    <div class="left_box">
+    <div class="left_box" @click="close">
       <span>
         <i class="bx bx-info-circle font-size-20"></i>
       </span>
-      <p v-html="text" />
+      <p v-html="text" class="text-start" />
     </div>
-    <div @click="close">
+    <!-- <div @click="close">
       <i class="bx bx-x-circle font-size-20"></i>
-    </div>
+    </div> -->
   </article>
 
   <!-- err -->
 
   <article v-else :class="{ error: snackbar }">
-    <div class="left_box">
+    <div class="left_box" @click="close">
       <span>
         <i class="bx bx-info-circle font-size-20"></i>
       </span>
-      <p v-html="text" />
+      <p v-html="text" class="text-start" />
     </div>
-    <div @click="close">
+    <!-- <div @click="close">
       <i class="bx bx-x-circle font-size-20"></i>
-    </div>
+    </div> -->
   </article>
 </template>
 

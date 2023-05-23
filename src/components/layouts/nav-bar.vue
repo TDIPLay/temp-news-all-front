@@ -559,18 +559,29 @@
           variant="black"
           toggle-class="header-item"
           menu-class="dropdown-menu-end"
+          v-if="currentUser"
         >
           <template v-slot:button-content>
-            <img
+            <!-- <img
               class="rounded-circle header-profile-user"
               src="@/assets/images/users/avatar-1.jpg"
               alt="Header Avatar"
-            />
+            /> -->
+            <div
+              class="rounded-circle bg-primary header-profile-user me-1"
+              style="display: inline-block"
+            >
+              <span class="avatar-title rounded-circle">
+                <span class="font-size-18">
+                  {{ currentUser.firstStr }}
+                </span>
+              </span>
+            </div>
+
             <span class="d-none d-xl-inline-block ms-1">
-              <div v-if="currentUser">
-                {{ currentUser.displayName }}
+              <div>
+                {{ currentUser.name }}
               </div>
-              <div v-else>Henry</div>
             </span>
             <i class="mdi mdi-chevron-down d-none d-xl-inline-block"></i>
           </template>
@@ -632,18 +643,18 @@ import i18n from "@/i18n";
 import { useSessionStore } from "@/store/session";
 import { useCommonStore } from "@/store/common";
 
-const { user, setUserInfo, logout } = useSessionStore();
+const { user, logout } = useSessionStore();
 const { loading, showNoti } = useCommonStore();
 
 const router = useRouter();
 const currentUser = computed(() => {
-  return user
+  return user.value
     ? {
-        displayName: user.name,
+        ...user.value,
+        firstStr: user.value.name.substr(0, 1),
       }
     : null;
 });
-
 const emit = defineEmits<{
   (e: "toggle-menu", value?: any): void;
   (e: "toggle-right-sidebar", value?: any): void;

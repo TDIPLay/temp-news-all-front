@@ -354,6 +354,7 @@ const removeSelectItem = (index: number) => {
 //이벤트에 따라 키워드를 검색해줍니다
 const addSearchItem = (searchItem: ACOv) => {
   // 방향키로 선택 Focus 되어있는 상태인 경우
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const curACListEl = customACList.value! as HTMLElement;
   if (currentOv.currentFocus > -1 && curACListEl?.childNodes?.length) {
     const activeItem = curACListEl.querySelectorAll(".autocomplete_active");

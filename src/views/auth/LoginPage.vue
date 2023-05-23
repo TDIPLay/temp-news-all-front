@@ -1,119 +1,161 @@
 <template>
-  <div style="height: 100%; padding-bottom: 100px">
-    <header>
-      <div class="container-header">
-        <div class="header-title">
-          <h1>
-            <a @click="goHome">
-              <img
-                src="@/assets/img/main_logo.png"
-                alt="로고"
-                style="width: 100px"
-              />
-            </a>
-          </h1>
-        </div>
-      </div>
-    </header>
-
-    <!-- section: login form -->
-    <section class="login_form-wrap">
-      <div class="login_form-login white_box">
-        <div class="login_form-container">
-          <h2>Login</h2>
-
-          <div class="login_form user_id">
-            <div class="login_form-inner">
-              <label for="userId">아이디</label>
-              <input
-                v-model="email"
-                type="text"
-                id="userId"
-                :class="{ input_common_style, error_box: userId }"
-                placeholder="아이디를 입력해주세요."
-                @keydown.enter="submit"
-              />
+  <div class="account-pages my-5 pt-5">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6 col-xl-5">
+          <div class="card overflow-hidden">
+            <div class="bg-soft bg-primary">
+              <div class="row">
+                <div class="col-7">
+                  <div class="text-primary p-4 text-start">
+                    <h5 class="text-primary">Welcome Back !</h5>
+                    <p>Sign in to continue to Skote.</p>
+                  </div>
+                </div>
+                <div class="col-5 align-self-end">
+                  <!-- <img
+                    src="@/assets/images/logo/main_logo_header.png"
+                    alt
+                    class="img-fluid"
+                  /> -->
+                </div>
+              </div>
             </div>
-            <p
-              style="margin-bottom: 0"
-              :class="{ help_txt, error_box: userId }"
-              v-html="userErrMsg"
-            ></p>
-          </div>
-
-          <div class="login_form user_pw">
-            <div class="login_form-inner">
-              <label for="passWd">비밀번호</label>
-              <input
-                v-model="password"
-                :type="passType"
-                id="passWd"
-                class="input_common_style"
-                placeholder="비밀번호를 입력해주세요."
-                :class="{ input_common_style, error_box: userPass }"
-                @keydown.enter="submit"
-              />
-
-              <!-- active: The class name of password icon 'active' is default -->
-              <span class="icon_password-btn">
-                <img
-                  src="@/assets/img/icon_password-eyes-active.svg"
-                  alt="패스워드 아이즈 활성화"
-                  :class="{ active: passType === 'password' }"
-                  @click="passType = 'text'"
-                />
-                <img
-                  src="@/assets/img/icon_password-eyes.svg"
-                  alt="패스워드 아이즈 비활성화"
-                  :class="{ active: passType === 'text' }"
-                  @click="passType = 'password'"
-                />
-              </span>
-            </div>
-            <p
-              style="margin-bottom: 0"
-              :class="{ help_txt, error_box: userPass }"
-              v-html="userPassErrMsg"
-            ></p>
-          </div>
-
-          <button
-            style="color: white; height: 52px"
-            type="submit"
-            :class="{
-              btn_black,
-            }"
-            @click="submit"
-          >
-            로그인
-          </button>
-          <!--  -->
-          <div class="user_active">
-            <p @click="goRegister">회원가입</p>
-          </div>
-          <div>
-            <h3 class="sns_title">SNS 간편 로그인</h3>
-            <div class="sns_btn">
-              <!--  -->
-              <div @click="redirect('kakao')">
-                <!-- <img src="@/assets/img/kakao_icon.svg" alt="" /> -->
+            <div class="card-body pt-0">
+              <div>
+                <router-link to="/">
+                  <div class="avatar-md profile-user-wid mb-4">
+                    <span
+                      class="avatar-title rounded-circle bg-white"
+                      style="border: 1px solid rgba(85, 110, 230, 0.25)"
+                    >
+                      <img
+                        src="@/assets/images/logo/main_logo_header.png"
+                        alt
+                        height="34"
+                      />
+                    </span>
+                  </div>
+                </router-link>
               </div>
-              <div @click="redirect('naver')">
-                <!-- <img src="@/assets/img/naver_icon.svg" alt="" /> -->
-              </div>
-              <div @click="redirect('google')">
-                <!-- <img src="@/assets/img/google_icon.svg" alt="" /> -->
-              </div>
-              <!-- <div @click="redirect('apple')">
+
+              <b-alert
+                v-model="isAuthError"
+                variant="danger"
+                class="mt-3"
+                dismissible
+                >{{ authError }}</b-alert
+              >
+
+              <b-form class="p-2 text-start" action="javascript:void(0)">
+                <slot />
+                <b-form-group
+                  id="input-group-1"
+                  label="아이디"
+                  label-for="input-1"
+                  class="mb-3"
+                >
+                  <b-form-input
+                    id="input-1"
+                    name="email"
+                    v-model="email"
+                    type="text"
+                    placeholder="아이디를 입력해 주세요."
+                    @keydown.enter="submit"
+                  ></b-form-input>
+                </b-form-group>
+
+                <b-form-group
+                  id="input-group-2"
+                  label="비밀번호"
+                  label-for="input-2"
+                  class="mb-3 position-relative"
+                >
+                  <div class="row m-0 align-items-center">
+                    <b-form-input
+                      id="input-2"
+                      v-model="password"
+                      name="password"
+                      :type="passType"
+                      placeholder="비밀번호를 입력해 주세요."
+                      class="col"
+                    >
+                    </b-form-input>
+                    <span class="icon_password-btn col-auto">
+                      <img
+                        src="@/assets/img/icon_password-eyes-active.svg"
+                        alt="패스워드 아이즈 활성화"
+                        :class="{ active: passType === 'password' }"
+                        @click="passType = 'text'"
+                      />
+                      <img
+                        src="@/assets/img/icon_password-eyes.svg"
+                        alt="패스워드 아이즈 비활성화"
+                        :class="{ active: passType === 'text' }"
+                        @click="passType = 'password'"
+                        @keydown.enter="submit"
+                      />
+                    </span>
+                  </div>
+                </b-form-group>
+                <div class="mt-3 d-grid">
+                  <button
+                    type="submit"
+                    :disabled="processing"
+                    @click="submit"
+                    class="btn btn-primary btn-block"
+                  >
+                    {{ processing ? "Please wait" : "Login" }}
+                  </button>
+                </div>
+
+                <div class="mt-4 text-center">
+                  <h5 class="font-size-14 mb-3">SNS 간편 로그인</h5>
+                  <div class="sns_btn">
+                    <!--  -->
+                    <div @click="redirect('kakao')">
+                      <img src="@/assets/img/kakao_icon.svg" alt="" />
+                    </div>
+                    <div @click="redirect('naver')">
+                      <img src="@/assets/img/naver_icon.svg" alt="" />
+                    </div>
+                    <div @click="redirect('google')">
+                      <img src="@/assets/img/google_icon.svg" alt="" />
+                    </div>
+                    <!-- <div @click="redirect('apple')">
                 <img src="@/assets/img/apple_icon.svg" alt="" />
               </div> -->
+                  </div>
+                </div>
+                <!-- <div class="mt-4 text-center">
+                  <router-link to="/forget-password" class="text-muted">
+                    <i class="mdi mdi-lock mr-1"></i> Forgot your password?
+                  </router-link>
+                </div> -->
+              </b-form>
             </div>
+            <!-- end card-body -->
           </div>
+          <!-- end card -->
+
+          <div class="mt-5 text-center">
+            <p>
+              Don't have an account ?
+              <a
+                @click="goRegister"
+                class="fw-medium text-primary"
+                href="javascript:void(0)"
+              >
+                Signup now
+              </a>
+            </p>
+            <p>© 2023 ©Jeongeum. Crafted</p>
+          </div>
+          <!-- end row -->
         </div>
+        <!-- end col -->
       </div>
-    </section>
-    <div class="footer_wrap">
-      <p>©Jeongeum. All Rights Reserved.</p>
+      <!-- end row -->
     </div>
   </div>
 </template>
@@ -181,175 +223,51 @@ const submit = async () => {
     });
 
     if (res.result) {
-      // router.push({ name: "monitoring" });
+      router.push({ name: "monitoring" });
     }
   });
 };
 
 if (user) {
-  // router.push({ name: "monitoring" });
+  router.push({ name: "monitoring" });
 }
 </script>
-<style lang="css" scoped>
-/* @import url("@/assets/css/common.css");
-@import url("@/assets/css/media.css"); */
-.activeLogin {
-  pointer-events: none;
-  background: rgb(17, 17, 17, 0.2);
-  color: #111;
-}
-.help_txt {
-  color: #ff004b;
-  display: none;
-  font-size: 14px;
-}
-.help_txt.error_box {
-  display: block;
-}
-.error_box.input_common_style {
-  border: solid 1px #f73287;
-  box-sizing: border-box;
-}
-.error_box:focus {
-  border: solid 1px #f73287;
-  box-sizing: border-box;
-}
-
-/* 사용자액션 */
-.user_active {
-  margin: 0 auto;
-  display: flex;
-  text-align: center;
-  margin-top: 20px;
-  position: relative;
-  width: 100%;
-  justify-content: right;
-  margin-bottom: 40px;
-}
-.user_active p {
-  font-size: 14px;
-  color: #111;
-  font-weight: bold;
-  position: relative;
-  padding: 0 24px;
-  margin-bottom: 44px;
-  cursor: pointer;
-}
-.user_active p:first-child::after {
-  content: "";
-  height: 12px;
-  width: 1px;
-  /* background-color: #e4e9f0; */
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-}
-.user_active::after {
-  width: 100%;
-  height: 1px;
-  background-color: #e4e9f0;
-  content: "";
-  position: absolute;
-  bottom: 0;
-}
-.sns_title {
-  font-size: 18px;
-  font-weight: bold;
-  color: #111;
-  text-align: center;
-  margin-bottom: 20px;
-}
+<style lang="scss" scoped>
 .sns_btn {
   display: flex;
   justify-content: center;
-}
-.sns_btn > div {
-  border: solid 1px #e4e9f0;
-  border-radius: 50%;
-  padding: 18px;
-  margin-right: 24px;
-  cursor: pointer;
-}
-@media screen and (max-width: 500px) {
-  .sns_btn > div {
-    width: 56px;
-    height: 56px;
-    padding: 15px;
-    margin-right: 12px;
-    box-sizing: border-box;
-    position: relative;
+
+  div {
+    border: solid 1px #e4e9f0;
+    border-radius: 50%;
+    padding: 8px;
+    margin-right: 24px;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    img {
+      width: 100%;
+    }
+
+    &:last-child {
+      margin-right: 0;
+    }
   }
-  .sns_btn > div img {
-    width: 24px;
-    height: 24px;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-  }
-  .sns_btn > div:last-child {
-    margin-right: 0;
-  }
-}
-.sns_btn > div:last-child {
-  margin-right: 0;
 }
 
-.footer_wrap {
-  padding: 24px 0;
-  text-align: center;
+.icon_password-btn {
+  z-index: 9;
+  position: absolute;
+  right: 0;
+  cursor: pointer;
 }
-.footer_wrap p {
-  font-size: 14px;
-  color: #acb2b9;
-  margin-bottom: 0;
+.icon_password-btn img {
+  display: none;
 }
-header {
-  position: relative;
+.icon_password-btn img.active {
+  display: block;
 }
-/* bi 추가 */
-@media screen and (max-width: 1023px) {
-  header {
-    background-color: unset;
-    left: unset;
-    height: 80px;
-  }
-  .container-header {
-    padding: 0;
-    z-index: -1;
-    height: 80px;
-    background-color: unset;
-  }
-  .header-title {
-    padding-top: 40px;
-  }
-  .login_form-container {
-    border-radius: 20px;
-  }
-  .white_box {
-    border-radius: 20px;
-  }
-}
-@media screen and (max-width: 767px) {
-  .login_form-container {
-    padding: 20px 20px;
-    border-radius: 20px;
-  }
-  .login_form-login h2 {
-    display: none;
-  }
-  .login_form-login {
-    height: 525px;
-  }
-  .user_active p {
-    margin-bottom: 30px;
-  }
-  .user_active {
-    margin-bottom: 20px;
-  }
-}
-.wrap {
-  padding-bottom: 0 !important;
+.login_form-container button {
+  margin: 20px 0 0;
 }
 </style>

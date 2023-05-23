@@ -175,11 +175,7 @@ const password = ref<string>("");
 const passType = ref<string>("password");
 
 //오류
-const userPass = ref<boolean>(false);
 const userId = ref<boolean>(false);
-const input_common_style = ref<boolean>(true);
-const btn_black = ref<boolean>(true);
-const help_txt = ref<boolean>(true);
 const userErrMsg = ref<string>("");
 const userPassErrMsg = ref<string>("");
 

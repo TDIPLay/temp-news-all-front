@@ -271,6 +271,19 @@
       <!-- end row -->
     </div>
 
+    <div class="mt-5 text-center">
+      <p>
+        Do have an account?
+        <a
+          @click="goLogin"
+          class="fw-medium text-primary"
+          href="javascript:void(0)"
+        >
+          Login now
+        </a>
+      </p>
+      <p>© 2023 ©Jeongeum. Crafted</p>
+    </div>
     <ServicePolicyModal
       @close-modal="closeModal"
       :modal="modal"

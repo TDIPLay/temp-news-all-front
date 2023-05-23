@@ -251,3 +251,14 @@ body {
     }
   }
 }
+
+.dropdown-item {
+  &.active {
+    background-color: rgba($color: $primary, $alpha: 0.2);
+  }
+}
+
+.date-picker {
+  font-weight: 700;
+  color: rgba(#2a3042, 0.8);
+}

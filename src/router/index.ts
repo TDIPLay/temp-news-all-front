@@ -87,17 +87,16 @@ const routes: Array<RouteRecordRaw> = [
   },
 
   //======== 저장뉴스 ===================================
-  // {
-  //   path: "/save-news",
-  //   component: () => import("@/layouts/MainLayout.vue"),
-  //   children: [
-  //     {
-  //       name: "save-news",
-  //       path: "/save-news",
-  //       component: () => import("@/views/save-news/IndexPage.vue"),
-  //     },
-  //   ],
-  // },
+  {
+    path: "/save-news",
+    children: [
+      {
+        name: "save-news",
+        path: "/save-news",
+        component: () => import("@/views/save-news/IndexPage.vue"),
+      },
+    ],
+  },
 
   //======== 집계 분석 ===================================
   // {

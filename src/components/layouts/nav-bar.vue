@@ -572,7 +572,7 @@
               style="display: inline-block"
             >
               <span class="avatar-title rounded-circle">
-                <span class="font-size-18">
+                <span class="font-size-16">
                   {{ currentUser.firstStr }}
                 </span>
               </span>

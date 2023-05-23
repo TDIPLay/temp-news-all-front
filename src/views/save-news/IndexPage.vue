@@ -5,88 +5,11 @@
         <template #title>
           <div class="row m-0">
             <div class="col">
-              <span class="fw-bolder font-size-18">
-                {{ pageInfo.title }}
-              </span>
-              <button
-                type="button"
-                class="btn noti-icon right-bar-toggle toggle-right px-1 py-0"
-                @click="showKeywordGroupModal.list = true"
-              >
-                <i
-                  class="bx bx-cog toggle-right"
-                  :class="{
-                    'bx-spin': !showKeywordGroupModal.list,
-                  }"
-                ></i>
-              </button>
+              <span class="fw-bolder font-size-18"> 저장 뉴스 </span>
             </div>
           </div>
         </template>
-        <template #right>
-          <button
-            class="btn btn-outline-danger px-2 py-1 font-size-12"
-            @click="handleSettingClick(2)"
-          >
-            <i class="mdi mdi-bell-outline"></i>
-            <span class="d-none d-sm-inline"> 알림 설정 </span>
-          </button>
-        </template>
       </PageHeader>
-
-      <!-- 키워드 그룹 Header -->
-      <div v-if="selectedKeywordGroup" class="row justify-content-start m-0">
-        <div class="card-title col-auto col-sm-12 text-start">
-          <i :class="`bx bx-folder`"></i>
-          <span
-            @click="showKeywordGroupModal.list = true"
-            class="mx-1"
-            style="cursor: pointer"
-          >
-            {{ selectedKeywordGroup.group_name }}
-          </span>
-          <!-- 키워드 그룹 수정 -->
-          <button
-            type="button"
-            class="btn font-size-20 right-bar-toggle toggle-right px-1 py-0"
-            :disabled="!selectedKeywordGroup || loading"
-            @click="showKeywordGroupModal.info = true"
-          >
-            <i class="bx bx-pencil"></i>
-          </button>
-
-          <!-- 키워드 그룹 추가 -->
-          <button
-            type="button"
-            class="btn font-size-20 right-bar-toggle toggle-right px-1 py-0"
-            @click="showKeywordGroupModal.create = true"
-          >
-            <i class="bx bxs-plus-square"></i>
-          </button>
-        </div>
-
-        <div class="col-12 row justify-content-start pa-0 pb-1 g-1 mt-0">
-          <span
-            v-for="(keyword, idx) in filteredSelectedKeywords"
-            :key="idx"
-            class="col-auto badge rounded-pill font-size-11 badge-soft-secondary ms-2"
-          >
-            {{ keyword.keyword }}
-            <i
-              class="bx bx-x-circle"
-              style="margin-left: 4px"
-              @click="
-                handleKeywordClick(
-                  selectedKeywordGroup.group_no,
-                  keyword.keyword_no
-                )
-              "
-            ></i>
-          </span>
-
-          <!-- <span @click="addKeywordModal(selectedKeywordGroup.group_no)">키워드 추가</span> -->
-        </div>
-      </div>
 
       <!-- 키워드 조회  필터 (포함, 불포함, 기간) -->
       <h5 class="font-size-14 p-2 text-dark text-start">
@@ -97,7 +20,33 @@
         <dl class="row align-items-center mb-0 text-start">
           <dt class="col-sm-2 py-2 text-sm-center">키워드</dt>
           <dd class="col-sm-10 px-1 px-sm-2 mb-0">
-            <SearchBarCustom
+            <template v-for="(kType, kIdx) in keywordTypeList">
+              <SearchBarCustom
+                v-if="keywordType == kType.value"
+                :key="kIdx"
+                title="키워드"
+                :id="kType.key"
+                :default-selected="filterObj[kType.key]"
+                :max-count="10"
+                :cur-count="searchKeyword.length"
+                :placeholder="`최대 10개까지 복수 분석가능`"
+                :type="kType.value"
+                :hide-selected-item="true"
+                @set-item="(val:any) => handleSearch('keyword', val)"
+              >
+                <template #prepend>
+                  <select
+                    v-model="keywordType"
+                    :class="`col-auto form-control w-auto ${keywordType}`"
+                  >
+                    <option value="include">포함</option>
+                    <option value="exclude">제외</option>
+                  </select>
+                </template>
+              </SearchBarCustom>
+            </template>
+            <!-- <SearchBarCustom
+              :key="kIdx"
               v-if="keywordType == 'include'"
               title="키워드"
               id="in_keyword"
@@ -140,7 +89,7 @@
                   <option value="exclude">제외</option>
                 </select>
               </template>
-            </SearchBarCustom>
+            </SearchBarCustom> -->
             <!---------- 선택한 키워드 목록 ---------->
             <div class="row m-0 align-center" v-if="searchKeyword.length">
               <div class="col row align-items-center m-0 ps-1">
@@ -177,7 +126,7 @@
                   <i
                     class="bx bx-x-circle"
                     style="margin-left: 4px"
-                    @click="removeKeyword(item, index)"
+                    @click="removeKeyword(item, pIdx)"
                   ></i>
                 </span>
               </div>
@@ -323,13 +272,13 @@
 
         <button
           class="btn btn-secondary ms-3 mt-2"
-          :disabled="!selectedKeywordGroup || loading"
+          :disabled="loading"
           style="width: 100px"
           @click="
             () => {
               showLoading();
               pagenation.isMax = false;
-              fetchNewsList();
+              fetchSaveNewsList();
             }
           "
         >
@@ -359,7 +308,7 @@
                   class="mb-4"
                 />
                 <br />
-                모니터링 뉴스가 존재하지 않습니다.
+                저장 뉴스가 존재하지 않습니다.
               </h4>
             </div>
           </div>
@@ -367,95 +316,19 @@
         <!-- end col -->
       </div>
     </MainLayout>
-
-    <GroupManageModal
-      v-if="showKeywordGroupModal.info"
-      :id="selectedKeywordGroup ? selectedKeywordGroup.group_no : ''"
-      :name="selectedKeywordGroup ? selectedKeywordGroup.group_name : ''"
-      @close="showKeywordGroupModal.info = false"
-      @refresh="refreshList()"
-    />
-    <GroupManageModal
-      v-if="showKeywordGroupModal.create"
-      @close="showKeywordGroupModal.create = false"
-      @refresh="refreshList()"
-    />
-    <b-modal
-      v-model="showKeywordGroupModal.list"
-      size="sm"
-      centered
-      title="키워드 그룹 관리"
-      hide-footer
-      no-close-on-esc
-      no-close-on-backdrop
-      @close="
-        () => {
-          showKeywordGroupModal.list = false;
-        }
-      "
-    >
-      <ul class="group_manage_modal px-0">
-        <li
-          v-for="(group, gIdx) in keywordsGroupList"
-          :key="gIdx"
-          class="row align-items-center"
-          :class="{
-            'bg-body': gIdx % 2 == 0,
-          }"
-          @click.stop="handleKeywordGroupClick(group.group_no)"
-        >
-          <div class="col-auto">
-            <button
-              type="button"
-              class="btn font-size-20 text-primary px-1 py-0"
-              @click.stop="handleKeywordGroupClick(group.group_no)"
-            >
-              <i
-                class="bx"
-                :class="{
-                  'bx-check-square':
-                    group.group_no == selectedKeywordGroup.group_no,
-                  'bx-square': group.group_no != selectedKeywordGroup.group_no,
-                }"
-              ></i>
-            </button>
-          </div>
-          <div class="col ps-0 overflow-text fw-bold">
-            {{ group.group_name }}
-            <span class="font-size-11 fw-light">
-              ({{ group.keyword_list.length }})</span
-            >
-          </div>
-          <div class="col-auto">
-            <button
-              type="button"
-              class="btn font-size-20 text-danger px-1 py-0"
-              @click.stop="keywordGroupDelete(group.group_no)"
-            >
-              <i class="bx bx bx-trash-alt"></i>
-            </button>
-          </div>
-        </li>
-      </ul>
-    </b-modal>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, reactive } from "vue";
-import { useRouter } from "vue-router";
+import { ref, reactive } from "vue";
 import moment from "moment";
-import Swal from "sweetalert2";
-import { floor } from "lodash";
 
 import PageHeader from "@/components/layouts/page-header.vue";
 import SearchBarCustom from "@/components/search/SearchBarCustom.vue";
 import NewsCardItem from "@/components/monitoring/CardItem.vue";
-import GroupManageModal from "@/components/monitoring/GroupManageModal.vue";
 import MainLayout from "@/layouts/MainLayout.vue";
 import DatePicker from "vue3-datepicker";
 
-import { ScrapKeyword, ScrapKeywordGroup } from "@/models/scrap";
 import { useCommonStore } from "@/store/common";
 import { OptionItemProps } from "@/utils/CommonUtils";
 
@@ -463,7 +336,6 @@ import { KeywordAPI } from "@/api/keyword";
 import { ModulesAPI } from "@/api/module";
 
 interface IFilterObj {
-  keyword_no: string[];
   in_keyword: string[];
   not_keyword: string[];
   in_press_no: number[];
@@ -471,39 +343,26 @@ interface IFilterObj {
   start_date: string;
   end_date: string;
 }
-const pageInfo = {
-  title: "모니터링",
-  // items: [
-  //   {
-  //     text: "Dashboards",
-  //     href: "/",
-  //   },
-  //   {
-  //     text: "Default",
-  //     active: true,
-  //   },
-  // ],
-};
-const { loading, showLoading, hideLoading, showNoti } = useCommonStore();
-const router = useRouter();
-const showKeywordGroupModal = reactive({
-  info: false,
-  list: false,
-  keyword: false,
-  create: false,
-});
 
+const { loading, showLoading, hideLoading, showNoti } = useCommonStore();
 const showFilterList = reactive({
   keyword: true,
   press_no: true,
 }); // 필터 펼침 여부
-const openKeywordGroups = ref<string[]>([]);
 const pressList = ref<OptionItemProps[]>([]);
-const keywordsGroupList = ref<ScrapKeywordGroup[]>([]);
-const selectedKeywordGroup = ref<ScrapKeywordGroup>();
 const searchPress = ref<any[]>([]); //언론사 필터
 const searchKeyword = ref<any[]>([]); //언론사 필터
 const newsList = ref<any[]>([]);
+const keywordTypeList = [
+  {
+    value: "include",
+    key: "in_keyword",
+  },
+  {
+    value: "exclude",
+    key: "not_keyword",
+  },
+];
 const keywordType = ref("include");
 const processKeywordType = ref("include");
 const showMenu = reactive({
@@ -511,7 +370,6 @@ const showMenu = reactive({
   end_date: false,
 });
 const filterObj = reactive<IFilterObj>({
-  keyword_no: [],
   in_keyword: [],
   not_keyword: [],
   in_press_no: [],
@@ -519,12 +377,10 @@ const filterObj = reactive<IFilterObj>({
   start_date: moment().subtract(7, "d").format("YYYY-MM-DD"),
   end_date: moment().format("YYYY-MM-DD"),
 });
-
 const tempData = reactive({
   start_date: new Date(filterObj.start_date),
   end_date: new Date(filterObj.end_date),
 });
-
 const pagenation = reactive({
   current: 1,
   limit: 100,
@@ -534,9 +390,6 @@ const timeLoading = ref(false);
 
 /**@description: 검색 필터 초기화 */
 const initFilter = () => {
-  filterObj.keyword_no =
-    selectedKeywordGroup.value?.keyword_list.map((item) => item.keyword_no) ??
-    [];
   filterObj.in_keyword =
     filterObj.not_keyword =
     filterObj.in_press_no =
@@ -547,12 +400,6 @@ const initFilter = () => {
   tempData.start_date = new Date(filterObj.start_date);
   tempData.end_date = new Date(filterObj.end_date);
 };
-/**@description: 키워드 그룹 하단 - 필터링 된 키워드 목록*/
-const filteredSelectedKeywords = computed(() => {
-  return selectedKeywordGroup.value?.keyword_list.filter((item) =>
-    filterObj.keyword_no.includes(item.keyword_no)
-  );
-});
 
 /**@description: 언론사 목록 조회 */
 const fetchPressList = async () => {
@@ -568,112 +415,12 @@ const fetchPressList = async () => {
   }
 };
 
-/**@description: 키워드 그룹 목록 조회 */
-const fetchKeywordGroupList = async (group_no?: string) => {
-  const response = await KeywordAPI.getKeyWordGroups();
-
-  const { data } = response;
-
-  if (data && data.length > 0) {
-    keywordsGroupList.value = data.map(
-      (item: any) => new ScrapKeywordGroup(item)
-    );
-  }
-  openKeywordGroups.value = [];
-
-  if (keywordsGroupList.value.length > 0) {
-    handleKeywordGroupClick(
-      group_no ? group_no : keywordsGroupList.value[0].group_no
-    );
-  }
-};
-
-/**@description: 키워드 그룹 선택시 */
-const handleKeywordGroupClick = async (group_no: string) => {
-  showKeywordGroupModal.list = false;
-  const keywordGrooup = keywordsGroupList.value.find(
-    (item) => item.group_no === group_no
-  );
-
-  if (
-    keywordGrooup &&
-    !openKeywordGroups.value.includes(keywordGrooup.group_no)
-  ) {
-    openKeywordGroups.value = [keywordGrooup.group_no];
-  } else {
-    openKeywordGroups.value = [];
-  }
-
-  // 동일한 조건이면 return
-  if (
-    keywordGrooup &&
-    selectedKeywordGroup.value?.group_no === group_no &&
-    filterObj.keyword_no.length === keywordGrooup.keyword_list.length
-  )
-    return;
-
-  pagenation.current = 1;
-  pagenation.isMax = false;
-  newsList.value = [];
-
-  selectedKeywordGroup.value = keywordGrooup;
-
-  showLoading();
-  filterObj.keyword_no =
-    selectedKeywordGroup.value?.keyword_list.map((item) => item.keyword_no) ??
-    [];
-
-  await fetchNewsList();
-};
-
-/**@description: 키워드 선택시 */
-const handleKeywordClick = async (group_no: string, keyword_no: string) => {
-  // 동일한 조건이면 return
-  if (
-    !selectedKeywordGroup.value ||
-    (selectedKeywordGroup.value?.group_no === group_no &&
-      filterObj.keyword_no.length === 1 &&
-      filterObj.keyword_no[0] === keyword_no)
-  )
-    return;
-
-  pagenation.current = 1;
-  pagenation.isMax = false;
-
-  if (selectedKeywordGroup.value.group_no !== group_no) {
-    filterObj.keyword_no = [];
-  }
-
-  openKeywordGroups.value = [group_no];
-
-  const keywordGrooup = keywordsGroupList.value.find(
-    (item) => item.group_no === group_no
-  );
-
-  selectedKeywordGroup.value = keywordGrooup;
-
-  let keywordIdx = filterObj.keyword_no.findIndex(
-    (item) => item === keyword_no
-  );
-  if (keywordIdx < 0) {
-    filterObj.keyword_no.push(keyword_no);
-  } else {
-    filterObj.keyword_no.splice(keywordIdx, 1);
-  }
-};
-
 /**@description: 기사 목록 조회 */
-const fetchNewsList = async () => {
+const fetchSaveNewsList = async () => {
   timeLoading.value = true;
 
   if (pagenation.current === 1) {
     newsList.value = [];
-  }
-
-  if (!filterObj.keyword_no.length) {
-    hideLoading();
-    timeLoading.value = false;
-    return;
   }
 
   if (pagenation.isMax) {
@@ -684,9 +431,8 @@ const fetchNewsList = async () => {
 
   const skip = (pagenation.current - 1) * pagenation.limit;
 
-  const response = await KeywordAPI.fetchScrapKeyWord({
+  const response = await KeywordAPI.fetchNewsSaveList({
     ...filterObj,
-    keyword_no: filterObj.keyword_no,
     skip: skip,
     limit: pagenation.limit,
   });
@@ -727,7 +473,7 @@ const infiniteScrolling = async ({ target }: Event) => {
     pagenation.current++;
 
     setTimeout(async () => {
-      await fetchNewsList();
+      await fetchSaveNewsList();
     }, 500);
   }
 };
@@ -835,17 +581,9 @@ const handleSearch = async (key: string, data: any) => {
 
 /**@description: 초기화 및 데이터 재 조회 */
 const refreshList = () => {
-  keywordsGroupList.value = [];
   pressList.value = [];
   // topNewsList.value = [];
-  Promise.all([
-    fetchPressList(),
-    fetchKeywordGroupList(
-      selectedKeywordGroup.value
-        ? selectedKeywordGroup.value?.group_no
-        : undefined
-    ),
-  ]);
+  Promise.all([fetchPressList(), fetchSaveNewsList()]);
   // fetchTopNewsList();
 };
 
@@ -873,93 +611,9 @@ const removePress = (item: any, index: number) => {
   curFilterObj.splice(press_no_idx, 1);
 };
 
-// 키워드 그룹이름 저장
-const keywordGroupSave = async (props: any) => {
-  showLoading();
-
-  const resGroup = props.id
-    ? await KeywordAPI.updateKeyWordGroup({
-        division: "modify",
-        group_no: props.id,
-        group_name: props.input,
-      })
-    : await KeywordAPI.createKeyWordGroup({
-        division: "regist",
-        group_name: props.input,
-      });
-
-  const { result, message } = resGroup.data;
-  hideLoading();
-  showNoti({
-    message: message,
-  });
-
-  if (result) {
-    showKeywordGroupModal.info = false;
-    fetchKeywordGroupList(selectedKeywordGroup.value?.group_no);
-  }
-};
-
-/**@description: 키워드 그룹 삭제 */
-const keywordGroupDelete = async (group_no: string) => {
-  Swal.fire({
-    text: "그룹의 하위 키워드도 함께 삭제 됩니다. 키워드 그룹을 삭제하시겠습니까?",
-    icon: "info",
-    showCancelButton: true,
-    confirmButtonText: "확인",
-    cancelButtonText: "취소",
-  }).then(async (res) => {
-    if (res.value) {
-      showLoading();
-
-      const resGroup = await KeywordAPI.deleteKeyWordGroup(group_no);
-
-      const { result, message } = resGroup.data;
-
-      hideLoading();
-
-      if (result) {
-        showKeywordGroupModal.info = false;
-        fetchKeywordGroupList();
-      }
-
-      showNoti({
-        message: message,
-      });
-    }
-  });
-};
-
-/**@description: 알림설정 페이지로 이동 */
-const handleSettingClick = (idx: number) => {
-  router.push({
-    name: "setting",
-    query: {
-      tabIdx: idx ? idx : 0,
-    },
-  });
-};
-
 refreshList();
 </script>
 <style lang="scss" scoped>
-.group_manage_modal {
-  .btn-primary {
-    // background-color: #556ee6 !important;
-  }
-  ul {
-    max-height: 300px;
-    overflow: auto;
-  }
-  li {
-    cursor: pointer;
-    transition: all 0.4s;
-    &:hover div:first-child i {
-      transform: scale(1.2);
-    }
-  }
-}
-
 .filter-wrap {
   $primary: #556ee6;
   $danger: #f46a6a;

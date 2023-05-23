@@ -10,7 +10,7 @@ export const menuItems = [
     id: 2,
     label: "menu_items_txt.save_news.text",
     icon: "bx-bookmark",
-    link: "/save_news",
+    link: "/save-news",
   },
   {
     id: 3,

@@ -4,7 +4,7 @@
 <script setup lang="ts">
 import { useSessionStore } from "@/store/session";
 import { useRoute, useRouter } from "vue-router";
-import { ref, nextTick } from "vue";
+import { nextTick } from "vue";
 const { user, attempt, snsLogin } = useSessionStore();
 const route = useRoute();
 const router = useRouter();
@@ -21,7 +21,9 @@ if (
   !!localStorage.getItem("type") &&
   localStorage.getItem("type") !== "undefind"
 ) {
-  loginType = localStorage.getItem("type");
+  loginType = localStorage.getItem("type")
+    ? `${localStorage.getItem("type")}`
+    : "";
 }
 
 const params = {

@@ -101,11 +101,11 @@
                 <div class="mt-3 d-grid">
                   <button
                     type="submit"
-                    :disabled="processing"
+                    :disabled="loading"
                     @click="submit"
                     class="btn btn-primary btn-block"
                   >
-                    {{ processing ? "Please wait" : "Login" }}
+                    로그인
                   </button>
                 </div>
 

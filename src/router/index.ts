@@ -19,16 +19,16 @@ const routes: Array<RouteRecordRaw> = [
         path: "/login",
         component: () => import("@/views/auth/LoginPage.vue"),
       },
-      // {
-      //   name: "SNS",
-      //   path: "/login/social",
-      //   component: () => import("@/views/auth/SNSPage.vue"),
-      // },
-      // {
-      //   name: "register",
-      //   path: "/register",
-      //   component: () => import("@/views/auth/RegisterPage.vue"),
-      // },
+      {
+        name: "SNS",
+        path: "/login/social",
+        component: () => import("@/views/auth/SNSPage.vue"),
+      },
+      {
+        name: "register",
+        path: "/register",
+        component: () => import("@/views/auth/RegisterPage.vue"),
+      },
       // {
       //   name: "findPassword",
       //   path: "/find-password",

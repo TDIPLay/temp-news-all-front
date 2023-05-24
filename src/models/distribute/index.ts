@@ -57,7 +57,7 @@ export class DistributeNews {
     numberFormatKeys.forEach((key) => {
       const val = (this as any)[`${key}`];
 
-      if (!!val) {
+      if (val) {
         (this as any)[`${key}_format`] = Number(val) / 1000;
       }
     });
@@ -104,26 +104,26 @@ export class DistributeNews {
 
   get badge_color() {
     const status = Number(this.status);
-    let color = "#ffbf00";
+    let color = "255, 191, 0"; // "#ffbf00";
     switch (status) {
       case 1: // 1: 신청
-        color = "#FFC107";
+        color = "255, 193, 7"; // "#FFC107";
         break;
       case 2: // 2:신청서 검토
-        color = "#2eb82e";
+        color = "46, 184, 46"; // "#2eb82e";
         break;
       case 3: // 3:접수 완료
-        color = "#1976D2";
+        color = "25, 118, 210"; // "#1976D2";
         break;
       case 4: // 4:배포 진행
-        color = "#9C27B0";
+        color = "156, 39, 176"; //"#9C27B0";
         break;
       case 5: // 4:배포완료
-        color = "#4CAF50";
+        color = "76, 175, 80"; // "#4CAF50";
         break;
       default:
         // 에러
-        color = "#db3700";
+        color = "219, 55, 0"; //"#db3700";
     }
     return color;
   }
@@ -194,6 +194,7 @@ export class DistributeNews {
     }
     if (!res && this.homepage) {
       const regex =
+        // eslint-disable-next-line no-useless-escape
         /(http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
       if (!regex.test(this.homepage)) {
         res = "홈패이지 주소를 형식에 맞게 작성해 주세요.";

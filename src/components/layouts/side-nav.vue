@@ -141,17 +141,18 @@ const checkActiveMenu = () => {
   let itemIndex = menuItems.findIndex((item) => {
     if (item.subItems && item.subItems.length > 0) {
       let subIdx = item.subItems.findIndex((subItem) => {
-        subItem.link === route.path;
+        const checkPatth = route.meta?.parent ?? route.path;
+        return subItem.link === checkPatth;
       });
-
       if (subIdx > -1) {
         matchingMenuItem = item.subItems[subIdx].link;
         activeMenuId.value = item.subItems[subIdx].id;
         activeMenuParentId.value = item.id;
       }
     }
+    const checkPatth = route.meta?.parent ?? route.path;
 
-    return item.link === route.path;
+    return item.link === checkPatth;
   });
 
   if (itemIndex > -1) {

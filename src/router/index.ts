@@ -112,17 +112,24 @@ const routes: Array<RouteRecordRaw> = [
   // },
 
   //======== 뉴스 보도 ===================================
-  // {
-  //   path: "/distribute",
-  //   component: () => import("@/layouts/MainLayout.vue"),
-  //   children: [
-  //     {
-  //       name: "distribute",
-  //       path: "/distribute",
-  //       component: () => import("@/views/distribute/IndexPage.vue"),
-  //     },
-  //   ],
-  // },
+  {
+    path: "/distribute",
+    children: [
+      {
+        name: "distribute",
+        path: "/distribute",
+        component: () => import("@/views/distribute/IndexPage.vue"),
+      },
+      {
+        name: "distribute-edit",
+        path: "/distribute/edit",
+        component: () => import("@/views/distribute/EditPage.vue"),
+        meta: {
+          parent: "/distribute",
+        },
+      },
+    ],
+  },
 
   //======== 브리핑 ===================================
   // {

@@ -24,8 +24,8 @@
 <script setup lang="ts"></script>
 <style lang="scss" scoped>
 .footer {
-  position: relative;
-  left: 0;
+  // position: relative;
+  // left: 0;
   .main-logo {
     max-height: 45px;
   }

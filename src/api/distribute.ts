@@ -96,4 +96,19 @@ export class DistributeAPI {
       return error;
     }
   }
+
+  /**
+   * 뉴스 보도 목록 조회
+   * * @returns {Promise<any>}
+   */
+  static async getDistributeNewsInfo(dis_no: string): Promise<any> {
+    try {
+      const res = await axiosService.post(`/Distribute/DistributeNewsInfo`, {
+        dis_no: dis_no,
+      });
+      return res && res.data ? res.data : undefined;
+    } catch (error) {
+      return error;
+    }
+  }
 }

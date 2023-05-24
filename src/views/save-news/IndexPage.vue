@@ -25,8 +25,8 @@
                 v-if="keywordType == kType.value"
                 :key="kIdx"
                 title="키워드"
-                :id="kType.key"
-                :default-selected="filterObj[kType.key]"
+                :id="`${kType.key}_keyword`"
+                :default-selected="filterObj[`${kType.key}_keyword`]"
                 :max-count="10"
                 :cur-count="searchKeyword.length"
                 :placeholder="`최대 10개까지 복수 분석가능`"
@@ -45,51 +45,6 @@
                 </template>
               </SearchBarCustom>
             </template>
-            <!-- <SearchBarCustom
-              :key="kIdx"
-              v-if="keywordType == 'include'"
-              title="키워드"
-              id="in_keyword"
-              :default-selected="filterObj.in_keyword"
-              :max-count="10"
-              :cur-count="searchKeyword.length"
-              :placeholder="`최대 10개까지 복수 분석가능`"
-              type="include"
-              :hide-selected-item="true"
-              @set-item="(val:any) => handleSearch('keyword', val)"
-            >
-              <template #prepend>
-                <select
-                  v-model="keywordType"
-                  :class="`col-auto form-control w-auto ${keywordType}`"
-                >
-                  <option value="include">포함</option>
-                  <option value="exclude">제외</option>
-                </select>
-              </template>
-            </SearchBarCustom>
-            <SearchBarCustom
-              v-if="keywordType == 'exclude'"
-              title="키워드"
-              id="not_keyword"
-              :default-selected="filterObj.not_keyword"
-              :max-count="10"
-              :cur-count="searchKeyword.length"
-              :placeholder="`최대 10개까지 복수 분석가능`"
-              type="exclude"
-              :hide-selected-item="true"
-              @set-item="(val:any) => handleSearch('keyword', val)"
-            >
-              <template #prepend>
-                <select
-                  v-model="keywordType"
-                  :class="`col-auto form-control w-auto ${keywordType}`"
-                >
-                  <option value="include">포함</option>
-                  <option value="exclude">제외</option>
-                </select>
-              </template>
-            </SearchBarCustom> -->
             <!---------- 선택한 키워드 목록 ---------->
             <div class="row m-0 align-center" v-if="searchKeyword.length">
               <div class="col row align-items-center m-0 ps-1">
@@ -135,52 +90,33 @@
 
           <dt class="col-sm-2 py-2 text-sm-center">언론사</dt>
           <dd class="col-sm-10 px-1 px-sm-2 mb-0">
-            <SearchBarCustom
-              v-if="processKeywordType == 'exclude'"
-              title="미디어"
-              id="not_press_no"
-              :default-selected="filterObj.not_press_no"
-              :autocomplate-list="pressList"
-              :max-count="10"
-              :cur-count="searchPress.length"
-              :placeholder="`최대 10개까지 복수 분석가능`"
-              type="exclude"
-              :hide-selected-item="true"
-              @set-item="(val:any) => handleSearch('press_no', val)"
-            >
-              <template #prepend>
-                <select
-                  v-model="processKeywordType"
-                  :class="`col-auto form-control w-auto ${processKeywordType}`"
-                >
-                  <option value="include">포함</option>
-                  <option value="exclude">제외</option>
-                </select>
-              </template>
-            </SearchBarCustom>
-            <SearchBarCustom
-              v-if="processKeywordType == 'include'"
-              title="미디어"
-              id="in_press_no"
-              :default-selected="filterObj.in_press_no"
-              :autocomplate-list="pressList"
-              :max-count="10"
-              :cur-count="searchPress.length"
-              :placeholder="`최대 10개까지 복수 분석가능`"
-              type="include"
-              :hide-selected-item="true"
-              @set-item="(val:any) => handleSearch('press_no', val)"
-            >
-              <template #prepend>
-                <select
-                  v-model="processKeywordType"
-                  :class="`col-auto form-control w-auto ${processKeywordType}`"
-                >
-                  <option value="include">포함</option>
-                  <option value="exclude">제외</option>
-                </select>
-              </template>
-            </SearchBarCustom>
+            <template v-for="(kType, kIdx) in keywordTypeList">
+              <SearchBarCustom
+                v-if="processKeywordType == kType.value"
+                :key="kIdx"
+                title="언론사"
+                :id="`${kType.key}_press_no`"
+                :default-selected="filterObj[`${kType.key}_press_no`]"
+                :autocomplate-list="pressList"
+                :max-count="10"
+                :cur-count="searchPress.length"
+                :placeholder="`최대 10개까지 복수 분석가능`"
+                :type="kType.value"
+                :hide-selected-item="true"
+                @set-item="(val:any) => handleSearch('press_no', val)"
+              >
+                <template #prepend>
+                  <select
+                    v-model="processKeywordType"
+                    :class="`col-auto form-control w-auto ${processKeywordType}`"
+                  >
+                    <option value="include">포함</option>
+                    <option value="exclude">제외</option>
+                  </select>
+                </template>
+              </SearchBarCustom>
+            </template>
+
             <!---------- 선택한 언론사 목록 ---------->
             <div class="row m-0 align-center" v-if="searchPress.length">
               <div class="col row align-items-center m-0 ps-1">
@@ -217,7 +153,7 @@
                   <i
                     class="bx bx-x-circle"
                     style="margin-left: 4px"
-                    @click="removePress(item, index)"
+                    @click="removePress(item, pIdx)"
                   ></i>
                 </span>
               </div>
@@ -292,7 +228,10 @@
             v-for="(news, index) in newsList"
             :key="index"
             :index="index"
-            :news-data="news"
+            :news-data="{
+              ...news,
+              save_status: true,
+            }"
             :id="news.news_no"
           />
         </template>
@@ -356,11 +295,11 @@ const newsList = ref<any[]>([]);
 const keywordTypeList = [
   {
     value: "include",
-    key: "in_keyword",
+    key: "in",
   },
   {
     value: "exclude",
-    key: "not_keyword",
+    key: "not",
   },
 ];
 const keywordType = ref("include");
@@ -582,9 +521,7 @@ const handleSearch = async (key: string, data: any) => {
 /**@description: 초기화 및 데이터 재 조회 */
 const refreshList = () => {
   pressList.value = [];
-  // topNewsList.value = [];
   Promise.all([fetchPressList(), fetchSaveNewsList()]);
-  // fetchTopNewsList();
 };
 
 /**@description: 필터 키워드 제거 */

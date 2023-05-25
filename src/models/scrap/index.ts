@@ -56,12 +56,25 @@ export class NewListItem {
   repoter = "";
   save_status = 0;
   thumbnail = "";
+  platform = 0; // 1: 뉴스. 2.카페 3. 블로그
 
   comments = "";
 
   constructor(init?: any) {
     if (!init) return;
     CommonUtils.updateVoByKey(this, init);
+  }
+
+  get platform_text(): string {
+    return !this.platform
+      ? ""
+      : this.platform == 1
+      ? "뉴스"
+      : this.platform == 2
+      ? "카페"
+      : this.platform == 3
+      ? "블로그"
+      : "기타";
   }
 
   get decode_keyword(): string {

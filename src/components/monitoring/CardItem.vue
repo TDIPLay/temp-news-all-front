@@ -70,16 +70,35 @@
                 :title="props.newsData.description"
               />
 
-              <h5 class="row font-size-11 fw-bold text-start m-0">
+              <h5
+                class="row font-size-11 fw-bold text-start m-0 align-items-end"
+              >
                 <div class="col-auto text-secondary p-0">
                   {{ moment(props.newsData.pub_date).format("YYYY-MM-DD") }}
                 </div>
-                <div class="col-auto px-2" v-if="props.newsData.press_name">
-                  |
-                </div>
-                <div class="col text-primary overflow-text mw-100 p-0">
-                  {{ props.newsData.press_name }}
-                </div>
+                <!-- platform == 1: 뉴스 -->
+                <template v-if="props.newsData.platform < 2">
+                  <div class="col-auto px-2" v-if="props.newsData.press_name">
+                    |
+                  </div>
+                  <div class="col text-primary overflow-text mw-100 p-0">
+                    {{ props.newsData.press_name }}
+                  </div>
+                </template>
+                <!-- platform == 2: 카페 / 3:  블로그-->
+                <template v-else>
+                  <div class="col-auto px-2">|</div>
+                  <div class="col-auto p-0 pe-1">
+                    <img
+                      :src="`/img/icon/platform_${props.newsData.platform}.png`"
+                      style="width: 14px"
+                      class="d-inline-block"
+                    />
+                  </div>
+                  <div class="col text-success overflow-text mw-100 p-0">
+                    {{ props.newsData.platform_text }}
+                  </div>
+                </template>
               </h5>
             </div>
           </div>

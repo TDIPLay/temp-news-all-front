@@ -3,6 +3,7 @@
     <VerticalLayout
       v-if="layoutType === 'vertical'"
       :layout="layoutType"
+      :footer-hide="props.footerHide"
       @content-scroll="(event:Event) => emit('content-scroll', event)"
     >
       <slot />
@@ -11,6 +12,7 @@
     <HorizontalLayout
       v-if="layoutType === 'horizontal'"
       :layout="layoutType"
+      :footer-hide="props.footerHide"
       @content-scroll="(event:Event) =>emit('content-scroll', event)"
     >
       <slot />
@@ -30,6 +32,13 @@ const { setUserInfo } = useSessionStore();
 const emit = defineEmits<{
   (e: "content-scroll'", value?: any): void;
 }>();
+
+const props = defineProps({
+  "footer-hide": {
+    type: Boolean,
+    default: false,
+  },
+});
 const { layoutType } = useHelperStore();
 
 onBeforeMount(() => {

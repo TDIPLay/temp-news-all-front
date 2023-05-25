@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <MainLayout @content-scroll="infiniteScrolling">
+    <MainLayout @content-scroll="infiniteScrolling" :footer-hide="true">
       <PageHeader>
         <template #title>
           <div class="row m-0">

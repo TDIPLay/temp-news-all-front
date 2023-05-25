@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <MainLayout @content-scroll="infiniteScrolling">
+    <MainLayout @content-scroll="infiniteScrolling" :footer-hide="true">
       <PageHeader>
         <template #title>
           <div class="row m-0">
@@ -446,7 +446,6 @@ import { computed, ref, reactive } from "vue";
 import { useRouter } from "vue-router";
 import moment from "moment";
 import Swal from "sweetalert2";
-import { floor } from "lodash";
 
 import PageHeader from "@/components/layouts/page-header.vue";
 import SearchBarCustom from "@/components/search/SearchBarCustom.vue";
@@ -455,7 +454,7 @@ import GroupManageModal from "@/components/monitoring/GroupManageModal.vue";
 import MainLayout from "@/layouts/MainLayout.vue";
 import DatePicker from "vue3-datepicker";
 
-import { ScrapKeyword, ScrapKeywordGroup } from "@/models/scrap";
+import { NewListItem, ScrapKeywordGroup } from "@/models/scrap";
 import { useCommonStore } from "@/store/common";
 import { OptionItemProps } from "@/utils/CommonUtils";
 
@@ -473,16 +472,6 @@ interface IFilterObj {
 }
 const pageInfo = {
   title: "모니터링",
-  // items: [
-  //   {
-  //     text: "Dashboards",
-  //     href: "/",
-  //   },
-  //   {
-  //     text: "Default",
-  //     active: true,
-  //   },
-  // ],
 };
 const { loading, showLoading, hideLoading, showNoti } = useCommonStore();
 const router = useRouter();
@@ -506,10 +495,6 @@ const searchKeyword = ref<any[]>([]); //언론사 필터
 const newsList = ref<any[]>([]);
 const keywordType = ref("include");
 const processKeywordType = ref("include");
-const showMenu = reactive({
-  start_date: false,
-  end_date: false,
-});
 const filterObj = reactive<IFilterObj>({
   keyword_no: [],
   in_keyword: [],
@@ -696,10 +681,13 @@ const fetchNewsList = async () => {
   if (newslist && newslist.length) {
     newsList.value = [
       ...newsList.value,
-      ...newslist.map((item: any) => ({
-        ...item,
-        keyword: decodeURIComponent(item.keyword),
-      })),
+      ...newslist.map(
+        (item: any) =>
+          new NewListItem({
+            ...item,
+            keyword: decodeURIComponent(item.keyword),
+          })
+      ),
     ];
     pagenation.isMax = newslist.length < pagenation.limit;
   } else {

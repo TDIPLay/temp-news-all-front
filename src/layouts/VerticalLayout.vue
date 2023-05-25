@@ -36,7 +36,8 @@
             <slot />
           </b-container>
         </div>
-        <FootLayout />
+
+        <FootLayout v-if="!props.footerHide" />
       </div>
       <!-- 테마는 잠시 보류 -->
       <!-- <RightBar
@@ -56,7 +57,12 @@ import SideBar from "@/components/layouts/side-bar.vue";
 import FootLayout from "@/components/layouts/footer-layout.vue";
 import { onBeforeMount, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
-
+const props = defineProps({
+  "footer-hide": {
+    type: Boolean,
+    default: false,
+  },
+});
 const emit = defineEmits<{
   (e: "content-scroll'", value?: any): void;
 }>();

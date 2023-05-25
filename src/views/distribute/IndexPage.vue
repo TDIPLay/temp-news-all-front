@@ -242,42 +242,6 @@
                           {{ distribute[column.key] }}
                         </template>
                       </td>
-                      <!-- <td>Magento Developer</td>
-                      <td>Themesbrand</td>
-                      <td>California</td>
-                      <td>0-2 Years</td>
-                      <td>2</td>
-                      <td>
-                        <span class="badge badge-soft-success">Full Time</span>
-                      </td>
-                      <td>02 June 2021</td>
-                      <td>25 June 2021</td>
-                      <td><span class="badge bg-success">Active</span></td>
-                      <td>
-                        <ul class="list-unstyled hstack gap-1 mb-0">
-                          <li
-                            data-bs-toggle="tooltip"
-                            data-bs-placement="top"
-                            aria-label="Edit"
-                          >
-                            <a href="#" class="btn btn-sm btn-soft-info"
-                              ><i class="mdi mdi-pencil-outline"></i
-                            ></a>
-                          </li>
-                          <li
-                            data-bs-toggle="tooltip"
-                            data-bs-placement="top"
-                            aria-label="Delete"
-                          >
-                            <b-button
-                              variant="soft-danger"
-                              class="btn-sm"
-                              @click="listDeleteModal = !listDeleteModal"
-                              ><i class="mdi mdi-delete-outline"></i
-                            ></b-button>
-                          </li>
-                        </ul>
-                      </td> -->
                     </tr>
                   </tbody>
                 </table>

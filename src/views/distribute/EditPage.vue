@@ -126,8 +126,7 @@
                 </label>
                 <div class="col-xxl-10">
                   <input
-                    id="taskname"
-                    name="taskname"
+                    name="title"
                     type="text"
                     class="form-control"
                     placeholder="제목을 입력해 주세요."
@@ -350,6 +349,7 @@ import MainLayout from "@/layouts/MainLayout.vue";
 
 import { useCommonStore } from "@/store/common";
 import { useRouter, useRoute } from "vue-router";
+
 const { loading, showNoti } = useCommonStore();
 
 const tooltip = reactive({
@@ -372,14 +372,16 @@ const route = useRoute();
 const router = useRouter();
 const sltNo = route.query.no;
 
-if (!sltNo || sltNo == "undefined") {
-  showNoti({
-    message: "해당 보도자료가 존재하지 않습니다.",
-    type: "error",
-  });
-  router.replace("/distribute");
-} else {
-  fetchDistributeInfo(`${sltNo}`);
+if (sltNo) {
+  if (sltNo == "undefined") {
+    showNoti({
+      message: "해당 보도자료가 존재하지 않습니다.",
+      type: "error",
+    });
+    router.replace("/distribute");
+  } else {
+    fetchDistributeInfo(`${sltNo}`);
+  }
 }
 </script>
 

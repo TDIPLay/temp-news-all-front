@@ -65,6 +65,7 @@ export class Briefing {
         // .replace(/\n/gi, "\\n")
         // .replace(/\t/gi, "\\t")
         // .replace(/\f/gi, "\\f")
+        // eslint-disable-next-line no-useless-escape
         .replace(/\&quot;/g, `\"`);
       this.briefing_news_list = JSON.parse(tempStr);
     }
@@ -80,7 +81,7 @@ export class Briefing {
       });
     }
     if (this.briefing_key) {
-      this.preview_link = `${window.location.protocol}//${window.location.host}/preview-briefing?key=${this.briefing_key}`;
+      this.preview_link = `${window.location.protocol}//${window.location.host}/briefing/preview?key=${this.briefing_key}`;
     }
     if (!skipOrigin) {
       this.origin = new Briefing(this, true);

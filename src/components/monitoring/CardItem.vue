@@ -96,7 +96,7 @@
                     />
                   </div>
                   <div class="col text-success overflow-text mw-100 p-0">
-                    {{ props.newsData.platform_text }}
+                    {{ props.newsData.press_name }}
                   </div>
                 </template>
               </h5>
@@ -199,12 +199,14 @@ const getMeta = (
 };
 
 const openNews = () => {
-  try {
-    window.webToAppSelectNewUrl.postMessage(props.newsData.original_link);
-  } catch (err) {
-    console.log(err);
-    window.open(props.newsData.original_link);
-  }
+  // window.open(props.newsData.original_link);
+  console.log(props.newsData);
+  // try {
+  //   window.webToAppSelectNewUrl.postMessage(props.newsData.original_link);
+  // } catch (err) {
+  //   console.log(err);
+  //   window.open(props.newsData.original_link);
+  // }
 };
 
 const searchKeyword = async () => {

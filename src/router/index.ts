@@ -68,11 +68,11 @@ const routes: Array<RouteRecordRaw> = [
   //   ],
   // },
 
-  // {
-  //   path: "/preview-briefing",
-  //   name: "preview-briefing",
-  //   component: () => import("@/views/briefing/PreviewBriefingPage.vue"),
-  // },
+  {
+    path: "//briefing/preview",
+    name: "briefing-preview",
+    component: () => import("@/views/briefing/PreviewBriefingPage.vue"),
+  },
 
   // ======== 모니터링 ===================================
   {
@@ -132,17 +132,24 @@ const routes: Array<RouteRecordRaw> = [
   },
 
   //======== 브리핑 ===================================
-  // {
-  //   path: "/briefing",
-  //   component: () => import("@/layouts/MainLayout.vue"),
-  //   children: [
-  //     {
-  //       name: "briefing",
-  //       path: "/briefing",
-  //       component: () => import("@/views/briefing/IndexPage.vue"),
-  //     },
-  //   ],
-  // },
+  {
+    path: "/briefing",
+    children: [
+      {
+        name: "briefing",
+        path: "/briefing",
+        component: () => import("@/views/briefing/IndexPage.vue"),
+      },
+      {
+        name: "briefing-edit",
+        path: "/briefing/edit",
+        component: () => import("@/views/briefing/EditPage.vue"),
+        meta: {
+          parent: "/briefing",
+        },
+      },
+    ],
+  },
 
   //======== TOP 5 ===================================
   // {
@@ -198,9 +205,9 @@ Router.beforeEach((to, from, next) => {
   const toPath = to.path;
   const hasSession = localStorage.getItem("user_name");
   // 로그인 여부 상관 없는 페이지
-  // if (["preview-briefing"].includes(toPath)) {
-  //   return next();
-  // }
+  if (["/briefing/preview"].includes(toPath)) {
+    return next();
+  }
   // 로그인, 회원가입페이지로 가는데, 로그인중일때
   if (beforLoginRoutes.includes(toPath) && hasSession) {
     return next({ name: "monitoring" });

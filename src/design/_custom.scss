@@ -266,3 +266,12 @@ body {
 .ck-content {
   height: 350px !important;
 }
+
+.table_hover {
+  tbody {
+    tr:hover {
+      background-color: rgba($color: $primary, $alpha: 0.1);
+      cursor: pointer;
+    }
+  }
+}

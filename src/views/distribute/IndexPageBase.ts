@@ -21,8 +21,6 @@ export const useFetch = () => {
   const { showLoading, hideLoading } = useCommonStore();
   const { showNoti } = useCommonStore();
   const router = useRouter();
-  const tempSelectDistibuteNo = ref("");
-  const distibuteForm = ref();
   const distributeList = ref<DistributeNews[]>([]);
   const selectedDistribute = ref<DistributeNews>(new DistributeNews());
   const isEditable = computed(
@@ -353,8 +351,6 @@ export const useFetch = () => {
   };
   return {
     DistributeNewsStatusOptions,
-    tempSelectDistibuteNo,
-    distibuteForm,
     distributeList,
     selectedDistribute,
     isEditable,

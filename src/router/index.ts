@@ -165,17 +165,16 @@ const routes: Array<RouteRecordRaw> = [
   // },
 
   //======== 메타베이 ===================================
-  // {
-  //   path: "/metavey",
-  //   component: () => import("@/layouts/MainLayout.vue"),
-  //   children: [
-  //     {
-  //       name: "metavey",
-  //       path: "/metavey",
-  //       component: () => import("@/views/metavey/IndexPage.vue"),
-  //     },
-  //   ],
-  // },
+  {
+    path: "/metavey",
+    children: [
+      {
+        name: "metavey",
+        path: "/metavey",
+        component: () => import("@/views/metavey/IndexPage.vue"),
+      },
+    ],
+  },
   //======== 설정 ===================================
   // {
   //   path: "/setting",

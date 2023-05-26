@@ -26,12 +26,6 @@ export const menuItems = [
   },
   {
     id: 5,
-    label: "menu_items_txt.metavey.text",
-    icon_url: require("@/assets/images/icon/metavey_icon.svg"),
-    link: "/distribute",
-  },
-  {
-    id: 5,
     label: "menu_items_txt.analyze.text",
     icon: "bx-line-chart",
     link: "/analyze",
@@ -45,15 +39,21 @@ export const menuItems = [
       {
         id: 7,
         label: "menu_items_txt.analyze.list.trand",
-        link: "/analyze-news",
+        link: "/analyze-trand",
         parentId: 5,
       },
       {
         id: 8,
         label: "menu_items_txt.analyze.list.keyword",
-        link: "/analyze-news",
+        link: "/analyze-keyword",
         parentId: 5,
       },
     ],
+  },
+  {
+    id: 9,
+    label: "menu_items_txt.metavey.text",
+    icon_url: require("@/assets/images/icon/metavey_icon.svg"),
+    link: "/metavey",
   },
 ];

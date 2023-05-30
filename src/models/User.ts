@@ -144,7 +144,7 @@ export class UserInfo {
   account_id = "";
   account_company = "";
   phone_number = "";
-  mailing = 0;
+  mailing = false;
   name = "";
 
   origin: any = null;
@@ -156,6 +156,7 @@ export class UserInfo {
     if (!skipOrigin) {
       this.origin = new RegisterUser(this, true);
     }
+    this.mailing = this.mailing ? true : false;
   }
 
   vaild() {
@@ -198,7 +199,7 @@ export class UserInfo {
       const newVal = (this as any)[key];
       temp[key] = newVal;
     });
-    temp.mailing = temp.mailing == 1 ? true : false;
+    temp.mailing = temp.mailing ? true : false;
 
     return Object.keys(temp).length > 0 ? temp : null;
   }
@@ -211,7 +212,7 @@ export class KakaoAlarmInfo {
   alarm_end_time = "19:00";
   alarm_target = "";
 
-  keyword_no = [];
+  keyword_no: Array<string | number> = [];
   open_group_pannel = [];
   origin: any = null;
 
@@ -227,7 +228,7 @@ export class KakaoAlarmInfo {
       const temp = this.alarm_end_time.split(":");
       this.alarm_end_time = `${temp[0]}:${temp[1]}`;
     }
-
+    this.origin = null;
     if (!skipOrigin) {
       this.origin = new KakaoAlarmInfo(this, true);
     }
@@ -339,7 +340,7 @@ export class MailAlarmInfo {
   alarm_target = "";
 
   open_group_pannel = [];
-  keyword_no = [];
+  keyword_no: Array<string | number> = [];
   origin: any = null;
 
   constructor(init?: any, skipOrigin = false) {

@@ -176,17 +176,16 @@ const routes: Array<RouteRecordRaw> = [
     ],
   },
   //======== 설정 ===================================
-  // {
-  //   path: "/setting",
-  //   component: () => import("@/layouts/MainLayout.vue"),
-  //   children: [
-  //     {
-  //       name: "setting",
-  //       path: "/setting",
-  //       component: () => import("@/views/setting/IndexPage.vue"),
-  //     },
-  //   ],
-  // },
+  {
+    path: "/setting",
+    children: [
+      {
+        name: "setting",
+        path: "/setting",
+        component: () => import("@/views/setting/IndexPage.vue"),
+      },
+    ],
+  },
 ];
 
 const Router = createRouter({

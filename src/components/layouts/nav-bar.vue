@@ -598,10 +598,15 @@
             <i class="bx bx-wallet font-size-16 align-middle me-1"></i>
             {{ $t("navbar.dropdown.henry.list.mywallet") }}
           </b-dropdown-item> -->
-          <b-dropdown-item class="d-block" href="javascript: void(0);">
+          <b-dropdown-item
+            class="d-block"
+            href="javascript: void(0);"
+            @click="router.push('/setting')"
+          >
             <!-- <span class="badge bg-success float-end">11</span> -->
+
             <i class="bx bx-wrench font-size-16 align-middle me-1"></i>
-            {{ $t("navbar.dropdown.henry.list.settings") }}
+            설정
           </b-dropdown-item>
           <!-- <b-dropdown-item href="javascript: void(0);">
             <i class="bx bx-lock-open font-size-16 align-middle me-1"></i>
@@ -616,7 +621,7 @@
             <i
               class="bx bx-power-off font-size-16 align-middle me-1 text-danger"
             ></i>
-            {{ $t("navbar.dropdown.henry.list.logout") }}
+            로그아웃
           </a>
         </b-dropdown>
         <!-- 테마는 잠시 보류 -->

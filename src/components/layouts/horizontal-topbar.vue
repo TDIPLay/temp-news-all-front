@@ -565,19 +565,19 @@
           <b-dropdown-item class="d-block" href="javascript: void(0);">
             <span class="badge bg-success float-end">11</span>
             <i class="bx bx-wrench font-size-16 align-middle me-1"></i>
-            {{ $t("navbar.dropdown.henry.list.settings") }}
+            설정
           </b-dropdown-item>
           <b-dropdown-item href="javascript: void(0);">
             <i class="bx bx-lock-open font-size-16 align-middle me-1"></i>
             {{ $t("navbar.dropdown.henry.list.lockscreen") }}
           </b-dropdown-item>
           <b-dropdown-divider></b-dropdown-divider>
-          <a href="/logout" class="dropdown-item text-danger">
+          <div @click="handleLogOut" class="dropdown-item text-danger">
             <i
               class="bx bx-power-off font-size-16 align-middle me-1 text-danger"
             ></i>
-            {{ $t("navbar.dropdown.henry.list.logout") }}
-          </a>
+            로그아웃s
+          </div>
         </b-dropdown>
 
         <div class="dropdown d-inline-block">
@@ -596,9 +596,16 @@
 
 <script setup lang="ts">
 import i18n from "@/i18n";
+import { useCommonStore } from "@/store/common";
+import { useSessionStore } from "@/store/session";
 
-import { SimpleBar } from "simplebar-vue3";
+const { user, logout } = useSessionStore();
+const { loading, showNoti } = useCommonStore();
+
 import { onMounted, ref, watch } from "vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 
 const props = defineProps({
   type: {
@@ -761,6 +768,17 @@ const setWidthAttr = (width: string) => {
   }
 };
 
+const handleLogOut = () => {
+  logout().then((res) => {
+    let msg = "";
+    if (res) {
+      showNoti({
+        message: res.message,
+      });
+    }
+    router.replace({ name: "login" });
+  });
+};
 setTypeAttr(props.type);
 setWidthAttr(props.width);
 </script>

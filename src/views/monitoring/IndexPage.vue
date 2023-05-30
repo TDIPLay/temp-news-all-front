@@ -25,7 +25,7 @@
         </template>
         <template #right>
           <button
-            class="btn btn-outline-danger px-2 py-1 font-size-12"
+            class="btn btn-outline-danger px-2 py-1 font-size-13"
             @click="handleSettingClick(2)"
           >
             <i class="mdi mdi-bell-outline"></i>
@@ -291,7 +291,8 @@
                     'YYYY-MM-DD'
                   )
                 "
-              ></DatePicker>
+              >
+              </DatePicker>
             </div>
             <span class="p-1 p-sm-2"> ~ </span>
             <div class="col">

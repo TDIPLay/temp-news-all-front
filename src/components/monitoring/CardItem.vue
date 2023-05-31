@@ -33,8 +33,8 @@
 
           <div class="col-xl-8 col-xxxl-9">
             <div>
-              <div class="row m-0">
-                <div class="col text-start px-0 py-2">
+              <div class="d-flex m-0">
+                <div class="col text-start px-0 py-2 d-flex overflow-text">
                   <span
                     class="col-auto badge fw-bolder font-size-11 me-2 px-2"
                     :class="{
@@ -45,24 +45,29 @@
                   >
                     {{ props.newsData.scoreTypeText }} 반응
                   </span>
-
-                  <span
+                  <div
                     v-if="
                       !!props.newsData.nlp_keyword &&
                       props.newsData.nlp_keyword.length > 0
                     "
-                    class="col-auto fw-bolder font-size-11"
-                    :class="{
-                      'text-danger': props.newsData.scoreTypeCode < 0,
-                      'text-success': props.newsData.scoreTypeCode > 0,
-                      'text-warning': props.newsData.scoreTypeCode == 0,
-                    }"
+                    class="col overflow-text"
                   >
-                    # {{ props.newsData.nlp_keyword[0] }}
-                  </span>
+                    <span
+                      v-for="(k, kIdx) in props.newsData.nlp_keyword"
+                      :key="kIdx"
+                      class="col-auto fw-bolder font-size-11 me-1"
+                      :class="{
+                        'text-danger': props.newsData.scoreTypeCode < 0,
+                        'text-success': props.newsData.scoreTypeCode > 0,
+                        'text-warning': props.newsData.scoreTypeCode == 0,
+                      }"
+                    >
+                      #{{ k }}
+                    </span>
+                  </div>
                 </div>
                 <div
-                  class="col-auto ms-3 pe-0 save-icon"
+                  class="col-auto ms-3 pe-0 save-icon align-self-end"
                   v-if="props.useSaveBtn"
                   @click.stop="saveNewsItem"
                 >

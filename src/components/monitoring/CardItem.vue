@@ -94,18 +94,19 @@
                 class="row font-size-13 fw-bold justify-content-end m-0 align-items-center mb-2"
                 style="height: 20px"
               >
-                <span class="col-auto font-size-11 fw-600"></span>
-                <div class="col-auto px-1 badge badge-soft-primary me-2">
-                  <i class="mdi mdi-thumb-up-outline me-1"></i>
-                  긍정 댓글
-                  {{ props.newsData.replySympathyPer }}%
-                </div>
+                <template v-if="props.newsData.platform < 2">
+                  <div class="col-auto px-1 badge badge-soft-primary me-2">
+                    <i class="mdi mdi-thumb-up-outline me-1"></i>
+                    긍정 댓글
+                    {{ props.newsData.replySympathyPer }}%
+                  </div>
 
-                <div class="col-auto px-1 badge badge-soft-danger">
-                  <i class="mdi mdi-thumb-down-outline me-1"></i>
-                  부정 댓글
-                  {{ props.newsData.replyNoneSympathyPer }}%
-                </div>
+                  <div class="col-auto px-1 badge badge-soft-danger">
+                    <i class="mdi mdi-thumb-down-outline me-1"></i>
+                    부정 댓글
+                    {{ props.newsData.replyNoneSympathyPer }}%
+                  </div>
+                </template>
               </h5>
               <h5
                 class="row font-size-11 fw-bold text-start m-0 align-items-center"

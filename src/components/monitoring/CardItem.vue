@@ -12,7 +12,7 @@
       <div class="card-body">
         <div class="row">
           <div
-            class="col-lg-4 col-xxxl-3"
+            class="col-xl-4 col-xxxl-3"
             style="position: relative; min-height: 120px"
           >
             <div class="noimg-thum-wrap">
@@ -31,7 +31,7 @@
             </div>
           </div>
 
-          <div class="col-lg-8 col-xxxl-9">
+          <div class="col-xl-8 col-xxxl-9">
             <div>
               <div class="row m-0">
                 <div class="col text-start px-0 py-2">
@@ -84,12 +84,29 @@
               ></h5>
               <p
                 v-html="props.newsData.description"
-                class="text-start overflow-text-line-2 mb-3"
+                class="text-start overflow-text-line-2 mb-2"
                 data-toggle="tooltip"
                 data-placement="top"
                 :title="props.newsData.description"
               />
 
+              <h5
+                class="row font-size-13 fw-bold justify-content-end m-0 align-items-center mb-2"
+                style="height: 20px"
+              >
+                <span class="col-auto font-size-11 fw-600"></span>
+                <div class="col-auto px-1 badge badge-soft-primary me-2">
+                  <i class="mdi mdi-thumb-up-outline me-1"></i>
+                  긍정 댓글
+                  {{ props.newsData.replySympathyPer }}%
+                </div>
+
+                <div class="col-auto px-1 badge badge-soft-danger">
+                  <i class="mdi mdi-thumb-down-outline me-1"></i>
+                  부정 댓글
+                  {{ props.newsData.replyNoneSympathyPer }}%
+                </div>
+              </h5>
               <h5
                 class="row font-size-11 fw-bold text-start m-0 align-items-center"
               >
@@ -126,7 +143,7 @@
                       class="d-inline-block ms-auto me-1"
                     />
                     <span
-                      style="max-width: 100px"
+                      style="max-width: 85px"
                       class="text-success d-inline-block overflow-text"
                     >
                       {{ props.newsData.press_name }}
@@ -237,8 +254,8 @@ const getMeta = (
 };
 
 const openNews = () => {
-  // window.open(props.newsData.original_link);
-  console.log(props.newsData);
+  window.open(props.newsData.original_link);
+  // console.log(props.newsData);
   // try {
   //   window.webToAppSelectNewUrl.postMessage(props.newsData.original_link);
   // } catch (err) {

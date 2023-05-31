@@ -8,6 +8,7 @@
               <span class="fw-bolder font-size-18">
                 {{ pageInfo.title }}
               </span>
+
               <button
                 type="button"
                 class="btn noti-icon right-bar-toggle toggle-right px-1 py-0"
@@ -34,34 +35,52 @@
         </template>
       </PageHeader>
       <!-- 키워드 그룹 Header -->
-      <div v-if="selectedKeywordGroup" class="row justify-content-start m-0">
-        <div class="card-title col-auto col-sm-12 text-start">
-          <i :class="`bx bx-folder`"></i>
-          <span
-            @click="showKeywordGroupModal.list = true"
-            class="mx-1"
-            style="cursor: pointer"
-          >
-            {{ selectedKeywordGroup.group_name }}
-          </span>
+      <div class="row justify-content-start m-0">
+        <div
+          class="card-title col-auto col-sm-12 text-start d-flex align-items-center"
+        >
+          <div class="font-size-13 badge badge-soft-secondary py-0 pe-0 ps-3">
+            <span class="d-none d-sm-inline">키워드</span>
+            그룹
+            <select
+              v-model="tempSltGroupVal"
+              :class="`d-inline-block w-auto form-select keyword_group_select ms-3`"
+              @update:model-value="(val:string) => handleKeywordGroupClick(val)"
+            >
+              <option value="" disabled v-if="!tempSltGroupVal">
+                그룹을 선택해 주세요.
+              </option>
+              <option
+                v-for="(group, gIdx) in keywordsGroupList"
+                :key="gIdx"
+                :value="group.group_no"
+              >
+                {{ group.group_name }}
+              </option>
+            </select>
+          </div>
+
           <!-- 키워드 그룹 수정 -->
-          <button
-            type="button"
-            class="btn font-size-20 right-bar-toggle toggle-right px-1 py-0"
-            :disabled="!selectedKeywordGroup || loading"
-            @click="showKeywordGroupModal.info = true"
-          >
-            <i class="bx bx-pencil"></i>
-          </button>
+          <i
+            class="btn bx bx-pencil p-1 m-1 my-auto font-size-20"
+            @click="
+              () => {
+                if (!selectedKeywordGroup || loading) return;
+                showKeywordGroupModal.info = true;
+              }
+            "
+          ></i>
 
           <!-- 키워드 그룹 추가 -->
-          <button
-            type="button"
-            class="btn font-size-20 right-bar-toggle toggle-right px-1 py-0"
-            @click="showKeywordGroupModal.create = true"
-          >
-            <i class="bx bxs-plus-square"></i>
-          </button>
+          <i
+            class="btn bx bxs-plus-square p-1 my-auto font-size-20"
+            @click="
+              () => {
+                if (!selectedKeywordGroup || loading) return;
+                showKeywordGroupModal.create = true;
+              }
+            "
+          ></i>
         </div>
 
         <div class="col-12 row justify-content-start pa-0 pb-1 g-1 mt-0">
@@ -273,41 +292,6 @@
           <dt class="col-sm-2 py-2 text-sm-center">채널</dt>
           <dd class="d-flex col-sm-10 px-1 px-sm-2 m-0 align-items-center py-1">
             <div class="col py-1 d-flex">
-              <!-- <span
-                style="max-width: 100px"
-                class="btn me-2 py-1 col font-size-13"
-                :class="{
-                  'btn-primary': filterObj.channel_news,
-                  'btn-outline-primary': !filterObj.channel_news,
-                }"
-                @click="filterObj.channel_news = !filterObj.channel_news"
-              >
-                뉴스
-              </span>
-
-              <span
-                style="max-width: 100px"
-                class="btn me-2 py-1 col font-size-13"
-                :class="{
-                  'btn-primary': filterObj.channel_cafe,
-                  'btn-outline-primary': !filterObj.channel_cafe,
-                }"
-                @click="filterObj.channel_cafe = !filterObj.channel_cafe"
-              >
-                카페
-              </span>
-              <span
-                style="max-width: 100px"
-                class="btn py-1 col font-size-13"
-                :class="{
-                  'btn-primary': filterObj.channel_blog,
-                  'btn-outline-primary': !filterObj.channel_blog,
-                }"
-                @click="filterObj.channel_blog = !filterObj.channel_blog"
-              >
-                블로그
-              </span> -->
-
               <div
                 class="col form-check form-switch font-size-13 mb-0 ms-1"
                 style="max-width: 100px"
@@ -316,7 +300,9 @@
                   class="form-check-input"
                   type="checkbox"
                   id="switch_news"
-                  v-model="filterObj.channel_news"
+                  name="filter_platform"
+                  :value="1"
+                  v-model="filterObj.platform"
                 />
                 <label class="form-check-label" for="switch_news"> 뉴스 </label>
               </div>
@@ -329,7 +315,9 @@
                   class="form-check-input"
                   type="checkbox"
                   id="switch_cafe"
-                  v-model="filterObj.channel_cafe"
+                  name="filter_platform"
+                  :value="2"
+                  v-model="filterObj.platform"
                 />
                 <label class="form-check-label" for="switch_cafe"> 카페 </label>
               </div>
@@ -342,7 +330,9 @@
                   class="form-check-input"
                   type="checkbox"
                   id="switch_blog"
-                  v-model="filterObj.channel_blog"
+                  name="filter_platform"
+                  :value="3"
+                  v-model="filterObj.platform"
                 />
                 <label class="form-check-label" for="switch_blog">
                   블로그
@@ -537,11 +527,9 @@ interface IFilterObj {
   not_keyword: string[];
   in_press_no: number[];
   not_press_no: number[];
+  platform: number[];
   start_date: string;
   end_date: string;
-  channel_news: boolean;
-  channel_blog: boolean;
-  channel_cafe: boolean;
 }
 const pageInfo = {
   title: "모니터링",
@@ -586,9 +574,7 @@ const filterObj = reactive<IFilterObj>({
   not_press_no: [],
   start_date: moment().subtract(7, "d").format("YYYY-MM-DD"),
   end_date: moment().format("YYYY-MM-DD"),
-  channel_news: true,
-  channel_blog: true,
-  channel_cafe: true,
+  platform: [1, 2, 3],
 });
 const contentFilterObj = reactive({
   positive: true, // 긍정
@@ -607,14 +593,14 @@ const pagenation = reactive({
   isMax: false,
 });
 const timeLoading = ref(false);
+const tempSltGroupVal = ref("");
 const filteredNewsList = computed(() => {
+  const temp: number[] = [];
+  if (contentFilterObj.positive) temp.push(1);
+  if (contentFilterObj.negative) temp.push(-1);
+  if (contentFilterObj.neutrality) temp.push(0);
   return newsList.value.filter((item: NewListItem) =>
-    item.nlp_score
-      ? (contentFilterObj.positive && item.nlp_score > 0.5) ||
-        (contentFilterObj.negative &&
-          (item.nlp_score <= 0.5 || item.nlp_score >= -0.5)) ||
-        (contentFilterObj.neutrality && item.nlp_score < -0.5)
-      : true
+    temp.includes(item.scoreTypeCode)
   );
 });
 /**@description: 검색 필터 초기화 */
@@ -627,11 +613,11 @@ const initFilter = () => {
     filterObj.in_press_no =
     filterObj.not_press_no =
       [];
+  filterObj.platform = [1, 2, 3];
   filterObj.start_date = moment().subtract(7, "d").format("YYYY-MM-DD");
   filterObj.end_date = moment().format("YYYY-MM-DD");
   tempData.start_date = new Date(filterObj.start_date);
   tempData.end_date = new Date(filterObj.end_date);
-  filterObj.channel_news = filterObj.channel_blog = filterObj.channel_cafe;
 };
 /**@description: 키워드 그룹 하단 - 필터링 된 키워드 목록*/
 const filteredSelectedKeywords = computed(() => {
@@ -676,6 +662,7 @@ const fetchKeywordGroupList = async (group_no?: string) => {
 
 /**@description: 키워드 그룹 선택시 */
 const handleKeywordGroupClick = async (group_no: string) => {
+  console.log("group_no", group_no);
   showKeywordGroupModal.list = false;
   const keywordGrooup = keywordsGroupList.value.find(
     (item) => item.group_no === group_no
@@ -703,6 +690,7 @@ const handleKeywordGroupClick = async (group_no: string) => {
   newsList.value = [];
 
   selectedKeywordGroup.value = keywordGrooup;
+  tempSltGroupVal.value = keywordGrooup?.group_no ?? "";
 
   showLoading();
   filterObj.keyword_no =
@@ -737,7 +725,7 @@ const handleKeywordClick = async (group_no: string, keyword_no: string) => {
   );
 
   selectedKeywordGroup.value = keywordGrooup;
-
+  tempSltGroupVal.value = keywordGrooup?.group_no ?? "";
   let keywordIdx = filterObj.keyword_no.findIndex(
     (item) => item === keyword_no
   );
@@ -1032,6 +1020,10 @@ const handleSettingClick = (idx: number) => {
 refreshList();
 </script>
 <style lang="scss" scoped>
+.keyword_group_select {
+  font-weight: bold;
+  min-width: 120px;
+}
 .group_manage_modal {
   .btn-primary {
     // background-color: #556ee6 !important;

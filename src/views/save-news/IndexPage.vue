@@ -191,6 +191,58 @@
               ></DatePicker>
             </div>
           </dd>
+
+          <dt class="col-sm-2 py-2 text-sm-center">채널</dt>
+          <dd class="d-flex col-sm-10 px-1 px-sm-2 m-0 align-items-center py-1">
+            <div class="col py-1 d-flex">
+              <div
+                class="col form-check form-switch font-size-13 mb-0 ms-1"
+                style="max-width: 100px"
+              >
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  id="switch_news"
+                  name="filter_platform"
+                  :value="1"
+                  v-model="filterObj.platform"
+                />
+                <label class="form-check-label" for="switch_news"> 뉴스 </label>
+              </div>
+
+              <div
+                class="col form-check form-switch font-size-13 mb-0"
+                style="max-width: 100px"
+              >
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  id="switch_cafe"
+                  name="filter_platform"
+                  :value="2"
+                  v-model="filterObj.platform"
+                />
+                <label class="form-check-label" for="switch_cafe"> 카페 </label>
+              </div>
+
+              <div
+                class="col form-check form-switch font-size-13 mb-0"
+                style="max-width: 100px"
+              >
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  id="switch_blog"
+                  name="filter_platform"
+                  :value="3"
+                  v-model="filterObj.platform"
+                />
+                <label class="form-check-label" for="switch_blog">
+                  블로그
+                </label>
+              </div>
+            </div>
+          </dd>
         </dl>
 
         <button
@@ -218,10 +270,42 @@
         </button>
       </div>
 
-      <div class="row m-0 mt-4">
-        <template v-if="newsList.length">
+      <div class="mt-4 d-flex justify-content-end pe-3">
+        <div class="col-auto form-check form-switch font-size-13 mb-0 me-4">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            id="switch_positive"
+            v-model="contentFilterObj.positive"
+          />
+          <label class="form-check-label" for="switch_positive"> 긍정 </label>
+        </div>
+
+        <div class="col-auto form-check form-switch font-size-13 mb-0 me-4">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            id="switch_negative"
+            v-model="contentFilterObj.negative"
+          />
+          <label class="form-check-label" for="switch_negative"> 부정 </label>
+        </div>
+
+        <div class="col-auto form-check form-switch font-size-13 mb-0">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            id="switch_neutrality"
+            v-model="contentFilterObj.neutrality"
+          />
+          <label class="form-check-label" for="switch_neutrality"> 중립 </label>
+        </div>
+      </div>
+
+      <div class="row m-0 mt-2">
+        <template v-if="filteredNewsList.length">
           <NewsCardItem
-            v-for="(news, index) in newsList"
+            v-for="(news, index) in filteredNewsList"
             :key="index"
             :index="index"
             :news-data="news"
@@ -252,7 +336,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from "vue";
+import { ref, reactive, computed } from "vue";
 import moment from "moment";
 
 import PageHeader from "@/components/layouts/page-header.vue";
@@ -273,6 +357,7 @@ interface IFilterObj {
   not_keyword: string[];
   in_press_no: number[];
   not_press_no: number[];
+  platform: number[];
   start_date: string;
   end_date: string;
 }
@@ -298,10 +383,7 @@ const keywordTypeList = [
 ];
 const keywordType = ref("include");
 const processKeywordType = ref("include");
-const showMenu = reactive({
-  start_date: false,
-  end_date: false,
-});
+
 const filterObj = reactive<IFilterObj>({
   in_keyword: [],
   not_keyword: [],
@@ -309,7 +391,14 @@ const filterObj = reactive<IFilterObj>({
   not_press_no: [],
   start_date: moment().subtract(1, "M").format("YYYY-MM-DD"),
   end_date: moment().format("YYYY-MM-DD"),
+  platform: [1, 2, 3],
 });
+const contentFilterObj = reactive({
+  positive: true, // 긍정
+  negative: true, // 부정
+  neutrality: true, // 중립
+});
+
 const tempData = reactive({
   start_date: new Date(filterObj.start_date),
   end_date: new Date(filterObj.end_date),
@@ -321,6 +410,15 @@ const pagenation = reactive({
 });
 const timeLoading = ref(false);
 
+const filteredNewsList = computed(() => {
+  const temp: number[] = [];
+  if (contentFilterObj.positive) temp.push(1);
+  if (contentFilterObj.negative) temp.push(-1);
+  if (contentFilterObj.neutrality) temp.push(0);
+  return newsList.value.filter((item: NewListItem) =>
+    temp.includes(item.scoreTypeCode)
+  );
+});
 /**@description: 검색 필터 초기화 */
 const initFilter = () => {
   filterObj.in_keyword =
@@ -332,6 +430,7 @@ const initFilter = () => {
   filterObj.end_date = moment().format("YYYY-MM-DD");
   tempData.start_date = new Date(filterObj.start_date);
   tempData.end_date = new Date(filterObj.end_date);
+  filterObj.platform = [1, 2, 3];
 };
 
 /**@description: 언론사 목록 조회 */

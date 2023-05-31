@@ -59,6 +59,8 @@ export class NewListItem {
   platform = 0; // 1: 뉴스. 2.카페 3. 블로그
   nlp_score = 0;
   nlp_keyword: string[] = [];
+  reply_sympathy = 0; // 공감
+  reply_non_sympathy = 0; // 비공감
 
   comments = "";
 
@@ -66,6 +68,15 @@ export class NewListItem {
     if (!init) return;
     CommonUtils.updateVoByKey(this, init);
   }
+  get replySympathyPer() {
+    const tot = this.reply_sympathy + this.reply_non_sympathy;
+    return tot ? Math.round((tot / 100) * this.reply_sympathy) : 0;
+  }
+  get replyNoneSympathyPer() {
+    const tot = this.reply_sympathy + this.reply_non_sympathy;
+    return tot ? Math.round((tot / 100) * this.reply_non_sympathy) : 0;
+  }
+
   get scoreTypeCode() {
     return this.nlp_score > 0.5
       ? 1 // 긍정

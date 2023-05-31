@@ -94,10 +94,18 @@
                 class="row font-size-13 fw-bold justify-content-end m-0 align-items-center mb-2"
                 style="height: 20px"
               >
-                <template v-if="props.newsData.platform < 2">
+                <!-- 긍/부정 댓글 둘다 0이거나, 플랫폼이 뉴스인 경우에는 표시 안함 -->
+                <template
+                  v-if="
+                    props.newsData.platform < 2 &&
+                    (props.newsData.replyNoneSympathyPer ||
+                      props.newsData.replySympathyPer)
+                  "
+                >
                   <div class="col-auto px-1 badge badge-soft-primary me-2">
                     <i class="mdi mdi-thumb-up-outline me-1"></i>
                     긍정 댓글
+
                     {{ props.newsData.replySympathyPer }}%
                   </div>
 

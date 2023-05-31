@@ -359,7 +359,7 @@
             () => {
               showLoading();
               pagenation.isMax = false;
-              fetchNewsList();
+              fetchNewsList(true);
             }
           "
         >
@@ -737,9 +737,11 @@ const handleKeywordClick = async (group_no: string, keyword_no: string) => {
 };
 
 /**@description: 기사 목록 조회 */
-const fetchNewsList = async () => {
+const fetchNewsList = async (init = false) => {
   timeLoading.value = true;
-
+  if (init) {
+    pagenation.current = 1;
+  }
   if (pagenation.current === 1) {
     newsList.value = [];
   }

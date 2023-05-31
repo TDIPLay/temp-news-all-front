@@ -262,7 +262,7 @@
             () => {
               showLoading();
               pagenation.isMax = false;
-              fetchSaveNewsList();
+              fetchSaveNewsList(true);
             }
           "
         >
@@ -448,9 +448,11 @@ const fetchPressList = async () => {
 };
 
 /**@description: 기사 목록 조회 */
-const fetchSaveNewsList = async () => {
+const fetchSaveNewsList = async (init = false) => {
   timeLoading.value = true;
-
+  if (init) {
+    pagenation.current = 1;
+  }
   if (pagenation.current === 1) {
     newsList.value = [];
   }

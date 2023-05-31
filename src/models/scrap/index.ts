@@ -70,11 +70,11 @@ export class NewListItem {
   }
   get replySympathyPer() {
     const tot = this.reply_sympathy + this.reply_non_sympathy;
-    return tot ? Math.round((tot / 100) * this.reply_sympathy) : 0;
+    return tot ? Math.round((this.reply_sympathy / tot) * 100) : 0;
   }
   get replyNoneSympathyPer() {
     const tot = this.reply_sympathy + this.reply_non_sympathy;
-    return tot ? Math.round((tot / 100) * this.reply_non_sympathy) : 0;
+    return tot ? Math.round((this.reply_non_sympathy / tot) * 100) : 0;
   }
 
   get scoreTypeCode() {

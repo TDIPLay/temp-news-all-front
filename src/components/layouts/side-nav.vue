@@ -47,7 +47,12 @@
           >
             <i :class="`bx ${item.icon}`" v-if="item.icon"></i>
             <img
-              style="width: 1.45rem; margin-left: 4px; padding-right: 8px"
+              style="
+                min-width: 1.75rem;
+                max-width: 28px;
+                margin-left: 4px;
+                padding-right: 8px;
+              "
               :src="item.icon_url"
               v-if="item.icon_url"
             />

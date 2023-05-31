@@ -33,7 +33,6 @@
           </button>
         </template>
       </PageHeader>
-
       <!-- 키워드 그룹 Header -->
       <div v-if="selectedKeywordGroup" class="row justify-content-start m-0">
         <div class="card-title col-auto col-sm-12 text-start">
@@ -89,58 +88,36 @@
       </div>
 
       <!-- 키워드 조회  필터 (포함, 불포함, 기간) -->
-      <h5 class="font-size-14 p-2 text-dark text-start">
-        <i class="mdi mdi-filter-outline align-middle"></i>
-        필터
-      </h5>
-      <div class="filter-wrap px-4">
+      <div class="filter-wrap px-4 pt-3">
         <dl class="row align-items-center mb-0 text-start">
           <dt class="col-sm-2 py-2 text-sm-center">키워드</dt>
           <dd class="col-sm-10 px-1 px-sm-2 mb-0">
-            <SearchBarCustom
-              v-if="keywordType == 'include'"
-              title="키워드"
-              id="in_keyword"
-              :default-selected="filterObj.in_keyword"
-              :max-count="10"
-              :cur-count="searchKeyword.length"
-              :placeholder="`최대 10개까지 복수 분석가능`"
-              type="include"
-              :hide-selected-item="true"
-              @set-item="(val:any) => handleSearch('keyword', val)"
-            >
-              <template #prepend>
-                <select
-                  v-model="keywordType"
-                  :class="`col-auto form-control w-auto ${keywordType}`"
-                >
-                  <option value="include">포함</option>
-                  <option value="exclude">제외</option>
-                </select>
-              </template>
-            </SearchBarCustom>
-            <SearchBarCustom
-              v-if="keywordType == 'exclude'"
-              title="키워드"
-              id="not_keyword"
-              :default-selected="filterObj.not_keyword"
-              :max-count="10"
-              :cur-count="searchKeyword.length"
-              :placeholder="`최대 10개까지 복수 분석가능`"
-              type="exclude"
-              :hide-selected-item="true"
-              @set-item="(val:any) => handleSearch('keyword', val)"
-            >
-              <template #prepend>
-                <select
-                  v-model="keywordType"
-                  :class="`col-auto form-control w-auto ${keywordType}`"
-                >
-                  <option value="include">포함</option>
-                  <option value="exclude">제외</option>
-                </select>
-              </template>
-            </SearchBarCustom>
+            <template v-for="(kType, kIdx) in keywordTypeList">
+              <SearchBarCustom
+                v-if="keywordType == kType.value"
+                :key="kIdx"
+                title="키워드"
+                :id="`${kType.key}_keyword`"
+                :default-selected="filterObj[`${kType.key}_keyword`]"
+                :max-count="10"
+                :cur-count="searchKeyword.length"
+                :placeholder="`최대 10개까지 복수 분석가능`"
+                :type="kType.value"
+                :hide-selected-item="true"
+                @set-item="(val:any) => handleSearch('keyword', val)"
+              >
+                <template #prepend>
+                  <select
+                    v-model="keywordType"
+                    :class="`col-auto form-select w-auto ${keywordType}`"
+                  >
+                    <option value="include">포함</option>
+                    <option value="exclude">제외</option>
+                  </select>
+                </template>
+              </SearchBarCustom>
+            </template>
+
             <!---------- 선택한 키워드 목록 ---------->
             <div class="row m-0 align-center" v-if="searchKeyword.length">
               <div class="col row align-items-center m-0 ps-1">
@@ -186,52 +163,33 @@
 
           <dt class="col-sm-2 py-2 text-sm-center">언론사</dt>
           <dd class="col-sm-10 px-1 px-sm-2 mb-0">
-            <SearchBarCustom
-              v-if="processKeywordType == 'exclude'"
-              title="미디어"
-              id="not_press_no"
-              :default-selected="filterObj.not_press_no"
-              :autocomplate-list="pressList"
-              :max-count="10"
-              :cur-count="searchPress.length"
-              :placeholder="`최대 10개까지 복수 분석가능`"
-              type="exclude"
-              :hide-selected-item="true"
-              @set-item="(val:any) => handleSearch('press_no', val)"
-            >
-              <template #prepend>
-                <select
-                  v-model="processKeywordType"
-                  :class="`col-auto form-control w-auto ${processKeywordType}`"
-                >
-                  <option value="include">포함</option>
-                  <option value="exclude">제외</option>
-                </select>
-              </template>
-            </SearchBarCustom>
-            <SearchBarCustom
-              v-if="processKeywordType == 'include'"
-              title="미디어"
-              id="in_press_no"
-              :default-selected="filterObj.in_press_no"
-              :autocomplate-list="pressList"
-              :max-count="10"
-              :cur-count="searchPress.length"
-              :placeholder="`최대 10개까지 복수 분석가능`"
-              type="include"
-              :hide-selected-item="true"
-              @set-item="(val:any) => handleSearch('press_no', val)"
-            >
-              <template #prepend>
-                <select
-                  v-model="processKeywordType"
-                  :class="`col-auto form-control w-auto ${processKeywordType}`"
-                >
-                  <option value="include">포함</option>
-                  <option value="exclude">제외</option>
-                </select>
-              </template>
-            </SearchBarCustom>
+            <template v-for="(kType, kIdx) in keywordTypeList">
+              <SearchBarCustom
+                v-if="processKeywordType == kType.value"
+                :key="kIdx"
+                title="언론사"
+                :id="`${kType.key}_press_no`"
+                :default-selected="filterObj[`${kType.key}_press_no`]"
+                :autocomplate-list="pressList"
+                :max-count="10"
+                :cur-count="searchPress.length"
+                :placeholder="`최대 10개까지 복수 분석가능`"
+                :type="kType.value"
+                :hide-selected-item="true"
+                @set-item="(val:any) => handleSearch('press_no', val)"
+              >
+                <template #prepend>
+                  <select
+                    v-model="processKeywordType"
+                    :class="`col-auto form-select w-auto ${processKeywordType}`"
+                  >
+                    <option value="include">포함</option>
+                    <option value="exclude">제외</option>
+                  </select>
+                </template>
+              </SearchBarCustom>
+            </template>
+
             <!---------- 선택한 언론사 목록 ---------->
             <div class="row m-0 align-center" v-if="searchPress.length">
               <div class="col row align-items-center m-0 ps-1">
@@ -311,6 +269,87 @@
               ></DatePicker>
             </div>
           </dd>
+
+          <dt class="col-sm-2 py-2 text-sm-center">채널</dt>
+          <dd class="d-flex col-sm-10 px-1 px-sm-2 m-0 align-items-center py-1">
+            <div class="col py-1 d-flex">
+              <!-- <span
+                style="max-width: 100px"
+                class="btn me-2 py-1 col font-size-13"
+                :class="{
+                  'btn-primary': filterObj.channel_news,
+                  'btn-outline-primary': !filterObj.channel_news,
+                }"
+                @click="filterObj.channel_news = !filterObj.channel_news"
+              >
+                뉴스
+              </span>
+
+              <span
+                style="max-width: 100px"
+                class="btn me-2 py-1 col font-size-13"
+                :class="{
+                  'btn-primary': filterObj.channel_cafe,
+                  'btn-outline-primary': !filterObj.channel_cafe,
+                }"
+                @click="filterObj.channel_cafe = !filterObj.channel_cafe"
+              >
+                카페
+              </span>
+              <span
+                style="max-width: 100px"
+                class="btn py-1 col font-size-13"
+                :class="{
+                  'btn-primary': filterObj.channel_blog,
+                  'btn-outline-primary': !filterObj.channel_blog,
+                }"
+                @click="filterObj.channel_blog = !filterObj.channel_blog"
+              >
+                블로그
+              </span> -->
+
+              <div
+                class="col form-check form-switch font-size-13 mb-0 ms-1"
+                style="max-width: 100px"
+              >
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  id="switch_news"
+                  v-model="filterObj.channel_news"
+                />
+                <label class="form-check-label" for="switch_news"> 뉴스 </label>
+              </div>
+
+              <div
+                class="col form-check form-switch font-size-13 mb-0"
+                style="max-width: 100px"
+              >
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  id="switch_cafe"
+                  v-model="filterObj.channel_cafe"
+                />
+                <label class="form-check-label" for="switch_cafe"> 카페 </label>
+              </div>
+
+              <div
+                class="col form-check form-switch font-size-13 mb-0"
+                style="max-width: 100px"
+              >
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  id="switch_blog"
+                  v-model="filterObj.channel_blog"
+                />
+                <label class="form-check-label" for="switch_blog">
+                  블로그
+                </label>
+              </div>
+            </div>
+          </dd>
         </dl>
 
         <button
@@ -337,11 +376,41 @@
           조회
         </button>
       </div>
+      <div class="mt-4 d-flex justify-content-end pe-3">
+        <div class="col-auto form-check form-switch font-size-13 mb-0 me-4">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            id="switch_positive"
+            v-model="contentFilterObj.positive"
+          />
+          <label class="form-check-label" for="switch_positive"> 긍정 </label>
+        </div>
 
-      <div class="row m-0 mt-4">
-        <template v-if="newsList.length">
+        <div class="col-auto form-check form-switch font-size-13 mb-0 me-4">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            id="switch_negative"
+            v-model="contentFilterObj.negative"
+          />
+          <label class="form-check-label" for="switch_negative"> 부정 </label>
+        </div>
+
+        <div class="col-auto form-check form-switch font-size-13 mb-0">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            id="switch_neutrality"
+            v-model="contentFilterObj.neutrality"
+          />
+          <label class="form-check-label" for="switch_neutrality"> 중립 </label>
+        </div>
+      </div>
+      <div class="row m-0 mt-2">
+        <template v-if="filteredNewsList.length">
           <NewsCardItem
-            v-for="(news, index) in newsList"
+            v-for="(news, index) in filteredNewsList"
             :key="index"
             :index="index"
             :news-data="news"
@@ -470,10 +539,23 @@ interface IFilterObj {
   not_press_no: number[];
   start_date: string;
   end_date: string;
+  channel_news: boolean;
+  channel_blog: boolean;
+  channel_cafe: boolean;
 }
 const pageInfo = {
   title: "모니터링",
 };
+const keywordTypeList = [
+  {
+    value: "include",
+    key: "in",
+  },
+  {
+    value: "exclude",
+    key: "not",
+  },
+];
 const { loading, showLoading, hideLoading, showNoti } = useCommonStore();
 const router = useRouter();
 const showKeywordGroupModal = reactive({
@@ -493,7 +575,7 @@ const keywordsGroupList = ref<ScrapKeywordGroup[]>([]);
 const selectedKeywordGroup = ref<ScrapKeywordGroup>();
 const searchPress = ref<any[]>([]); //언론사 필터
 const searchKeyword = ref<any[]>([]); //언론사 필터
-const newsList = ref<any[]>([]);
+const newsList = ref<NewListItem[]>([]);
 const keywordType = ref("include");
 const processKeywordType = ref("include");
 const filterObj = reactive<IFilterObj>({
@@ -504,6 +586,14 @@ const filterObj = reactive<IFilterObj>({
   not_press_no: [],
   start_date: moment().subtract(7, "d").format("YYYY-MM-DD"),
   end_date: moment().format("YYYY-MM-DD"),
+  channel_news: true,
+  channel_blog: true,
+  channel_cafe: true,
+});
+const contentFilterObj = reactive({
+  positive: true, // 긍정
+  negative: true, // 부정
+  neutrality: true, // 중립
 });
 
 const tempData = reactive({
@@ -517,7 +607,16 @@ const pagenation = reactive({
   isMax: false,
 });
 const timeLoading = ref(false);
-
+const filteredNewsList = computed(() => {
+  return newsList.value.filter((item: NewListItem) =>
+    item.nlp_score
+      ? (contentFilterObj.positive && item.nlp_score > 0.5) ||
+        (contentFilterObj.negative &&
+          (item.nlp_score <= 0.5 || item.nlp_score >= -0.5)) ||
+        (contentFilterObj.neutrality && item.nlp_score < -0.5)
+      : true
+  );
+});
 /**@description: 검색 필터 초기화 */
 const initFilter = () => {
   filterObj.keyword_no =
@@ -532,6 +631,7 @@ const initFilter = () => {
   filterObj.end_date = moment().format("YYYY-MM-DD");
   tempData.start_date = new Date(filterObj.start_date);
   tempData.end_date = new Date(filterObj.end_date);
+  filterObj.channel_news = filterObj.channel_blog = filterObj.channel_cafe;
 };
 /**@description: 키워드 그룹 하단 - 필터링 된 키워드 목록*/
 const filteredSelectedKeywords = computed(() => {

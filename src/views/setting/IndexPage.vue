@@ -13,10 +13,13 @@
 
       <div class="row m-0 mt-4 text-start justify-content-center">
         <div class="col">
-          <ul class="nav nav-pills nav-justified" role="tablist">
+          <ul
+            class="nav nav-pills nav-justified d-flex d-sm-inline-flex"
+            role="tablist"
+          >
             <li class="nav-item" role="presentation">
               <button
-                class="nav-link"
+                class="nav-link py-3 font-size-15"
                 :class="{
                   active: tabIdx == 1,
                 }"
@@ -32,7 +35,7 @@
             </li>
             <li class="nav-item" role="presentation">
               <button
-                class="nav-link"
+                class="nav-link py-3 font-size-15"
                 :class="{
                   active: tabIdx == 2,
                 }"
@@ -383,7 +386,16 @@ const intersectionList = (groupIdList: string[], selectedList: string[]) => {
 Promise.all([fetchUserInfo(), fetchUserAlarmInfo(), fetchKeywordGroupList()]);
 </script>
 <style lang="scss" scoped>
+$primary: #556ee6;
+
 .border-bottom {
   border-width: 2px !important;
+}
+.nav-link {
+  font-weight: 600;
+  color: rgba(gray, 0.7);
+  background-color: rgba(gray, 0.1);
+  padding-left: 56px;
+  padding-right: 56px;
 }
 </style>

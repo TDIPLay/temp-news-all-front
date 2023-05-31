@@ -1,6 +1,6 @@
 <template>
   <div
-    class="news_card_item col-sm-6 col-xxl-4"
+    class="news_card_item col-sm-6 col-xxxl-4"
     :class="{
       'col-xl-12': props.sortNum == 1,
       'col-sm-12': props.sortNum == 1,
@@ -12,7 +12,7 @@
       <div class="card-body">
         <div class="row">
           <div
-            class="col-lg-4 col-xxl-3"
+            class="col-lg-4 col-xxxl-3"
             style="position: relative; min-height: 120px"
           >
             <div class="noimg-thum-wrap">
@@ -31,14 +31,34 @@
             </div>
           </div>
 
-          <div class="col-lg-8 col-xxl-9">
+          <div class="col-lg-8 col-xxxl-9">
             <div>
               <div class="row m-0">
                 <div class="col text-start px-0 py-2">
                   <span
-                    class="col-auto badge fw-bolder rounded-pill font-size-11 badge-soft-danger mr-2"
+                    class="col-auto badge fw-bolder font-size-11 me-2 px-2"
+                    :class="{
+                      'badge-soft-danger': props.newsData.scoreTypeCode < 0,
+                      'badge-soft-success': props.newsData.scoreTypeCode > 0,
+                      'badge-soft-warning': props.newsData.scoreTypeCode == 0,
+                    }"
                   >
-                    # {{ props.newsData.keyword }}
+                    {{ props.newsData.scoreTypeText }} 반응
+                  </span>
+
+                  <span
+                    v-if="
+                      !!props.newsData.nlp_keyword &&
+                      props.newsData.nlp_keyword.length > 0
+                    "
+                    class="col-auto fw-bolder font-size-11"
+                    :class="{
+                      'text-danger': props.newsData.scoreTypeCode < 0,
+                      'text-success': props.newsData.scoreTypeCode > 0,
+                      'text-warning': props.newsData.scoreTypeCode == 0,
+                    }"
+                  >
+                    # {{ props.newsData.nlp_keyword[0] }}
                   </span>
                 </div>
                 <div
@@ -47,7 +67,7 @@
                   @click.stop="saveNewsItem"
                 >
                   <i
-                    color="danger"
+                    color="primary"
                     :class="` font-size-24 mdi mdi-bookmark${
                       !active ? '-outline' : ''
                     }`"
@@ -64,41 +84,59 @@
               ></h5>
               <p
                 v-html="props.newsData.description"
-                class="text-start overflow-text-line-2"
+                class="text-start overflow-text-line-2 mb-3"
                 data-toggle="tooltip"
                 data-placement="top"
                 :title="props.newsData.description"
               />
 
               <h5
-                class="row font-size-11 fw-bold text-start m-0 align-items-end"
+                class="row font-size-11 fw-bold text-start m-0 align-items-center"
               >
-                <div class="col-auto text-secondary p-0">
-                  {{ moment(props.newsData.pub_date).format("YYYY-MM-DD") }}
+                <div class="col-md-auto px-0 pb-md-0 pb-2">
+                  <span
+                    class="badge fw-bolder font-size-11 badge-soft-secondary me-2"
+                  >
+                    # {{ props.newsData.keyword }}
+                  </span>
                 </div>
+
                 <!-- platform == 1: 뉴스 -->
                 <template v-if="props.newsData.platform < 2">
+                  <div
+                    class="col text-primary p-0 d-flex align-items-center justify-content-end"
+                  >
+                    <span
+                      style="max-width: 100px"
+                      class="text-primary d-inline-block overflow-text"
+                    >
+                      {{ props.newsData.press_name }}
+                    </span>
+                  </div>
                   <div class="col-auto px-2" v-if="props.newsData.press_name">
                     |
-                  </div>
-                  <div class="col text-primary overflow-text mw-100 p-0">
-                    {{ props.newsData.press_name }}
                   </div>
                 </template>
                 <!-- platform == 2: 카페 / 3:  블로그-->
                 <template v-else>
-                  <div class="col-auto px-2">|</div>
-                  <div class="col-auto p-0 pe-1">
+                  <div class="col p-0 d-flex align-items-center">
                     <img
                       :src="`/img/icon/platform_${props.newsData.platform}.png`"
                       style="width: 14px"
-                      class="d-inline-block"
+                      class="d-inline-block ms-auto me-1"
                     />
+                    <span
+                      style="max-width: 100px"
+                      class="text-success d-inline-block overflow-text"
+                    >
+                      {{ props.newsData.press_name }}
+                    </span>
                   </div>
-                  <div class="col text-success overflow-text mw-100 p-0">
-                    {{ props.newsData.press_name }}
-                  </div>
+                  <div class="col-auto px-2">|</div>
                 </template>
+                <div class="col-auto text-secondary p-0">
+                  {{ moment(props.newsData.pub_date).format("YYYY-MM-DD") }}
+                </div>
               </h5>
             </div>
           </div>
@@ -314,6 +352,87 @@ $danger: #f46a6a;
       // background-size: cover;
       // background-position: center;
     }
+  }
+}
+
+@media (min-width: 1750px) {
+  .col-xxxl-auto {
+    -webkit-box-flex: 0;
+    -ms-flex: 0 0 auto;
+    flex: 0 0 auto;
+    width: auto;
+  }
+  .col-xxxl-1 {
+    -webkit-box-flex: 0;
+    -ms-flex: 0 0 auto;
+    flex: 0 0 auto;
+    width: 8.33333%;
+  }
+  .col-xxxl-2 {
+    -webkit-box-flex: 0;
+    -ms-flex: 0 0 auto;
+    flex: 0 0 auto;
+    width: 16.66667%;
+  }
+  .col-xxxl-3 {
+    -webkit-box-flex: 0;
+    -ms-flex: 0 0 auto;
+    flex: 0 0 auto;
+    width: 25%;
+  }
+  .col-xxxl-4 {
+    -webkit-box-flex: 0;
+    -ms-flex: 0 0 auto;
+    flex: 0 0 auto;
+    width: 33.33333%;
+  }
+  .col-xxxl-5 {
+    -webkit-box-flex: 0;
+    -ms-flex: 0 0 auto;
+    flex: 0 0 auto;
+    width: 41.66667%;
+  }
+  .col-xxxl-6 {
+    -webkit-box-flex: 0;
+    -ms-flex: 0 0 auto;
+    flex: 0 0 auto;
+    width: 50%;
+  }
+  .col-xxxl-7 {
+    -webkit-box-flex: 0;
+    -ms-flex: 0 0 auto;
+    flex: 0 0 auto;
+    width: 58.33333%;
+  }
+  .col-xxxl-8 {
+    -webkit-box-flex: 0;
+    -ms-flex: 0 0 auto;
+    flex: 0 0 auto;
+    width: 66.66667%;
+  }
+  .col-xxxl-9 {
+    -webkit-box-flex: 0;
+    -ms-flex: 0 0 auto;
+    flex: 0 0 auto;
+    width: 75%;
+  }
+  .col-xxxl-10 {
+    -webkit-box-flex: 0;
+    -ms-flex: 0 0 auto;
+    flex: 0 0 auto;
+    width: 83.33333%;
+  }
+  .col-xxxl-11 {
+    -webkit-box-flex: 0;
+    -ms-flex: 0 0 auto;
+    flex: 0 0 auto;
+    width: 91.66667%;
+  }
+  .col-xxxl-12 {
+    -webkit-box-flex: 0;
+    -ms-flex: 0 0 auto;
+    flex: 0 0 auto;
+    width: 100%;
   }
 }
 </style>

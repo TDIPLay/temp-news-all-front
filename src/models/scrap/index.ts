@@ -57,6 +57,8 @@ export class NewListItem {
   save_status = 0;
   thumbnail = "";
   platform = 0; // 1: 뉴스. 2.카페 3. 블로그
+  nlp_score = 0;
+  nlp_keyword: string[] = [];
 
   comments = "";
 
@@ -64,7 +66,20 @@ export class NewListItem {
     if (!init) return;
     CommonUtils.updateVoByKey(this, init);
   }
-
+  get scoreTypeCode() {
+    return this.nlp_score > 0.5
+      ? 1 // 긍정
+      : this.nlp_score < -0.5
+      ? -1 // 부정
+      : 0;
+  }
+  get scoreTypeText() {
+    return this.nlp_score > 0.5
+      ? "긍정" // 긍정
+      : this.nlp_score < -0.5
+      ? "부정" // 부정
+      : "중립";
+  }
   get platform_text(): string {
     return !this.platform
       ? ""

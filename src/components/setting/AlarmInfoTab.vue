@@ -92,11 +92,12 @@
           v-for="(keywordsGroup, gIndex) in props.keywordsGroupList"
           :key="gIndex"
           :value="keywordsGroup.group_no"
+          style="transition: 0.3s ease all"
         >
           <span
             class="custom-accordion-title collapsed fw-bolder p-2 d-flex align-items-center"
             :href="`#${props.type}_group_collapse_${gIndex}`"
-            data-bs-toggle="collapse"
+            @click="handleKeywordGroupAccordion(keywordsGroup.group_no)"
           >
             <i class="mdi mdi-pound me-1 text-primary"></i>
             {{ keywordsGroup.group_name }}
@@ -113,8 +114,21 @@
           </span>
 
           <div
-            class="px-2 collapse"
+            class="px-2 collapse show"
             :id="`${props.type}_group_collapse_${gIndex}`"
+            role="tabpanel"
+            :class="{
+              'show-acc': selectedGroupNo == keywordsGroup.group_no,
+              'hide-acc': selectedGroupNo != keywordsGroup.group_no,
+            }"
+            :style="{
+              height: '0px',
+              overflow: 'hidden',
+
+              'transition-property': 'height',
+              'transition-duration': '0.2s',
+              'transition-timing-function': 'linear',
+            }"
           >
             <button
               v-for="(item, index) in keywordsGroup.keyword_list"
@@ -145,6 +159,7 @@ import { useCommonStore } from "@/store/common";
 import CommonTimePicker from "@/components/common/CommonTimePicker.vue";
 
 import { ref, watch } from "vue";
+import { over } from "lodash";
 const { showNoti } = useCommonStore();
 
 const props = defineProps({
@@ -166,7 +181,7 @@ const props = defineProps({
   },
 });
 const curAlarmInfo = ref<MailAlarmInfo | KakaoAlarmInfo>();
-const selectedGroupNo = ref(null);
+const selectedGroupNo = ref<number>();
 const emit = defineEmits<{
   (e: "set-data", value?: any): void;
 }>();
@@ -213,6 +228,10 @@ const handleSelectKeyword = (keyword_no: string | number) => {
   }
 };
 
+const handleKeywordGroupAccordion = (group_no: number) => {
+  selectedGroupNo.value = selectedGroupNo.value == group_no ? -1 : group_no;
+};
+
 if (props.alarmInfo) {
   curAlarmInfo.value =
     props.type == "kakao"
@@ -233,5 +252,16 @@ $primary-1: rgba($primary, 0.5);
   padding-left: 12px;
   border-width: 5px;
   border-image-source: linear-gradient(to bottom, $primary, $primary-1, #fff);
+}
+.show-acc {
+  padding: 8px;
+  height: 120px !important;
+  overflow: auto !important;
+  border-top: 2px solid $primary-1;
+  background-color: rgba($primary, 0.05);
+}
+.hide-acc {
+  height: 0;
+  overflow: hidden;
 }
 </style>

@@ -12,11 +12,7 @@
       </PageHeader>
 
       <!-- 키워드 조회  필터 (포함, 불포함, 기간) -->
-      <h5 class="font-size-14 p-2 text-dark text-start">
-        <i class="mdi mdi-filter-outline align-middle"></i>
-        필터
-      </h5>
-      <div class="filter-wrap px-4">
+      <div class="filter-wrap px-4 pt-3">
         <dl class="row align-items-center mb-0 text-start">
           <dt class="col-sm-2 py-2 text-sm-center">키워드</dt>
           <dd class="col-sm-10 px-1 px-sm-2 mb-0">
@@ -37,7 +33,7 @@
                 <template #prepend>
                   <select
                     v-model="keywordType"
-                    :class="`col-auto form-control w-auto ${keywordType}`"
+                    :class="`col-auto form-select w-auto ${keywordType}`"
                   >
                     <option value="include">포함</option>
                     <option value="exclude">제외</option>
@@ -108,7 +104,7 @@
                 <template #prepend>
                   <select
                     v-model="processKeywordType"
-                    :class="`col-auto form-control w-auto ${processKeywordType}`"
+                    :class="`col-auto form-select w-auto ${processKeywordType}`"
                   >
                     <option value="include">포함</option>
                     <option value="exclude">제외</option>
@@ -228,10 +224,7 @@
             v-for="(news, index) in newsList"
             :key="index"
             :index="index"
-            :news-data="{
-              ...news,
-              save_status: true,
-            }"
+            :news-data="news"
             :id="news.news_no"
           />
         </template>
@@ -273,6 +266,7 @@ import { OptionItemProps } from "@/utils/CommonUtils";
 
 import { KeywordAPI } from "@/api/keyword";
 import { ModulesAPI } from "@/api/module";
+import { NewListItem } from "@/models/scrap";
 
 interface IFilterObj {
   in_keyword: string[];
@@ -291,7 +285,7 @@ const showFilterList = reactive({
 const pressList = ref<OptionItemProps[]>([]);
 const searchPress = ref<any[]>([]); //언론사 필터
 const searchKeyword = ref<any[]>([]); //언론사 필터
-const newsList = ref<any[]>([]);
+const newsList = ref<NewListItem[]>([]);
 const keywordTypeList = [
   {
     value: "include",
@@ -313,7 +307,7 @@ const filterObj = reactive<IFilterObj>({
   not_keyword: [],
   in_press_no: [],
   not_press_no: [],
-  start_date: moment().subtract(7, "d").format("YYYY-MM-DD"),
+  start_date: moment().subtract(1, "M").format("YYYY-MM-DD"),
   end_date: moment().format("YYYY-MM-DD"),
 });
 const tempData = reactive({
@@ -334,7 +328,7 @@ const initFilter = () => {
     filterObj.in_press_no =
     filterObj.not_press_no =
       [];
-  filterObj.start_date = moment().subtract(7, "d").format("YYYY-MM-DD");
+  filterObj.start_date = moment().subtract(1, "M").format("YYYY-MM-DD");
   filterObj.end_date = moment().format("YYYY-MM-DD");
   tempData.start_date = new Date(filterObj.start_date);
   tempData.end_date = new Date(filterObj.end_date);
@@ -381,10 +375,14 @@ const fetchSaveNewsList = async () => {
   if (newslist && newslist.length) {
     newsList.value = [
       ...newsList.value,
-      ...newslist.map((item: any) => ({
-        ...item,
-        keyword: decodeURIComponent(item.keyword),
-      })),
+      ...newslist.map(
+        (item: any) =>
+          new NewListItem({
+            ...item,
+            keyword: decodeURIComponent(item.keyword),
+            save_status: true,
+          })
+      ),
     ];
     pagenation.isMax = newslist.length < pagenation.limit;
   } else {

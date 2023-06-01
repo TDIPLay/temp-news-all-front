@@ -83,11 +83,22 @@
           ></i>
         </div>
 
-        <div class="col-12 row justify-content-start pa-0 pb-1 g-1 mt-0">
+        <div
+          class="col-12 row justify-content-start pa-0 pb-1 g-1 mt-0"
+          v-if="selectedKeywordGroup"
+        >
           <span
-            v-for="(keyword, idx) in filteredSelectedKeywords"
+            v-for="(keyword, idx) in selectedKeywordGroup.keyword_list"
             :key="idx"
-            class="col-auto badge rounded-pill font-size-11 badge-soft-secondary ms-2"
+            class="col-auto badge rounded-pill font-size-11 ms-2"
+            :class="{
+              'badge-soft-primary': filterObj.keyword_no.includes(
+                keyword.keyword_no
+              ),
+              'badge-soft-secondary': !filterObj.keyword_no.includes(
+                keyword.keyword_no
+              ),
+            }"
           >
             {{ keyword.keyword }}
             <i
@@ -662,7 +673,6 @@ const fetchKeywordGroupList = async (group_no?: string) => {
 
 /**@description: 키워드 그룹 선택시 */
 const handleKeywordGroupClick = async (group_no: string) => {
-  console.log("group_no", group_no);
   showKeywordGroupModal.list = false;
   const keywordGrooup = keywordsGroupList.value.find(
     (item) => item.group_no === group_no
@@ -799,7 +809,8 @@ const infiniteScrolling = async ({ target }: Event) => {
   const DOC_HEIGHT = Number(currentTarget.clientHeight || 0);
   const SCROLL_HEIGHT = Number(currentTarget.scrollHeight || 0);
   const IS_BOTTOM =
-    SCROLL_HEIGHT - DOC_HEIGHT * pagenation.current <= currentTarget.scrollTop;
+    SCROLL_HEIGHT - DOC_HEIGHT * pagenation.current <=
+    Math.round(currentTarget.scrollTop);
 
   if (IS_BOTTOM) {
     showLoading();

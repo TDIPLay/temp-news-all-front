@@ -504,7 +504,8 @@ const infiniteScrolling = async ({ target }: Event) => {
   const DOC_HEIGHT = Number(currentTarget.clientHeight || 0);
   const SCROLL_HEIGHT = Number(currentTarget.scrollHeight || 0);
   const IS_BOTTOM =
-    SCROLL_HEIGHT - DOC_HEIGHT * pagenation.current <= currentTarget.scrollTop;
+    SCROLL_HEIGHT - DOC_HEIGHT * pagenation.current <=
+    Math.round(currentTarget.scrollTop);
 
   if (IS_BOTTOM) {
     showLoading();

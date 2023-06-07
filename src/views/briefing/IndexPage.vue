@@ -178,7 +178,7 @@
 
                 <div
                   v-if="!filteredBriefingList.length"
-                  class="card"
+                  class="card mb-0"
                   style="min-height: calc(100vh - 560px)"
                 >
                   <div

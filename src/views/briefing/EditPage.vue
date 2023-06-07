@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <MainLayout @content-scroll="infiniteScrolling">
+    <MainLayout>
       <PageHeader>
         <template #title>
           <div class="row m-0 align-items-center">

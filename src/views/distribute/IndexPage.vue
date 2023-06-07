@@ -17,10 +17,13 @@
               <div class="d-flex align-items-center mb-3">
                 <h5 class="mb-0 card-title flex-grow-1"></h5>
                 <div class="flex-shrink-0">
-                  <a href="/distribute/edit" class="btn btn-primary me-1">
+                  <router-link
+                    to="/distribute/edit"
+                    class="btn btn-primary me-1"
+                  >
                     <i class="mdi mdi-plus me-1"> </i>
                     새로운 보도
-                  </a>
+                  </router-link>
 
                   <!-- <div class="dropdown d-inline-block">
                     <button

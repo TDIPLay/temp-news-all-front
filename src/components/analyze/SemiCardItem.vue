@@ -1,19 +1,11 @@
 <template>
-  <div
-    class="news_card_item col-sm-6 col-xxxl-4"
-    :class="{
-      'col-xl-12': props.sortNum == 1,
-      'col-sm-12': props.sortNum == 1,
-      'col-xl-6': props.sortNum == 2,
-      'col-sm-6': props.sortNum == 2,
-    }"
-  >
-    <div class="card" @click="openNews">
-      <div class="card-body">
-        <div class="row">
+  <div class="news_card_item col-12">
+    <div class="card border shadow-none mb-2" @click="openNews">
+      <div class="card-body p-2">
+        <div class="row m-0">
           <div
-            class="col-xl-4 col-xxxl-3 mb-2 mb-xxxl-0"
-            style="position: relative; min-height: 120px"
+            class="col-sm-2 col-xxl-3 mb-2 mb-xxxl-0"
+            style="position: relative; min-height: 100px"
           >
             <div class="noimg-thum-wrap">
               <img
@@ -31,11 +23,11 @@
             </div>
           </div>
 
-          <div class="col-xl-8 col-xxxl-9">
+          <div class="col-sm-10 col-xxl-9">
             <div>
               <div class="d-flex m-0">
                 <div
-                  class="col text-start px-0 pb-2 d-flex overflow-text align-items-center"
+                  class="col text-start px-0 py-2 d-flex overflow-text align-items-center"
                 >
                   <span
                     class="col-auto badge fw-bolder font-size-11 me-2 px-2"
@@ -83,7 +75,7 @@
               </div>
 
               <h5
-                class="d-block card-title mb-2 text-start overflow-text fw-bolder"
+                class="d-block font-size-13 mb-1 mb-xl-2 text-start overflow-text fw-bolder"
                 v-html="props.newsData.news_title"
                 data-toggle="tooltip"
                 data-placement="top"
@@ -91,37 +83,34 @@
               ></h5>
               <p
                 v-html="props.newsData.description"
-                class="text-start overflow-text-line-2 mb-2"
+                class="text-start overflow-text mb-1 mb-xl-2"
                 data-toggle="tooltip"
                 data-placement="top"
                 :title="props.newsData.description"
               />
 
               <h5
-                class="row font-size-13 fw-bold justify-content-end m-0 align-items-center mb-2"
+                v-if="
+                  props.newsData.platform < 2 &&
+                  (props.newsData.replyNoneSympathyPer ||
+                    props.newsData.replySympathyPer)
+                "
+                class="row font-size-11 fw-bold justify-content-end m-0 align-items-center mb-1"
                 style="height: 20px"
               >
                 <!-- 긍/부정 댓글 둘다 0이거나, 플랫폼이 뉴스인 경우에는 표시 안함 -->
-                <template
-                  v-if="
-                    props.newsData.platform < 2 &&
-                    (props.newsData.replyNoneSympathyPer ||
-                      props.newsData.replySympathyPer)
-                  "
-                >
-                  <div class="col-auto px-1 badge badge-soft-primary me-2">
-                    <i class="mdi mdi-thumb-up-outline me-1"></i>
-                    긍정 댓글
+                <div class="col-auto px-1 badge badge-soft-primary me-2">
+                  <i class="mdi mdi-thumb-up-outline me-1"></i>
+                  긍정 댓글
 
-                    {{ props.newsData.replySympathyPer }}%
-                  </div>
+                  {{ props.newsData.replySympathyPer }}%
+                </div>
 
-                  <div class="col-auto px-1 badge badge-soft-danger">
-                    <i class="mdi mdi-thumb-down-outline me-1"></i>
-                    부정 댓글
-                    {{ props.newsData.replyNoneSympathyPer }}%
-                  </div>
-                </template>
+                <div class="col-auto px-1 badge badge-soft-danger">
+                  <i class="mdi mdi-thumb-down-outline me-1"></i>
+                  부정 댓글
+                  {{ props.newsData.replyNoneSympathyPer }}%
+                </div>
               </h5>
               <h5
                 class="row font-size-11 fw-bold text-start m-0 align-items-center"
@@ -306,16 +295,6 @@ const saveNewsItem = async () => {
       type: "error",
     });
   }
-
-  // axiosService.post("v2/news/search/preserve", params).then(() => {
-  //   if (active.value === true) {
-  //     // this.$store.commit("controller/setMsg", "보관함에서 삭제되었습니다.");
-  //     emit("reload");
-  //   } else {
-  //     // this.$store.commit("controller/setMsg", "보관함에 저장되었습니다.");
-  //     save.value = true;
-  //   }
-  // });
 };
 
 const setSort = (sort: number) => {
@@ -331,22 +310,6 @@ const setSort = (sort: number) => {
 
   active.value = props.newsData.save_status ? true : false;
   firstCount.value = props.index % 2 === 0;
-
-  // sort01.value = sort02.value = sort03.value = false;
-  // switch (sort) {
-  //   case 0: {
-  //     sort01.value = true;
-  //     break;
-  //   }
-  //   case 1: {
-  //     sort02.value = true;
-  //     break;
-  //   }
-  //   case 2: {
-  //     sort03.value = true;
-  //     break;
-  //   }
-  // }
 };
 
 onMounted(() => {
@@ -356,16 +319,18 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 $primary: #556ee6;
+$gray: #74788d;
 $danger: #f46a6a;
 .news_card_item {
-  .card {
-    border: 2px solid #fff;
+  .card.border {
+    border: 2px solid #eff2f7 !important;
+    border-radius: 8px;
     box-sizing: border-box;
   }
   .card:hover {
     cursor: pointer;
     filter: opacity(0.5);
-    border-color: rgba($primary, 0.6);
+    border-color: rgba($primary, 0.6) !important;
   }
   .save-icon {
     color: $primary;

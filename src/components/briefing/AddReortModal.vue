@@ -1,7 +1,6 @@
 <template>
   <b-modal
     v-model="isOpenDialog"
-    size="sm"
     centered
     title="기사 추가"
     hide-footer
@@ -9,14 +8,12 @@
     no-close-on-backdrop
     @close="onCancle"
   >
-    <div class="card row m-0" style="max-width: 400px">
+    <div class="card row m-0" style="max-width: 600px">
       <h4 class="card-title">'{{ props.groupName }}'에 기사 추가</h4>
 
       <div class="form-group row m-0 mb-2">
-        <label for="report_url" class="col-form-label col-xxl-2">
-          URL 입력
-        </label>
-        <div class="col-xxl-10">
+        <label for="report_url" class="col-form-label"> URL 입력 </label>
+        <div>
           <input
             name="report_url"
             type="text"
@@ -28,10 +25,8 @@
       </div>
 
       <div class="form-group row m-0 mb-2">
-        <label for="report_title" class="col-form-label col-xxl-2">
-          가사 제목
-        </label>
-        <div class="col-xxl-10">
+        <label for="report_title" class="col-form-label"> 가사 제목 </label>
+        <div>
           <input
             name="report_title"
             type="text"
@@ -43,15 +38,15 @@
       </div>
 
       <div class="form-group row m-0 mb-2">
-        <label class="col-form-label col-xxl-2"> 빌헹일 </label>
-        <div class="col-xxl-10">
+        <label class="col-form-label"> 빌헹일 </label>
+        <div>
           <DatePicker
             :class="'form-control date-picker'"
             v-model="tempDate"
             :first-day-of-week="1"
             format="YYYY-MM-DD"
             lang="kr"
-            placeholder="시작일"
+            placeholder="발행일"
             confirm
             @update:model-value="setDate(tempDate)"
           ></DatePicker>
@@ -59,10 +54,8 @@
       </div>
 
       <div class="form-group row m-0 mb-2">
-        <label for="report_media" class="col-form-label col-xxl-2">
-          미디어 명
-        </label>
-        <div class="col-xxl-10">
+        <label for="report_media" class="col-form-label"> 미디어 명 </label>
+        <div>
           <input
             name="report_media"
             type="text"

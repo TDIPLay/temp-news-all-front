@@ -61,7 +61,6 @@ const onRoutechange = () => {
 watch(
   () => props.width,
   (newVal, oldVal) => {
-    console.log("width:", newVal);
     if (newVal !== oldVal) {
       setWidthAttr(newVal);
     }
@@ -70,7 +69,6 @@ watch(
 watch(
   () => props.type,
   (newVal, oldVal) => {
-    console.log("type:", newVal);
     if (newVal !== oldVal) {
       setTypeAttr(newVal);
     }

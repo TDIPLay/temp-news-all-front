@@ -515,33 +515,4 @@ if (props.id) {
 
 <style lang="scss" scoped>
 $primary: #556ee6;
-.news_card_item {
-  cursor: pointer;
-  .save-icon {
-    color: $primary;
-    transition: all 0.4s;
-    &:hover {
-      transform: scale(1.2);
-    }
-  }
-  .noimg-thum-wrap {
-    width: 100%;
-    z-index: 1;
-    height: 100%;
-    position: relative;
-    display: flex;
-    background-color: #f1f4f8;
-
-    .noimg-thum {
-      max-width: 100%;
-      z-index: 1;
-      max-height: 100%;
-      margin: auto;
-
-      // background-image: url(@/assets/img/noimg-thum.png);
-      // background-size: cover;
-      // background-position: center;
-    }
-  }
-}
 </style>

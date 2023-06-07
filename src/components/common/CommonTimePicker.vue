@@ -203,7 +203,6 @@ const initOptions = (length: number) => {
 
 // 확인 버튼
 const handleOkBtn = () => {
-  console.log(show.value);
   let setTime = time.value.hour + ":" + time.value.minute;
   orgTime.value.hour = time.value.hour;
   orgTime.value.minute = time.value.minute;

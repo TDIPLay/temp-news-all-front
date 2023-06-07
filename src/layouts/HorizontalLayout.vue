@@ -70,11 +70,9 @@ onBeforeMount(() => {
 });
 
 const toggleRightSidebar = () => {
-  console.log("toggleRightSidebar");
   document.body.classList.toggle("right-bar-enabled");
 };
 const hideRightSidebar = () => {
-  console.log("hideRightSidebar");
   document.body.classList.remove("right-bar-enabled");
 };
 

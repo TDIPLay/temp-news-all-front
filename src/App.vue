@@ -1,7 +1,7 @@
 <template>
   <router-view />
 
-  <CommonLoading v-if="loading" />
+  <CommonLoading v-if="loading && showLoader" />
   <CommonAlertBar />
 </template>
 <script setup lang="ts">
@@ -9,7 +9,7 @@ import CommonLoading from "@/components/common/CommonLoading.vue";
 import CommonAlertBar from "@/components/common/CommonAlertBar.vue";
 
 import { useCommonStore } from "@/store/common";
-const { loading, showNoti } = useCommonStore();
+const { loading, showLoader } = useCommonStore();
 
 // const { t } = i18n.useI18n({ useScope: "global" });
 </script>

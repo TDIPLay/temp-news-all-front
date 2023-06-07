@@ -16,6 +16,7 @@ export const useCommonStore = defineStore("common", () => {
   const dialogs = ref<DialogForm[]>([]);
   const dialogCnt = computed(() => dialogs.value.length);
   const loading = ref<boolean>(false);
+  const showLoader = ref<boolean>(true);
   const notiMsg = reactive({
     msg: "",
     active: false,
@@ -64,8 +65,14 @@ export const useCommonStore = defineStore("common", () => {
     }
   };
 
-  const showLoading = () => (loading.value = true);
-  const hideLoading = () => (loading.value = false);
+  const showLoading = (show_loader = true) => {
+    loading.value = true;
+    showLoader.value = show_loader;
+  };
+  const hideLoading = () => {
+    loading.value = false;
+    showLoader.value = true;
+  };
 
   /**@description: state */
   const showNoti = ({ message = "", type = "alert" }) => {
@@ -86,6 +93,7 @@ export const useCommonStore = defineStore("common", () => {
     dialogCnt: computed(() => dialogCnt),
     dialogs: computed(() => dialogs),
     loading: computed(() => loading),
+    showLoader: computed(() => showLoader),
     notiMsg,
     showDialog,
     closeDialog,

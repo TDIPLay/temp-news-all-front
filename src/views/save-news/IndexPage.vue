@@ -167,6 +167,7 @@
                 lang="kr"
                 placeholder="시작일"
                 confirm
+                :upper-limit="tomorrow"
                 @update:model-value="
                   filterObj.start_date = moment(tempData.start_date).format(
                     'YYYY-MM-DD'
@@ -183,6 +184,7 @@
                 lang="kr"
                 placeholder="종료일"
                 confirm
+                :upper-limit="tomorrow"
                 @update:model-value="
                   filterObj.end_date = moment(tempData.end_date).format(
                     'YYYY-MM-DD'
@@ -362,6 +364,7 @@ interface IFilterObj {
   end_date: string;
 }
 
+const tomorrow = new Date(moment().add(1, "days").format("YYYY-MM-DD"));
 const { loading, showLoading, hideLoading, showNoti } = useCommonStore();
 const showFilterList = reactive({
   keyword: true,

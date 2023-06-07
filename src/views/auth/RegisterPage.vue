@@ -374,7 +374,7 @@ const submit = async () => {
   showLoading();
 
   const { data } = await UserAPI.register(formData.value.saveDataFormat());
-  console.log("회원가입  ", data);
+  // console.log("회원가입  ", data);
 
   if (data?.result) {
     // ----TODO:회사명으로 스크랩 잠시 보류 ----------------------

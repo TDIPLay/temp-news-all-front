@@ -199,18 +199,19 @@ export class KeywordAPI {
       return error;
     }
   }
+
   /**
-   *
+   * * @description: 뉴스 분석
    * * @returns {Promise<any>}
    */
-  static async fetchNewsRank(
+  static async fetchNewsAnalysis(
     group_no: string | number,
     keyword_no: string[],
     start_date: string,
     end_date: string
   ): Promise<any> {
     try {
-      const res = await axiosService.post(`/KeyWord/KeyWordNewsRank`, {
+      const res = await axiosService.post(`/Analysis/NewsAnalysis`, {
         group_no: group_no,
         keyword_no: keyword_no,
         start_date: start_date,
@@ -231,6 +232,29 @@ export class KeywordAPI {
       const res = await axiosService.get(
         `http://console.news-all.co.kr/Trand/tdi/talk/v1/datalab?${query}`
       );
+      return res && res.data ? res.data : undefined;
+    } catch (error) {
+      return error;
+    }
+  }
+
+  /**
+   * * @description:트랜드 분석
+   * * @returns {Promise<any>}
+   */
+  static async fetchTrendAnalysis(
+    group_no: string | number,
+    keyword_no: string[],
+    start_date: string,
+    end_date: string
+  ): Promise<any> {
+    try {
+      const res = await axiosService.post(`/Analysis/TrendAnalysis`, {
+        group_no: group_no,
+        keyword_no: keyword_no,
+        start_date: start_date,
+        end_date: end_date,
+      });
       return res && res.data ? res.data : undefined;
     } catch (error) {
       return error;

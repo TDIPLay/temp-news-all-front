@@ -38,6 +38,7 @@
                       lang="kr"
                       placeholder="시작일"
                       confirm
+                      :upper-limit="today"
                       @update:model-value="
                         filterObj.start_date = moment(
                           tempData.start_date
@@ -54,6 +55,7 @@
                       lang="kr"
                       placeholder="종료일"
                       confirm
+                      :upper-limit="today"
                       @update:model-value="
                         filterObj.end_date = moment(tempData.end_date).format(
                           'YYYY-MM-DD'
@@ -263,6 +265,7 @@ const {
   initFilter,
 } = useFetch();
 
+const today = new Date();
 const filteredBriefingList = ref<Briefing[]>([]);
 const setFilteredList = () => {
   let searchText = filterObj.search_text;

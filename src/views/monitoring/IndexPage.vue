@@ -274,6 +274,7 @@
                 lang="kr"
                 placeholder="시작일"
                 confirm
+                :upper-limit="tomorrow"
                 @update:model-value="
                   filterObj.start_date = moment(tempData.start_date).format(
                     'YYYY-MM-DD'
@@ -291,6 +292,7 @@
                 lang="kr"
                 placeholder="종료일"
                 confirm
+                :upper-limit="tomorrow"
                 @update:model-value="
                   filterObj.end_date = moment(tempData.end_date).format(
                     'YYYY-MM-DD'
@@ -531,8 +533,24 @@ import { OptionItemProps } from "@/utils/CommonUtils";
 
 import { KeywordAPI } from "@/api/keyword";
 import { ModulesAPI } from "@/api/module";
+import { add } from "lodash";
+const props = defineProps({
+  groupNo: {
+    type: String,
+    default: undefined,
+    required: false,
+  },
+  searchParams: {
+    type: String,
+    default: undefined,
+    required: false,
+  },
+});
 
 interface IFilterObj {
+  nlp_score?: string[];
+  nlp_keyword?: string[];
+  repoter?: string[];
   keyword_no: string[];
   in_keyword: string[];
   not_keyword: string[];
@@ -583,7 +601,7 @@ const filterObj = reactive<IFilterObj>({
   not_keyword: [],
   in_press_no: [],
   not_press_no: [],
-  start_date: moment().subtract(7, "d").format("YYYY-MM-DD"),
+  start_date: moment().subtract(7, "days").format("YYYY-MM-DD"),
   end_date: moment().format("YYYY-MM-DD"),
   platform: [1, 2, 3],
 });
@@ -592,7 +610,7 @@ const contentFilterObj = reactive({
   negative: true, // 부정
   neutrality: true, // 중립
 });
-
+const tomorrow = new Date(moment().add(1, "days").format("YYYY-MM-DD"));
 const tempData = reactive({
   start_date: new Date(filterObj.start_date),
   end_date: new Date(filterObj.end_date),
@@ -666,13 +684,14 @@ const fetchKeywordGroupList = async (group_no?: string) => {
 
   if (keywordsGroupList.value.length > 0) {
     handleKeywordGroupClick(
-      group_no ? group_no : keywordsGroupList.value[0].group_no
+      group_no ? group_no : keywordsGroupList.value[0].group_no,
+      !!props.searchParams
     );
   }
 };
 
 /**@description: 키워드 그룹 선택시 */
-const handleKeywordGroupClick = async (group_no: string) => {
+const handleKeywordGroupClick = async (group_no: string, useProps = false) => {
   showKeywordGroupModal.list = false;
   const keywordGrooup = keywordsGroupList.value.find(
     (item) => item.group_no === group_no
@@ -706,6 +725,40 @@ const handleKeywordGroupClick = async (group_no: string) => {
   filterObj.keyword_no =
     selectedKeywordGroup.value?.keyword_list.map((item) => item.keyword_no) ??
     [];
+
+  if (useProps) {
+    // console.log(props);
+    const searchParams = props.searchParams
+      ? JSON.parse(props.searchParams)
+      : null;
+
+    if (searchParams && searchParams.keyword_no) {
+      filterObj.keyword_no = [...searchParams.keyword_no];
+    }
+
+    if (searchParams && searchParams.start_date) {
+      filterObj.start_date = searchParams.start_date;
+      tempData.start_date = new Date(searchParams.start_date);
+    }
+    if (searchParams && searchParams.end_date) {
+      filterObj.end_date = searchParams.end_date;
+      tempData.end_date = new Date(searchParams.end_date);
+    }
+    if (searchParams && searchParams.nlp_score) {
+      filterObj.nlp_score = [...searchParams.nlp_score];
+    }
+    if (searchParams && searchParams.nlp_keyword) {
+      filterObj.nlp_keyword = [...searchParams.nlp_keyword];
+    }
+    if (searchParams && searchParams.in_press_no) {
+      filterObj.in_press_no = [...searchParams.in_press_no];
+    }
+    if (searchParams && searchParams.repoter) {
+      filterObj.repoter = [...searchParams.repoter];
+    }
+
+    history.replaceState({}, "", location.pathname);
+  }
 
   await fetchNewsList();
 };
@@ -813,6 +866,7 @@ const infiniteScrolling = async ({ target }: Event) => {
     Math.round(currentTarget.scrollTop);
 
   if (IS_BOTTOM) {
+    console.log(SCROLL_HEIGHT, DOC_HEIGHT, Math.round(currentTarget.scrollTop));
     showLoading();
     pagenation.current++;
 
@@ -925,6 +979,9 @@ const handleSearch = async (key: string, data: any) => {
 
 /**@description: 초기화 및 데이터 재 조회 */
 const refreshList = () => {
+  // 더보기로 이동한 경우
+  const group_no = props.groupNo ? props.groupNo : undefined;
+
   keywordsGroupList.value = [];
   pressList.value = [];
   // topNewsList.value = [];
@@ -933,9 +990,10 @@ const refreshList = () => {
     fetchKeywordGroupList(
       selectedKeywordGroup.value
         ? selectedKeywordGroup.value?.group_no
-        : undefined
+        : group_no
     ),
   ]);
+
   // fetchTopNewsList();
 };
 

@@ -10,16 +10,14 @@
           </div>
         </template>
       </PageHeader>
-      <div class="row justify-content-start m-0">
-        <div
-          class="card-title col-auto col-sm-12 text-start d-flex align-items-center"
-        >
-          <div class="font-size-13 badge badge-soft-secondary py-0 pe-0 ps-3">
-            <span class="d-none d-sm-inline">키워드</span>
-            그룹
+
+      <div class="filter-wrap px-4">
+        <dl class="row align-items-center mb-0 text-start">
+          <dt class="col-sm-2 py-2 text-sm-center">키워드 그룹</dt>
+          <dd class="col-sm-10 p-1 px-sm-2 mb-0">
             <select
               v-model="tempSltGroupVal"
-              :class="`d-inline-block w-auto form-select keyword_group_select ms-3`"
+              :class="`form-select keyword_group_select `"
               @update:model-value="(val:string) => handleKeywordGroupClick(val)"
             >
               <option value="" disabled v-if="!tempSltGroupVal">
@@ -33,56 +31,182 @@
                 {{ group.group_name }}
               </option>
             </select>
-          </div>
+          </dd>
+          <dt class="col-sm-2 py-2 text-sm-center">키워드</dt>
+          <dd class="col-sm-10 p-1 py-2 px-sm-2 mb-0">
+            <div
+              class="col-12 row justify-content-start pa-0 pb-1 g-1 mt-0"
+              v-if="selectedKeywordGroup"
+            >
+              <span
+                v-for="(keyword, idx) in selectedKeywordGroup.keyword_list"
+                :key="idx"
+                class="col-auto badge rounded-pill font-size-11 ms-2"
+                :class="{
+                  'badge-soft-primary': selectedKeywordNoList.includes(
+                    keyword.keyword_no
+                  ),
+                  'badge-soft-secondary': !selectedKeywordNoList.includes(
+                    keyword.keyword_no
+                  ),
+                }"
+                @click="handleKeywordClick(keyword)"
+              >
+                {{ keyword.keyword }}
+                <i class="bx bx-x-circle" style="margin-left: 4px"></i>
+              </span>
+            </div>
+            <h4
+              v-else
+              class="d-felx my-1 font-size-13 fw-bolder text-center align-items-center text-secondary"
+            >
+              키워드 그룹에 등록된 키워드가 없습니다.
+            </h4>
+          </dd>
+          <dt class="col-sm-2 py-2 text-sm-center">기간</dt>
+          <dd class="d-flex col-sm-10 px-1 px-sm-2 m-0 align-items-center py-1">
+            <div class="col">
+              <DatePicker
+                :class="'form-control date-picker'"
+                v-model="tempData.startDate"
+                :first-day-of-week="1"
+                format="YYYY-MM-DD"
+                lang="kr"
+                placeholder="시작일"
+                confirm
+                :upper-limit="today"
+                @update:model-value="
+                  searchDate.startDate = moment(tempData.startDate).format(
+                    'YYYY-MM-DD'
+                  )
+                "
+              >
+              </DatePicker>
+            </div>
+            <span class="p-1 p-sm-2"> ~ </span>
+            <div class="col">
+              <DatePicker
+                class="form-control col date-picker"
+                v-model="tempData.endDate"
+                :first-day-of-week="1"
+                lang="kr"
+                placeholder="종료일"
+                confirm
+                :upper-limit="today"
+                @update:model-value="
+                  searchDate.endDate = moment(tempData.endDate).format(
+                    'YYYY-MM-DD'
+                  )
+                "
+              ></DatePicker>
+            </div>
+          </dd>
+        </dl>
 
-          <!-- 키워드 그룹 수정 -->
-          <i
-            class="btn bx bx-pencil p-1 m-1 my-auto font-size-20"
-            @click="
-              () => {
-                if (!selectedKeywordGroup || loading) return;
-                showKeywordGroupModal.info = true;
-              }
-            "
-          ></i>
+        <button
+          class="btn btn-outline-secondary ms-auto mt-2"
+          style="width: 100px"
+          :disabled="loading"
+          @click="initFilter"
+        >
+          초기화
+        </button>
 
-          <!-- 키워드 그룹 추가 -->
-          <i
-            class="btn bx bxs-plus-square p-1 my-auto font-size-20"
-            @click="
-              () => {
-                if (!selectedKeywordGroup || loading) return;
-                showKeywordGroupModal.create = true;
-              }
-            "
-          ></i>
-        </div>
-
-        <div class="col-12 row justify-content-start pa-0 pb-1 g-1 mt-0">
-          <span
-            v-for="(keyword, idx) in filteredSelectedKeywords"
-            :key="idx"
-            class="col-auto badge rounded-pill font-size-11 badge-soft-secondary ms-2"
-          >
-            {{ keyword.keyword }}
-            <i
-              class="bx bx-x-circle"
-              style="margin-left: 4px"
-              @click="
-                handleKeywordClick(
-                  selectedKeywordGroup.group_no,
-                  keyword.keyword_no
-                )
-              "
-            ></i>
-          </span>
-
-          <!-- <span @click="addKeywordModal(selectedKeywordGroup.group_no)">키워드 추가</span> -->
-        </div>
+        <button
+          class="btn btn-secondary ms-3 mt-2"
+          :disabled="!selectedKeywordGroup || loading"
+          style="width: 100px"
+          @click="
+            () => {
+              // 해당 로더는 표시 안됨
+              showLoading(false);
+              // fetchNewsRank(searchDate);
+              // fetchNewsRankTingSearch(searchDate);
+            }
+          "
+        >
+          조회
+        </button>
       </div>
 
-      <div class="card">
-        <div class="card-body"></div>
+      <div class="analyze_tab d-flex mt-3 pt-3">
+        <ul class="col nav nav-pills nav-justified d-flex d-sm-inline-flex">
+          <li class="nav-item" v-for="(tab, tIdx) in tabMenuList" :key="tIdx">
+            <button
+              class="nav-link py-3"
+              :class="{
+                active: tabIdx == tIdx,
+              }"
+              data-bs-toggle="tab"
+              :data-bs-target="`#t${tab.id}`"
+              role="tab"
+              :aria-controls="tab.id"
+              :aria-selected="tabIdx == tIdx"
+              @click="tabIdx = tIdx"
+            >
+              {{ tab.label }}
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      <div class="card tab-content p-3 text-muted">
+        <div
+          id="tab_analyze_new show"
+          class="tab-pane border-0 card-body"
+          :class="{
+            'active ': tabIdx == 0,
+            fade: tabIdx != 0,
+          }"
+          role="tabpanel"
+          aria-labelledby="tab_analyze_new"
+        >
+          <NewsTab
+            v-if="selectedKeywordGroup"
+            :group-no="selectedKeywordGroup.group_no"
+            :keyword-list="selectedKeywordNoList"
+            :start-date="searchDate.startDate"
+            :end-date="searchDate.endDate"
+            :is-active="tabIdx == 0"
+          />
+        </div>
+        <div
+          id="tab_analyze_trand"
+          class="tab-pane border-0 card-body"
+          :class="{
+            'active show': tabIdx == 1,
+            fade: tabIdx != 1,
+          }"
+          role="tabpanel"
+          aria-labelledby="tab_analyze_trand"
+        >
+          <TrendTab
+            v-if="selectedKeywordGroup"
+            :group-no="selectedKeywordGroup.group_no"
+            :keyword-list="selectedKeywordNoList"
+            :start-date="searchDate.startDate"
+            :end-date="searchDate.endDate"
+            :is-active="tabIdx == 1"
+          />
+        </div>
+        <div
+          id="tab_analyze_keyword show"
+          class="tab-pane border-0 card-body"
+          :class="{
+            'active ': tabIdx == 2,
+          }"
+          role="tabpanel"
+          aria-labelledby="tab_analyze_keyword"
+        >
+          <KeywordTab
+            v-if="selectedKeywordGroup"
+            :group-no="selectedKeywordGroup.group_no"
+            :keyword-list="selectedKeywordTextList"
+            :start-date="searchDate.startDate"
+            :end-date="searchDate.endDate"
+            :is-active="tabIdx == 2"
+          />
+        </div>
       </div>
     </MainLayout>
   </div>
@@ -90,33 +214,79 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed } from "vue";
+import moment from "moment";
+
+import DatePicker from "vue3-datepicker";
 import PageHeader from "@/components/layouts/page-header.vue";
+import TrendTab from "@/components/analyze/TrendTab.vue";
+import KeywordTab from "@/components/analyze/KeywordTab.vue";
+import NewsTab from "@/components/analyze/NewsTab.vue";
 import MainLayout from "@/layouts/MainLayout.vue";
+
 import { useCommonStore } from "@/store/common";
 import { ScrapKeyword, ScrapKeywordGroup } from "@/models/scrap";
+
 import { KeywordAPI } from "@/api/keyword";
 
-const { loading, showNoti, showLoading, hideLoading } = useCommonStore();
+interface IDatePros {
+  startDate: string;
+  endDate: string;
+}
 
+const { loading, showNoti, showLoading } = useCommonStore();
+const tabIdx = ref(0);
+const tabMenuList = [
+  {
+    label: "뉴스 분석",
+    id: "tab_analyze_new",
+  },
+  {
+    label: "트랜드 분석",
+    id: "tab_analyze_trand",
+  },
+  {
+    label: "키워드 분석",
+    id: "tab_analyze_keyword",
+  },
+];
+const today = new Date(moment().format("YYYY-MM-DD"));
 const searchDate = reactive({
-  startDate: "",
-  endDate: "",
+  startDate: moment().subtract(1, "M").format("YYYY-MM-DD"),
+  endDate: moment().subtract(1, "days").format("YYYY-MM-DD"),
 });
+const tempData = reactive({
+  startDate: new Date(searchDate.startDate),
+  endDate: new Date(searchDate.endDate),
+});
+const filterDisabledDates = [new Date()];
+
 const keywordsGroupList = ref<ScrapKeywordGroup[]>([]);
 const selectedKeywordGroup = ref<ScrapKeywordGroup>();
+const tempSltGroupVal = ref("");
 const selectedKeywords = ref<ScrapKeyword[]>([]);
+
 // 팅서치에 표시하는 값
-const newsRankInfo = reactive({
+const newsRankInfo = reactive<{
+  totalCount: number;
+  pressCount: number;
+  reporterCount: number;
+  daily: any[];
+  press: any[];
+  repoter: any[];
+  competition: any[];
+  chart_tablelist: any[];
+  daily_keywords?: any;
+}>({
   totalCount: 0,
   pressCount: 0,
   reporterCount: 0,
-  daily: [] as any[],
-  press: [] as any[],
-  repoter: [] as any[],
+  daily: [],
+  press: [],
+  repoter: [],
   //-----------
   daily_keywords: null,
-  competition: [] as any[],
-  chart_tablelist: [] as any[],
+  competition: [],
+  chart_tablelist: [],
 });
 
 const dailyCahrtData = computed(() => {
@@ -141,19 +311,25 @@ const selectedKeywordTextList = computed(() =>
 );
 
 /**@description: 키워드 그룹 목록 조회 */
-const fetchKeywordGroupList = async (group_no?: string) => {
+const fetchKeywordGroupList = async () => {
   const response = await KeywordAPI.getKeyWordGroups();
 
   const { data } = response;
 
   if (data && data.length > 0) {
-    keywordsGroupList.value = data.map((item) => new ScrapKeywordGroup(item));
+    keywordsGroupList.value = data.map(
+      (item: any) => new ScrapKeywordGroup(item)
+    );
   }
 };
 
 /**@description: 키워드 그룹 선택시 */
-const handleKeywordGroupClick = async (group_no: string) => {
-  if (!group_no) return;
+const handleKeywordGroupClick = async (group_no?: string) => {
+  if (!group_no) {
+    if (!selectedKeywordGroup.value && keywordsGroupList.value) {
+      handleKeywordGroupClick(keywordsGroupList.value[0].group_no);
+    }
+  }
 
   const keywordGrooup = keywordsGroupList.value.find(
     (item) => item.group_no === group_no
@@ -169,135 +345,106 @@ const handleKeywordGroupClick = async (group_no: string) => {
     return;
 
   selectedKeywordGroup.value = keywordGrooup;
+  tempSltGroupVal.value = selectedKeywordGroup.value
+    ? selectedKeywordGroup.value.group_no
+    : "";
   selectedKeywords.value = keywordGrooup.keyword_list
     ? [...keywordGrooup.keyword_list]
     : [];
-
-  await Promise.all([
-    fetchNewsRank(searchDate),
-    fetchNewsRankTingSearch(searchDate),
-  ]);
+  // 로더 표시는 안하는 상태
+  // 각각 탭에서 로더 표시 & 각각 탭에서 로딩 상태가 true 가 되면 데이터 조회
+  showLoading(false);
 };
 
-/**@description */
-const fetchNewsRank = async ({ startDate, endDate }) => {
-  searchDate.startDate = startDate;
-  searchDate.endDate = endDate;
+/**@description: 키워드 그룹 > 키워드 선택시 */
+const handleKeywordClick = async (selectedItem: ScrapKeyword) => {
+  if (selectedKeywords.value.length === 1) {
+    showNoti({
+      message: "최소 1개 이상의 키워드를 선택해야합니다.",
+    });
+    return;
+  }
 
-  // console.log("getCheckItem", selectedKeywordGroup.value, startDate, endDate);
-  if (!selectedKeywordGroup.value?.group_no) return;
-
-  showLoading();
-
-  const res = await KeywordAPI.fetchNewsRank(
-    selectedKeywordGroup.value.group_no,
-    selectedKeywordNoList.value,
-    startDate,
-    endDate
+  const idx = selectedKeywordNoList.value.findIndex(
+    (item) => item === selectedItem.keyword_no
   );
-
-  if (res.result) {
-    const { daily_news, press_rank, repoter } = res.data;
-
-    newsRankInfo.totalCount = res.news_total_count ?? 0;
-    newsRankInfo.pressCount = res.press_total_count ?? 0;
-    newsRankInfo.reporterCount = res.repoter_total_count ?? 0;
-    newsRankInfo.daily = daily_news.sort((a, b) => b.date > a.date) ?? [];
-    newsRankInfo.press = press_rank ?? [];
-    newsRankInfo.repoter = repoter ?? [];
-  }
-
-  hideLoading();
-};
-
-/**@description: 팅서치에 표시하는 내용 가지고 오기 */
-const fetchNewsRankTingSearch = async ({ startDate, endDate }) => {
-  searchDate.startDate = startDate;
-  searchDate.endDate = endDate;
-  console.log(selectedKeywords.value);
-  if (!selectedKeywordGroup.value?.group_no) return;
-
-  // showLoading();
-  let query = "";
-
-  newsRankInfo.daily_keywords = null;
-  newsRankInfo.competition = [];
-  newsRankInfo.chart_tablelist = [];
-
-  selectedKeywordTextList.value.map((item, index) => {
-    query += `${index ? "&" : ""}query=${item}`;
-  });
-  if (startDate) {
-    query += `&startDate=${startDate}`;
-  }
-  if (endDate) {
-    query += `&endDate=${endDate}`;
-  }
-
-  const res = await KeywordAPI.fetchTrand(query);
-
-  if (res.result) {
-    const chartData = res.data;
-
-    if (chartData.length > 0) {
-      let legend = [];
-      let series = [];
-      let xAxis = [];
-      let temp = [];
-
-      chartData.map((keywordOv, index) => {
-        if (!index) {
-          xAxis = keywordOv.daily.map((item, dIdx) => {
-            // temp.push({
-            //   date: item.period,
-            //   value: [item.totalCount],
-            // });
-            return item.period;
-          });
-        } else {
-          keywordOv.daily.map((item, dIdx) => {
-            // temp[dIdx].data.push(item.totalCount);
-            // temp[idx]?.value.push(item.totalCount);
-          });
-        }
-
-        series.push({
-          name: keywordOv.title,
-          type: "line",
-          data: keywordOv.daily.map((item) => {
-            return item.totalCount;
-          }),
-        });
-
-        legend.push(keywordOv.title);
-        newsRankInfo.competition.push({
-          keyword: keywordOv.title,
-          mobileCount: Number(keywordOv.mobileCount),
-          pcCount: keywordOv.pcCount,
-          totalCount: Number(keywordOv.pcCount) + Number(keywordOv.mobileCount),
-          blogCount: Number(keywordOv.blogCount),
-          newsCount: Number(keywordOv.newsCount),
-          ...keywordOv.rate,
-        });
-        temp.push({
-          key: keywordOv.title,
-          data: series,
-        });
-      });
-
-      newsRankInfo.chart_tablelist = temp;
-
-      // 키워드별 발행
-      newsRankInfo.daily_keywords = {
-        xAxis: xAxis,
-        series: series,
-        legend: legend,
-      };
-    }
+  if (idx < 0) {
+    selectedKeywords.value.push(selectedItem);
+  } else {
+    selectedKeywords.value.splice(idx, 1);
   }
 };
-
-fetchKeywordGroupList();
+const init = async () => {
+  await fetchKeywordGroupList();
+  await handleKeywordGroupClick();
+};
+init();
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+$primary: #556ee6;
+$danger: #f46a6a;
+.keyword_group_select {
+  font-weight: bold;
+  min-width: 120px;
+}
+
+.filter-wrap {
+  span.badge.font-size-11 {
+    i {
+      vertical-align: bottom;
+    }
+  }
+  select {
+    text-align: center;
+    letter-spacing: 1.5px;
+    font-weight: 900;
+    &.include {
+      color: rgba($primary, 0.8);
+    }
+    &.exclude {
+      color: rgba($danger, 0.8);
+    }
+  }
+  dl {
+    border: 2px solid #e2e6e9;
+    border-radius: 4px;
+    background-color: #e2e6e9;
+    hr {
+      border-width: 2px;
+      border-color: #fff;
+    }
+
+    dt {
+      border-radius: 4px;
+    }
+    dd {
+      background-color: #fff;
+      hr {
+        border-width: 1px;
+        border-color: #999;
+        border-style: dashed;
+      }
+    }
+  }
+}
+.analyze_tab {
+  ul.nav-pills {
+    border-bottom: 1px solid rgba($primary, 0.2);
+    .nav-item {
+      font-weight: 600;
+      font-size: 13px;
+      background-color: rgba(gray, 0.1);
+      .nav-link {
+        color: rgba(gray, 0.7);
+        &.active {
+          background-color: rgba($primary, 0.1);
+          font-weight: 900;
+          color: $primary;
+          border-top: 3px solid rgba($primary, 0.8);
+        }
+      }
+    }
+  }
+}
+</style>

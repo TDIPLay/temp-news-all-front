@@ -106,6 +106,7 @@
                       lang="kr"
                       placeholder="시작일"
                       confirm
+                      :upper-limit="today"
                       @update:model-value="
                         filterObj.start_date = moment(
                           tempData.start_date
@@ -122,6 +123,7 @@
                       lang="kr"
                       placeholder="종료일"
                       confirm
+                      :upper-limit="today"
                       @update:model-value="
                         filterObj.end_date = moment(tempData.end_date).format(
                           'YYYY-MM-DD'
@@ -299,7 +301,7 @@ import { useCommonStore } from "@/store/common";
 import { computed } from "@vue/reactivity";
 import { DistributeNews } from "@/models/distribute";
 const { loading, showLoading, hideLoading, showNoti } = useCommonStore();
-
+const today = new Date();
 const tbColumns = [
   {
     key: "dis_no",

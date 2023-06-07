@@ -36,37 +36,6 @@ const routes: Array<RouteRecordRaw> = [
       // },
     ],
   },
-  // {
-  //   path: "/",
-  //   component: () => import("@/layouts/BlankLayout.vue"),
-  //   children: [
-  //     {
-  //       name: "main",
-  //       path: "/",
-  //       component: () => import("@/views/Home.vue"),
-  //     },
-  //     {
-  //       name: "login",
-  //       path: "/login",
-  //       component: () => import("@/views/auth/LoginPage.vue"),
-  //     },
-  //     // {
-  //     //   name: "SNS",
-  //     //   path: "/login/social",
-  //     //   component: () => import("@/views/auth/SNSPage.vue"),
-  //     // },
-  //     // {
-  //     //   name: "register",
-  //     //   path: "/register",
-  //     //   component: () => import("@/views/auth/RegisterPage.vue"),
-  //     // },
-  //     // {
-  //     //   name: "findPassword",
-  //     //   path: "/find-password",
-  //     //   component: () => import("@/views/auth/FindPasswordPage.vue"),
-  //     // },
-  //   ],
-  // },
 
   {
     path: "//briefing/preview",
@@ -81,6 +50,10 @@ const routes: Array<RouteRecordRaw> = [
       {
         name: "monitoring",
         path: "/monitoring",
+        props: (route) => ({
+          groupNo: route.query.groupNo,
+          searchParams: route.query.searchParams,
+        }),
         component: () => import("@/views/monitoring/IndexPage.vue"),
       },
     ],
@@ -99,17 +72,16 @@ const routes: Array<RouteRecordRaw> = [
   },
 
   //======== 집계 분석 ===================================
-  // {
-  //   path: "/analyze",
-  //   component: () => import("@/layouts/MainLayout.vue"),
-  //   children: [
-  //     {
-  //       name: "analyze",
-  //       path: "/analyze",
-  //       component: () => import("@/views/analyze/IndexPage.vue"),
-  //     },
-  //   ],
-  // },
+  {
+    path: "/analyze",
+    children: [
+      {
+        name: "analyze",
+        path: "/analyze",
+        component: () => import("@/views/analyze/IndexPage.vue"),
+      },
+    ],
+  },
 
   //======== 뉴스 보도 ===================================
   {
@@ -201,6 +173,10 @@ const beforLoginRoutes = [
 ];
 Router.beforeEach((to, from, next) => {
   const toPath = to.path;
+  const fromPath = from.path;
+
+  if (toPath == fromPath) return;
+
   const hasSession = localStorage.getItem("user_name");
   // 로그인 여부 상관 없는 페이지
   if (["/briefing/preview"].includes(toPath)) {

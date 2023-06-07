@@ -12,7 +12,10 @@
     <div class="card-body">
       <div class="row m-0">
         <!-- 키워드 그룹 추가 -->
-        <div class="tag_register" v-if="!props.id">
+        <div class="card-title col-auto col-sm-12 text-start">
+          키워드 그룹명
+        </div>
+        <div class="tag_register mb-3" v-if="!props.id">
           <b-form-select
             v-model="groupInfo.group_no"
             size="sm"
@@ -35,27 +38,11 @@
               <v-divider class="ma-0"></v-divider>
             </template>
           </b-form-select>
-          <!-- 
-          <select
-            v-model="groupInfo.group_no"
-            placeholder="키워드 그룹을 선택해 주세요."
-            :items="options.groupList"
-            item-title="group_name"
-            item-value="group_no"
-            density="comfortable"
-            bg-color="transparent"
-            hide-details
-            class="custom-select-box"
-            variant="plain"
-            :style="{
-              height: 'auto',
-              minHeight: '42px',
-            }"
-            :menu-props="{ closeOnContentClick: true }"
-            @update:model-value="handleGroupInfoSelect"
-          ></select> -->
         </div>
-        <div class="col" v-if="!!props.id || groupInfo.division == 'regist'">
+        <div
+          class="col mb-3"
+          v-if="!!props.id || (!props.id && Number(groupInfo.group_no) < 0)"
+        >
           <input
             v-model="groupInfo.group_name"
             maxlength="20"
@@ -163,7 +150,6 @@ import Swal from "sweetalert2";
 
 import { ScrapKeywordGroup, ScrapKeyword } from "@/models/scrap";
 import { KeywordAPI } from "@/api/keyword";
-import ConfirmModal from "@/components/modal/ConfirmModal.vue";
 
 const openDialog = true;
 const { loading, showLoading, hideLoading } = useCommonStore();
@@ -199,10 +185,6 @@ const groupInfo = ref<ScrapKeywordGroup>(
 );
 const groupItems = ref<ScrapKeyword[]>([]); // 키워드 그룹에 속한 키워드
 
-const showRemoveModal = ref<boolean>(false);
-const showRemovGroupeModal = ref<boolean>(false);
-
-const removeKeywordNo = ref();
 const newKeywords = ref<string[]>([]);
 const inputKeyword = ref<string>("");
 const MAX_LENGTH = 10; // 등록 가능한 키워드 갯수
@@ -238,15 +220,13 @@ const fetchKeywordGroupList = async () => {
 
   const { data } = response;
 
-  if (data && data.length > 0) {
-    options.groupList = [
-      {
-        group_name: "새로운 키워드",
-        group_no: -1,
-      },
-      ...data,
-    ];
-  }
+  options.groupList = [
+    {
+      group_name: "새로운 키워드",
+      group_no: -1,
+    },
+    ...(data ?? []),
+  ];
   // groupItems.value =
   // axiosService.get("v2/news/keywords").then((res) => {
   //   groupItems.value = res.data.keywords;
@@ -257,7 +237,9 @@ const handleGroupInfoSelect = (group_no?: any) => {
   groupItems.value = [];
   newKeywords.value = [];
   if (group_no < 0) {
-    groupInfo.value = new ScrapKeywordGroup();
+    groupInfo.value = new ScrapKeywordGroup({
+      group_no: -1,
+    });
     groupItems.value = [];
   } else {
     const group = group_no
@@ -385,7 +367,7 @@ const submit = async () => {
   let msgType = "";
 
   // 키워드 등록
-  if (!groupInfo.value.group_no) {
+  if (Number(groupInfo.value.group_no) == -1) {
     // 키워드 그룹 등록
 
     const resGroup = await KeywordAPI.createKeyWordGroup({

@@ -26,7 +26,7 @@ export class ScrapKeywordGroup {
     if (!init) return;
     CommonUtils.updateVoByKey(this, init);
 
-    if (this.group_no) {
+    if (this.group_no && Number(this.group_no) > 0) {
       this.division = "modify";
     }
 

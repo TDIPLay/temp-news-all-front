@@ -76,7 +76,7 @@
             class="btn bx bxs-plus-square p-1 my-auto font-size-20"
             @click="
               () => {
-                if (!selectedKeywordGroup || loading) return;
+                if (loading) return;
                 showKeywordGroupModal.create = true;
               }
             "
@@ -99,18 +99,15 @@
                 keyword.keyword_no
               ),
             }"
+            @click="
+              handleKeywordClick(
+                selectedKeywordGroup.group_no,
+                keyword.keyword_no
+              )
+            "
           >
             {{ keyword.keyword }}
-            <i
-              class="bx bx-x-circle"
-              style="margin-left: 4px"
-              @click="
-                handleKeywordClick(
-                  selectedKeywordGroup.group_no,
-                  keyword.keyword_no
-                )
-              "
-            ></i>
+            <i class="bx bx-x-circle" style="margin-left: 4px"></i>
           </span>
 
           <!-- <span @click="addKeywordModal(selectedKeywordGroup.group_no)">키워드 추가</span> -->
@@ -766,13 +763,18 @@ const handleKeywordGroupClick = async (group_no: string, useProps = false) => {
 /**@description: 키워드 선택시 */
 const handleKeywordClick = async (group_no: string, keyword_no: string) => {
   // 동일한 조건이면 return
+
+  if (!selectedKeywordGroup.value) return;
+
   if (
-    !selectedKeywordGroup.value ||
-    (selectedKeywordGroup.value?.group_no === group_no &&
-      filterObj.keyword_no.length === 1 &&
-      filterObj.keyword_no[0] === keyword_no)
-  )
-    return;
+    selectedKeywordGroup.value?.group_no === group_no &&
+    filterObj.keyword_no.length === 1 &&
+    filterObj.keyword_no[0] === keyword_no
+  ) {
+    showNoti({
+      message: "최소 한가지 키워드를 선택해 주세요.",
+    });
+  }
 
   pagenation.current = 1;
   pagenation.isMax = false;
@@ -811,6 +813,9 @@ const fetchNewsList = async (init = false) => {
 
   if (!filterObj.keyword_no.length) {
     hideLoading();
+    showNoti({
+      message: "최소 한가지 키워드를 선택해 주세요.",
+    });
     timeLoading.value = false;
     return;
   }

@@ -165,7 +165,6 @@ const Router = createRouter({
   routes,
 });
 const beforLoginRoutes = [
-  "/",
   "/login",
   "/login/social",
   "/register",

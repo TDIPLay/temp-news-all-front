@@ -22,7 +22,7 @@ const props = defineProps([
 const chartEl = ref(null);
 let myChart = reactive<any>(null);
 type EChartsOption = echarts.EChartsOption;
-const countryColors = ["#34c38f", "#f46a6a", "#f1b44c"];
+const countryColors = ["52, 195, 143", "244, 106, 106", "241, 180, 76"];
 const option = ref<EChartsOption>();
 watch(
   () => props.isActive,
@@ -107,7 +107,9 @@ const setCahrtData = () => {
         itemStyle: {
           borderRadius: 5,
           color: function (param: any) {
-            return countryColors[param.dataIndex] || "#5470c6";
+            return `rgba(${
+              countryColors[param.dataIndex] || "84, 112, 198"
+            }, 0.8)`;
           },
         },
         data: optionData,

@@ -377,4 +377,38 @@ export class CommonUtils {
       ""
     );
   }
+
+  public static getHexToRgbA(
+    hex: string,
+    returnArray = false
+  ): string | number[] {
+    let c = [];
+    let cText = "";
+    if (/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)) {
+      c = hex.substring(1).split("");
+      if (c.length == 3) {
+        c = [c[0], c[0], c[1], c[1], c[2], c[2]];
+      }
+      cText = "0x" + c.join("");
+
+      if (returnArray) {
+        return [
+          (Number(cText) >> 16) & 255,
+          (Number(cText) >> 8) & 255,
+          Number(cText) & 255,
+        ];
+      } else {
+        return (
+          "rgba(" +
+          [
+            (Number(cText) >> 16) & 255,
+            (Number(cText) >> 8) & 255,
+            Number(cText) & 255,
+          ].join(",") +
+          ",1)"
+        );
+      }
+    }
+    throw new Error("Bad Hex");
+  }
 }

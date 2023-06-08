@@ -311,7 +311,6 @@ watch(
     if (newVal && !prevVal) {
       if (props.groupNo) {
         currentLoading.value = true;
-
         Promise.all([fetchTrendAnalysis()]).finally(() => {
           currentLoading.value = false;
         });

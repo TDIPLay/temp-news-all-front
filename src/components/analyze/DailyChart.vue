@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import { useCommonStore } from "@/store/common";
+import { CommonUtils } from "@/utils/CommonUtils";
 import * as echarts from "echarts";
 import { onMounted, ref, nextTick, onUnmounted, watch, reactive } from "vue";
 
@@ -61,7 +61,6 @@ const setCahrtData = () => {
         right: "5%",
         bottom: "15%",
       },
-
       toolbox: {
         show: true,
         feature: {
@@ -83,7 +82,22 @@ const setCahrtData = () => {
       yAxis: {
         type: "value",
       },
-      series: props.data.series ?? [],
+      series:
+        props.data.series?.map((s: any) => {
+          return {
+            ...s,
+            itemStyle: {
+              color: function (param: any) {
+                let c =
+                  CommonUtils.getHexToRgbA(
+                    s.itemStyle?.color ?? param.color,
+                    true
+                  )?.join(",") ?? "84, 112, 198";
+                return `rgba(${c}, 0.75)`;
+              },
+            },
+          };
+        }) ?? [],
     };
     option.value && myChart.setOption(option.value);
 
@@ -116,6 +130,9 @@ onUnmounted(() => {
   }
   & > div:last-child {
     position: absolute !important;
+    div {
+      text-align: left;
+    }
   }
 }
 </style>

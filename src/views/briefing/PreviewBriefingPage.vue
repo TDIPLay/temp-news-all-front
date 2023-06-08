@@ -158,8 +158,8 @@
                 min-width: 288px;
                 table-layout: fixed;
                 margin: auto;
+                background-color: #ffffff;
               "
-              bgcolor="#FFFFFF"
             >
               <!-- Report Loop Start -->
               <tbody

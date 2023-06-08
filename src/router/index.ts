@@ -174,9 +174,13 @@ Router.beforeEach((to, from, next) => {
   const toPath = to.path;
   const fromPath = from.path;
 
+  const hasSession = localStorage.getItem("user_name");
+
+  if (toPath == "/") {
+    return hasSession ? next({ name: "monitoring" }) : next({ name: "login" });
+  }
   if (toPath == fromPath) return;
 
-  const hasSession = localStorage.getItem("user_name");
   // 로그인 여부 상관 없는 페이지
   if (["/briefing/preview"].includes(toPath)) {
     return next();

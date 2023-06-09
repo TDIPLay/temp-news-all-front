@@ -69,7 +69,7 @@
               :id="index"
               @click.prevent="addSearchItem(item)"
             >
-              {{ item.name }} / {{ currentOv.currentFocus }}/{{ index }}
+              {{ item.name }}
             </div>
           </div>
         </div>

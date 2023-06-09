@@ -3,7 +3,7 @@
     v-model="showModal"
     size="md"
     centered
-    :title="props.id ? '키워드 그룹 관리' : '새 키워드 그룹 추가'"
+    title="키워드 그룹 관리"
     hide-footer
     @close="emit('close')"
     no-close-on-esc
@@ -15,7 +15,7 @@
         <div class="card-title col-auto col-sm-12 text-start">
           키워드 그룹명
         </div>
-        <div class="tag_register mb-3" v-if="!props.id">
+        <div class="tag_register mb-3">
           <b-form-select
             v-model="groupInfo.group_no"
             size="sm"
@@ -39,10 +39,7 @@
             </template>
           </b-form-select>
         </div>
-        <div
-          class="col mb-3"
-          v-if="!!props.id || (!props.id && Number(groupInfo.group_no) < 0)"
-        >
+        <div class="col mb-3">
           <input
             v-model="groupInfo.group_name"
             maxlength="20"
@@ -122,7 +119,7 @@
         >
           <div class="col-auto d-flex">
             <button
-              v-if="props.id"
+              v-if="!!groupInfo.group_no && groupInfo.group_no >= 0"
               class="btn btn-outline-secondary px-4 me-2"
               :class="{ disabled: loading }"
               @click="deleteGroup()"
@@ -144,12 +141,12 @@
 </template>
 
 <script lang="ts" setup>
-import { useCommonStore } from "@/store/common";
 import { ref, reactive, nextTick } from "vue";
 import Swal from "sweetalert2";
 
 import { ScrapKeywordGroup, ScrapKeyword } from "@/models/scrap";
 import { KeywordAPI } from "@/api/keyword";
+import { useCommonStore } from "@/store/common";
 
 const openDialog = true;
 const { loading, showLoading, hideLoading } = useCommonStore();
@@ -157,10 +154,6 @@ const { showNoti } = useCommonStore();
 const props = defineProps({
   id: {
     type: String || Number,
-    default: "",
-  },
-  name: {
-    type: String,
     default: "",
   },
 });
@@ -189,31 +182,6 @@ const newKeywords = ref<string[]>([]);
 const inputKeyword = ref<string>("");
 const MAX_LENGTH = 10; // 등록 가능한 키워드 갯수
 
-/**@description: 키워드 그룹에 등록되어있는 키워드 조회 */
-const fetchKeywords = async (group_no: string) => {
-  if (group_no) {
-    groupInfo.value = new ScrapKeywordGroup({
-      group_no: group_no,
-      group_name: props.name || "",
-    });
-  }
-
-  const response = await KeywordAPI.getKeyWords(group_no);
-
-  const { keyword } = response?.data;
-
-  groupItems.value = [];
-
-  if (keyword && keyword.length > 0) {
-    groupItems.value = [...keyword];
-  }
-
-  // groupItems.value =
-  // axiosService.get("v2/news/keywords").then((res) => {
-  //   groupItems.value = res.data.keywords;
-  // });
-};
-
 /**@description: 키워드 그룹목록 조회 */
 const fetchKeywordGroupList = async () => {
   const response = await KeywordAPI.getKeyWordGroups();
@@ -222,21 +190,25 @@ const fetchKeywordGroupList = async () => {
 
   options.groupList = [
     {
-      group_name: "새로운 키워드",
+      group_name: "새로운 키워드 그룹",
       group_no: -1,
     },
     ...(data ?? []),
   ];
+
+  if (props.id) {
+    handleGroupInfoSelect(props.id);
+  }
   // groupItems.value =
   // axiosService.get("v2/news/keywords").then((res) => {
   //   groupItems.value = res.data.keywords;
   // });
 };
 
-const handleGroupInfoSelect = (group_no?: any) => {
+const handleGroupInfoSelect = (group_no?: string | number) => {
   groupItems.value = [];
   newKeywords.value = [];
-  if (group_no < 0) {
+  if (group_no && group_no < 0) {
     groupInfo.value = new ScrapKeywordGroup({
       group_no: -1,
     });
@@ -348,7 +320,8 @@ const submit = async () => {
 
   if (!errorMsg && !newKeywords.value.length) {
     errorMsg =
-      props.id && props.name !== groupInfo.value.group_name
+      groupInfo.value.group_no &&
+      groupInfo.value.origin.group_name !== groupInfo.value.group_name
         ? ""
         : "키워드를 입력해주세요.";
   }
@@ -388,7 +361,10 @@ const submit = async () => {
     }
   }
   // 이름 변경 된 경우
-  if (props.id && props.name !== groupInfo.value.group_name) {
+  if (
+    groupInfo.value.group_no &&
+    groupInfo.value.origin.name !== groupInfo.value.group_name
+  ) {
     const resGroup = await KeywordAPI.updateKeyWordGroup({
       group_no: groupInfo.value.group_no,
       group_name: groupInfo.value.group_name,
@@ -474,7 +450,7 @@ const deleteGroup = async () => {
       const { result, message } = resGroup.data;
 
       if (result) {
-        emit("refresh");
+        emit("refresh", true);
         emit("close");
       }
 
@@ -486,13 +462,10 @@ const deleteGroup = async () => {
 };
 
 fetchKeywordGroupList();
+
 nextTick(() => {
   showModal.value = true;
 });
-
-if (props.id) {
-  fetchKeywords(props.id as string);
-}
 </script>
 
 <style lang="scss" scoped>

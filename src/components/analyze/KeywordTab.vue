@@ -1,7 +1,7 @@
 <template>
   <div class="py-3">
     <div class="card-title-index card-title text-start">키워드별 차트</div>
-    <template v-if="newsRankInfo.daily_keywords">
+    <template v-if="newsRankInfo.daily_keywords && !currentLoading">
       <DailyChart
         :is-active="props.isActive"
         :data="newsRankInfo.daily_keywords"
@@ -273,7 +273,6 @@ watch(
     if (newVal && !prevVal) {
       if (props.groupNo) {
         currentLoading.value = true;
-
         Promise.all([fetchNewsRankTingSearch()]).finally(() => {
           currentLoading.value = false;
         });

@@ -161,7 +161,6 @@ export const useFetch = () => {
   /**@description: 등록 / 수정 */
   const submit = async () => {
     const validMsg = await selectedDistribute.value.vaild();
-
     if (validMsg) {
       showNoti({
         message: validMsg,
@@ -169,7 +168,6 @@ export const useFetch = () => {
       });
       return;
     }
-
     if (!selectedDistribute.value.dis_no && !selectedDistribute.value.file) {
       showNoti({
         message: "추가자료를 첨부해 주세요.",
@@ -177,7 +175,6 @@ export const useFetch = () => {
       });
       return;
     }
-
     if (!selectedDistribute.value.dis_no && !selectedDistribute.value.file) {
       showNoti({
         message: "추가자료를 첨부해 주세요.",
@@ -185,17 +182,12 @@ export const useFetch = () => {
       });
       return;
     }
-
     showLoading();
     const formDataParams = new FormData();
-
     const payload = await selectedDistribute.value.saveDataFormat();
-
     for (const key in payload) {
       formDataParams.append(key, (payload as any)[key]);
-      router.back();
     }
-
     if (!payload) {
       showNoti({
         message: "저장할 내용이 없습니다.",
@@ -203,23 +195,20 @@ export const useFetch = () => {
       });
       return;
     }
-
     const { data } = !selectedDistribute.value.dis_no
       ? await DistributeAPI.createDistributeNews(formDataParams)
       : await DistributeAPI.updateDistributeNews(formDataParams);
 
     setTimeout(() => {
       hideLoading();
-
       if (data) {
-        if (data.result) {
-          fetchDistributeList();
-        }
-
         showNoti({
           message: data?.message,
           type: data.result > 0 ? "info" : "error",
         });
+        if (data.result) {
+          router.back();
+        }
       }
     }, 500);
   };

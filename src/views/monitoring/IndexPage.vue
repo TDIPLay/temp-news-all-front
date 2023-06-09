@@ -8,19 +8,6 @@
               <span class="fw-bolder font-size-18">
                 {{ pageInfo.title }}
               </span>
-
-              <button
-                type="button"
-                class="btn noti-icon right-bar-toggle toggle-right px-1 py-0"
-                @click="showKeywordGroupModal.list = true"
-              >
-                <i
-                  class="bx bx-cog toggle-right"
-                  :class="{
-                    'bx-spin': !showKeywordGroupModal.list,
-                  }"
-                ></i>
-              </button>
             </div>
           </div>
         </template>
@@ -61,7 +48,26 @@
           </div>
 
           <!-- 키워드 그룹 수정 -->
-          <i
+
+          <button
+            type="button"
+            class="btn noti-icon right-bar-toggle toggle-right px-1 py-0"
+            @click="
+              () => {
+                if (loading) return;
+                showKeywordGroupModal.info = true;
+              }
+            "
+          >
+            <i
+              class="bx bx-cog toggle-right"
+              :class="{
+                'bx-spin': !showKeywordGroupModal.list,
+              }"
+            ></i>
+          </button>
+
+          <!-- <i
             class="btn bx bx-pencil p-1 m-1 my-auto font-size-20"
             @click="
               () => {
@@ -69,10 +75,10 @@
                 showKeywordGroupModal.info = true;
               }
             "
-          ></i>
+          ></i> -->
 
           <!-- 키워드 그룹 추가 -->
-          <i
+          <!-- <i
             class="btn bx bxs-plus-square p-1 my-auto font-size-20"
             @click="
               () => {
@@ -80,7 +86,7 @@
                 showKeywordGroupModal.create = true;
               }
             "
-          ></i>
+          ></i> -->
         </div>
 
         <div
@@ -441,14 +447,8 @@
     <GroupManageModal
       v-if="showKeywordGroupModal.info"
       :id="selectedKeywordGroup ? selectedKeywordGroup.group_no : ''"
-      :name="selectedKeywordGroup ? selectedKeywordGroup.group_name : ''"
       @close="showKeywordGroupModal.info = false"
-      @refresh="refreshList()"
-    />
-    <GroupManageModal
-      v-if="showKeywordGroupModal.create"
-      @close="showKeywordGroupModal.create = false"
-      @refresh="refreshList()"
+      @refresh="(isClear = false) => refreshList(isClear)"
     />
     <b-modal
       v-model="showKeywordGroupModal.list"
@@ -484,8 +484,8 @@
                 class="bx"
                 :class="{
                   'bx-check-square':
-                    group.group_no == selectedKeywordGroup.group_no,
-                  'bx-square': group.group_no != selectedKeywordGroup.group_no,
+                    group.group_no == selectedKeywordGroup?.group_no,
+                  'bx-square': group.group_no != selectedKeywordGroup?.group_no,
                 }"
               ></i>
             </button>
@@ -530,7 +530,6 @@ import { OptionItemProps } from "@/utils/CommonUtils";
 
 import { KeywordAPI } from "@/api/keyword";
 import { ModulesAPI } from "@/api/module";
-import { add } from "lodash";
 const props = defineProps({
   groupNo: {
     type: String,
@@ -981,9 +980,19 @@ const handleSearch = async (key: string, data: any) => {
 };
 
 /**@description: 초기화 및 데이터 재 조회 */
-const refreshList = () => {
+const refreshList = (clear = false) => {
   // 더보기로 이동한 경우
-  const group_no = props.groupNo ? props.groupNo : undefined;
+  let group_no = props.groupNo ? props.groupNo : undefined;
+
+  if (clear) {
+    selectedKeywordGroup.value = undefined;
+  }
+
+  if (selectedKeywordGroup.value) {
+    group_no = selectedKeywordGroup.value
+      ? selectedKeywordGroup.value?.group_no
+      : group_no;
+  }
 
   keywordsGroupList.value = [];
   pressList.value = [];

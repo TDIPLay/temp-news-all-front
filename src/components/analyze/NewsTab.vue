@@ -54,11 +54,12 @@
 
   <div class="py-3">
     <div class="card-title-index card-title text-start">기간별 종합 반응</div>
-    <template v-if="newsRankInfo.daily_nlp">
-      <DailyChart
+    <template v-if="newsRankInfo.daily_nlp && !currentLoading">
+      <DailyBarChart
+        v-if="newsRankInfo.daily_nlp?.series"
         :is-active="props.isActive"
         :data="newsRankInfo.daily_nlp"
-        :id="'dailyCahrtData'"
+        :id="'dailyNlpCahrtData'"
         :toolbox="['line', 'bar', 'stack']"
       />
     </template>
@@ -72,7 +73,7 @@
     <div class="card-title-index card-title text-start mt-3">
       기사 및 댓글 반응
     </div>
-    <div v-if="newsRankInfo.news_circle" class="d-flex">
+    <div v-if="newsRankInfo.news_circle && !currentLoading" class="d-flex">
       <div class="col">
         <DonutChart
           :is-active="props.isActive"
@@ -126,7 +127,10 @@
 
             <tbody>
               <template
-                v-if="newsRankInfo[`${keywordType.key}_keyword_rank`]?.length"
+                v-if="
+                  newsRankInfo[`${keywordType.key}_keyword_rank`]?.length &&
+                  !currentLoading
+                "
               >
                 <tr
                   v-for="(keywordRank, index) in newsRankInfo[
@@ -284,7 +288,7 @@
         </div>
 
         <div class="card-body">
-          <template v-if="rankTop10.activeNews?.length">
+          <template v-if="rankTop10.activeNews?.length && !currentLoading">
             <SemiCardItem
               v-for="(news, index) in rankTop10.activeNews"
               :key="index"
@@ -319,6 +323,7 @@ import { ref, reactive, watch, computed } from "vue";
 
 import CommonLoading from "@/components/common/CommonLoading.vue";
 import DailyChart from "@/components/analyze/DailyChart.vue";
+
 import DonutChart from "@/components/analyze/DonutChart.vue";
 import KeywordRankNewsModal from "@/components/analyze/KeywordRankNewsModal.vue";
 import SemiCardItem from "@/components/analyze/SemiCardItem.vue";
@@ -418,17 +423,17 @@ const dailyCahrtSeries = [
   {
     label: "발행된 뉴스",
     key: "news",
-    type: "line",
+    type: "bar",
   },
   {
     label: "발행 미디어",
     key: "press",
-    type: "line",
+    type: "bar",
   },
   {
     label: "발행 기자",
     key: "repoter",
-    type: "line",
+    type: "bar",
   },
 ];
 const daily_xAxis = ref<string[]>([]);
@@ -531,6 +536,8 @@ const fetchNewsAnalysis = async () => {
     // 관련기사 초기화 및 세팅
     rankTop10.activeTabIdx = 0;
     rankTop10.activeItemIdx = -1;
+    newsRankInfo.daily_nlp = null;
+    newsRankInfo.news_circle = null;
 
     if (newsRankInfo.press.length) {
       newsRankInfo.press[0].clickEvt();
@@ -552,6 +559,8 @@ const fetchNewsAnalysis = async () => {
       series: [] as any[], // 값
       legend: [] as any[], // 라벨
     };
+
+    let tempDailyNlpSeries: any[] = [];
     // 댓글 반응 도넛 차트 데이터
     newsRankInfo.news_reply_circle = {
       series: [
@@ -568,17 +577,16 @@ const fetchNewsAnalysis = async () => {
         name: chartDataType.label,
         value: res[chartDataType.key] ?? 0,
       });
-      newsRankInfo.daily_nlp.series.push({
+      tempDailyNlpSeries.push({
         name: chartDataType.label,
         type: chartDataType.type,
         key: chartDataType.key,
         data: [] as any[],
-        itemStyle: {
-          color: chartDataType.color,
-        },
+        color: chartDataType.color,
       });
     });
 
+    newsRankInfo.daily_nlp.series = [...tempDailyNlpSeries];
     newsRankInfo.news_circle.legend = [...newsRankInfo.daily_nlp.legend];
 
     daily_series.value = [];

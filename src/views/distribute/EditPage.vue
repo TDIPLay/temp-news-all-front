@@ -164,7 +164,7 @@
                     class="tooltip position-absolute"
                     :class="{ show: tooltip.file, 'd-none': !tooltip.file }"
                     role="tooltip"
-                    style="left: 80px; top: 0"
+                    style="left: 80px; top: 0; min-width: max-content"
                   >
                     <div class="tooltip-arrow"></div>
                     <div class="tooltip-inner">

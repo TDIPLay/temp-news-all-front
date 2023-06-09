@@ -52,6 +52,9 @@ const setCahrtData = () => {
     option.value = {
       tooltip: {
         trigger: "axis",
+        axisPointer: {
+          type: "shadow",
+        },
       },
       legend: {
         data: props.data.legend,
@@ -60,6 +63,7 @@ const setCahrtData = () => {
         left: "5%",
         right: "5%",
         bottom: "15%",
+        containLabel: true,
       },
       toolbox: {
         show: true,
@@ -70,7 +74,6 @@ const setCahrtData = () => {
       },
       xAxis: {
         type: "category",
-        boundaryGap: false,
         data: props.data.xAxis,
         axisLabel: {
           formatter: (value: string) => {
@@ -82,22 +85,7 @@ const setCahrtData = () => {
       yAxis: {
         type: "value",
       },
-      series:
-        props.data.series?.map((s: any) => {
-          return {
-            ...s,
-            itemStyle: {
-              color: function (param: any) {
-                let c =
-                  CommonUtils.getHexToRgbA(
-                    s.itemStyle?.color ?? param.color,
-                    true
-                  )?.join(",") ?? "84, 112, 198";
-                return `rgba(${c}, 0.75)`;
-              },
-            },
-          };
-        }) ?? [],
+      series: props.data.series ?? [],
     };
     option.value && myChart.setOption(option.value);
 

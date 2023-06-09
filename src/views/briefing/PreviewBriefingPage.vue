@@ -4,53 +4,56 @@
   >
     <div class="col-12 m-0" style="max-width: 720px">
       <div class="col-auto my-3 d-flex justify-content-end">
-        <button
-          class="me-3 btn btn-outline-primary dropdown"
-          type="menu"
-          id="dropdownSendMail"
-          :aria-haspopup="showSendMailDropdown"
-          data-bs-toggle="dropdown"
-          :aria-expanded="true"
-        >
-          Mail 내보내기
-        </button>
-        <div
-          class="dropdown-menu p-0"
-          aria-labelledby="dropdownSendMail"
-          style="width: 300px"
-        >
-          <div class="card m-0 b-dropdown-form">
-            <div class="card-body row m-0 align-items-center">
-              <h4 class="card-title mb-2 d-flex">
-                <i class="me-1 mdi mdi-link"> </i>
-                이메일 공유
-              </h4>
-              <div class="col-12 overflow-text px-0 py-2">
-                <input
-                  v-model="shareEmail"
-                  type="email"
-                  class="forn-control"
-                  style="
-                    width: 100%;
-                    padding: 5px;
-                    border: 1px solid #a4aab1;
-                    border-radius: 5px;
-                  "
-                  placeholder="전송받을 이메일을 입력해주세요."
-                />
-              </div>
-              <div class="col p-0 pt-2 text-end">
-                <button
-                  class="px-3 py-1 btn btn-primary"
-                  :disabled="!shareEmail"
-                  @click="exportToMail()"
-                >
-                  전송
-                </button>
+        <div class="dropdown">
+          <button
+            class="me-3 btn btn-outline-primary"
+            type="menu"
+            id="dropdownSendMail"
+            :aria-haspopup="showSendMailDropdown"
+            data-bs-toggle="dropdown"
+            :aria-expanded="true"
+          >
+            Mail 내보내기
+          </button>
+          <div
+            class="dropdown-menu p-0"
+            aria-labelledby="dropdownSendMail"
+            style="width: 300px"
+          >
+            <div class="card m-0 b-dropdown-form">
+              <div class="card-body row m-0 align-items-center">
+                <h4 class="card-title mb-2 d-flex">
+                  <i class="me-1 mdi mdi-link"> </i>
+                  이메일 공유
+                </h4>
+                <div class="col-12 overflow-text px-0 py-2">
+                  <input
+                    v-model="shareEmail"
+                    type="email"
+                    class="forn-control"
+                    style="
+                      width: 100%;
+                      padding: 5px;
+                      border: 1px solid #a4aab1;
+                      border-radius: 5px;
+                    "
+                    placeholder="전송받을 이메일을 입력해주세요."
+                  />
+                </div>
+                <div class="col p-0 pt-2 text-end">
+                  <button
+                    class="px-3 py-1 btn btn-primary"
+                    :disabled="!shareEmail"
+                    @click="exportToMail()"
+                  >
+                    전송
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </div>
+
         <button class="col-auto btn btn-outline-secondary" @click="exportToPDF">
           PDF 내보내기
         </button>

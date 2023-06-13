@@ -40,14 +40,16 @@
                   <span
                     class="col-auto badge fw-bolder font-size-11 me-2 px-2"
                     :class="{
-                      'badge-soft-danger': props.newsData.scoreTypeCode < 0,
-                      'badge-soft-success': props.newsData.scoreTypeCode > 0,
-                      'badge-soft-warning': props.newsData.scoreTypeCode == 0,
+                      'bg-negative': props.newsData.scoreTypeCode < 0,
+                      'bg-positive': props.newsData.scoreTypeCode > 0,
+                      'bg-neutrality': props.newsData.scoreTypeCode == 0,
                     }"
+                    style="letter-spacing: 1.5px"
                   >
-                    {{ props.newsData.scoreTypeText }} 반응
+                    {{ props.newsData.scoreTypeText }}
                   </span>
-                  <div
+                  <!-- 긍부정 키워드 우선 안보이게  -->
+                  <!-- <div
                     v-if="
                       !!props.newsData.nlp_keyword &&
                       props.newsData.nlp_keyword.length > 0
@@ -66,7 +68,7 @@
                     >
                       #{{ k }}
                     </span>
-                  </div>
+                  </div> -->
                 </div>
                 <div
                   class="col-auto ms-3 pe-0 save-icon align-self-end"
@@ -74,10 +76,11 @@
                   @click.stop="saveNewsItem"
                 >
                   <i
-                    color="primary"
-                    :class="` font-size-24 mdi mdi-bookmark${
-                      !active ? '-outline' : ''
-                    }`"
+                    class="font-size-24 mdi"
+                    :class="{
+                      'mdi-bookmark-outline text-secondary': !active,
+                      'mdi-bookmark text-danger': active,
+                    }"
                   ></i>
                 </div>
               </div>
@@ -126,7 +129,7 @@
               <h5
                 class="row font-size-11 fw-bold text-start m-0 align-items-center"
               >
-                <div class="col-md-auto px-0 pb-md-0 pb-2">
+                <div class="col-auto px-0 pb-md-0 pb-2">
                   <span
                     class="badge fw-bolder font-size-11 badge-soft-secondary me-2"
                   >
@@ -368,7 +371,6 @@ $danger: #f46a6a;
     border-color: rgba($primary, 0.6);
   }
   .save-icon {
-    color: $primary;
     transition: all 0.4s;
     margin-top: -8px;
     &:hover {

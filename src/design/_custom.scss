@@ -291,3 +291,67 @@ table.table-striped-odd > tbody {
   font-weight: 900;
   color: #2a3042;
 }
+
+$positive: #5ccfa4; /** 긍정 **/
+$negative: #f68887; /** 부정 **/
+$neutrality: #f3c36f; /** 중립 **/
+
+.text-positive {
+  color: $positive;
+}
+
+.text-negative {
+  color: $negative;
+}
+
+.text-neutrality {
+  color: $neutrality;
+}
+
+.bg-positive {
+  background-color: $positive;
+  color: #fff;
+}
+
+.bg-negative {
+  background-color: $negative;
+  color: #fff;
+}
+
+.bg-soft-negative {
+  background-color: rgba($negative, 0.2);
+  color: $negative;
+}
+.bg-neutrality {
+  background-color: $neutrality;
+  color: #fff;
+}
+
+.bg-soft-neutrality {
+  background-color: rgba($neutrality, 0.2);
+  color: $neutrality;
+}
+
+.form-check-positive .form-check-input:checked {
+  background-color: $positive;
+  border-color: $positive;
+}
+
+.form-check-negative .form-check-input:checked {
+  background-color: $negative;
+  border-color: $negative;
+}
+
+.form-check-neutrality .form-check-input:checked {
+  background-color: $neutrality;
+  border-color: $neutrality;
+}
+
+input.date-picker {
+  background: transparent url(@/assets/img/calendar-blank-outline.svg) no-repeat
+    95%/15% 60% !important;
+
+  @media (max-width: 415px) {
+    background: none !important;
+  }
+}

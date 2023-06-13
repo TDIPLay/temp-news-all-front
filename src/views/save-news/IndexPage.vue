@@ -12,268 +12,347 @@
       </PageHeader>
 
       <!-- 키워드 조회  필터 (포함, 불포함, 기간) -->
-      <div class="filter-wrap px-4 pt-3">
-        <dl class="row align-items-center mb-0 text-start">
-          <dt class="col-sm-2 py-2 text-sm-center">키워드</dt>
-          <dd class="col-sm-10 px-1 px-sm-2 mb-0">
-            <template v-for="(kType, kIdx) in keywordTypeList">
-              <SearchBarCustom
-                v-if="keywordType == kType.value"
-                :key="kIdx"
-                title="키워드"
-                :id="`${kType.key}_keyword`"
-                :default-selected="filterObj[`${kType.key}_keyword`]"
-                :max-count="10"
-                :cur-count="searchKeyword.length"
-                :placeholder="`최대 10개까지 복수 분석가능`"
-                :type="kType.value"
-                :hide-selected-item="true"
-                @set-item="(val:any) => handleSearch('keyword', val)"
-              >
-                <template #prepend>
-                  <select
-                    v-model="keywordType"
-                    :class="`col-auto form-select w-auto ${keywordType}`"
+      <div class="filter-wrap px-2 pt-3">
+        <div class="filter-list p-2">
+          <div class="row m-0 text-start">
+            <div class="col-sm-auto py-2 text-sm-center" style="padding: 12px">
+              키워드
+            </div>
+            <div class="col px-1 px-sm-2 mb-0">
+              <template v-for="(kType, kIdx) in keywordTypeList">
+                <SearchBarCustom
+                  v-if="keywordType == kType.value"
+                  :key="kIdx"
+                  title="키워드"
+                  :id="`${kType.key}_keyword`"
+                  :default-selected="filterObj[`${kType.key}_keyword`]"
+                  :max-count="10"
+                  :cur-count="searchKeyword.length"
+                  :placeholder="`최대 10개까지 복수 분석가능`"
+                  :type="kType.value"
+                  :hide-selected-item="true"
+                  @set-item="(val:any) => handleSearch('keyword', val)"
+                >
+                  <template #prepend>
+                    <select
+                      v-model="keywordType"
+                      :class="`col-auto form-select w-auto ${keywordType}`"
+                    >
+                      <option value="include">포함</option>
+                      <option value="exclude">제외</option>
+                    </select>
+                  </template>
+                </SearchBarCustom>
+              </template>
+
+              <!---------- 선택한 키워드 목록 ---------->
+              <div class="row m-0 align-center" v-if="searchKeyword.length">
+                <div class="col row align-items-center m-0 ps-1">
+                  <hr class="my-auto col me-2" />
+                </div>
+                <div class="col-auto ps-0">
+                  <span
+                    class="col-auto font-size-11 ms-2 text-secondary"
+                    @click="showFilterList.press_no = !showFilterList.press_no"
                   >
-                    <option value="include">포함</option>
-                    <option value="exclude">제외</option>
-                  </select>
-                </template>
-              </SearchBarCustom>
-            </template>
-            <!---------- 선택한 키워드 목록 ---------->
-            <div class="row m-0 align-center" v-if="searchKeyword.length">
-              <div class="col row align-items-center m-0 ps-1">
-                <hr class="my-auto col me-2" />
-                <span
-                  class="col-auto badge rounded-pill font-size-11 ms-2 badge-soft-info"
-                >
-                  {{ searchKeyword.length }}개 적용
-                </span>
-              </div>
-              <div class="col-auto ps-0">
-                <i
-                  :class="`bx bx-${
-                    showFilterList.press_no ? 'up' : 'down'
-                  }-arrow`"
-                  style="margin-left: 4px"
-                  @click="showFilterList.press_no = !showFilterList.press_no"
-                ></i>
-              </div>
-              <div
-                class="col-12 row justify-content-start m-0 mb-1 pe-0 g-1"
-                v-show="showFilterList.press_no"
-              >
-                <span
-                  v-for="(item, pIdx) in searchKeyword"
-                  :key="pIdx"
-                  class="col-auto badge rounded-pill font-size-11 me-2"
-                  :class="{
-                    'badge-soft-primary': item.type == 'include',
-                    'badge-soft-danger': item.type != 'include',
-                  }"
-                >
-                  {{ item.name }}
+                    {{ searchKeyword.length }}개 적용
+                  </span>
                   <i
-                    class="bx bx-x-circle"
+                    :class="`bx bx-${
+                      showFilterList.press_no ? 'up' : 'down'
+                    }-arrow`"
                     style="margin-left: 4px"
+                  ></i>
+                </div>
+                <div
+                  class="col-12 row justify-content-start m-0 mb-1 pe-0 g-1"
+                  v-show="showFilterList.press_no"
+                >
+                  <span
+                    v-for="(item, pIdx) in searchKeyword"
+                    :key="pIdx"
+                    class="col-auto badge font-size-11 me-2 px-2 py-1"
+                    :class="{
+                      'badge-soft-secondary': item.type == 'include',
+                      'bg-soft-negative': item.type != 'include',
+                    }"
                     @click="removeKeyword(item, pIdx)"
-                  ></i>
-                </span>
-              </div>
-            </div>
-          </dd>
-
-          <dt class="col-sm-2 py-2 text-sm-center">언론사</dt>
-          <dd class="col-sm-10 px-1 px-sm-2 mb-0">
-            <template v-for="(kType, kIdx) in keywordTypeList">
-              <SearchBarCustom
-                v-if="processKeywordType == kType.value"
-                :key="kIdx"
-                title="언론사"
-                :id="`${kType.key}_press_no`"
-                :default-selected="filterObj[`${kType.key}_press_no`]"
-                :autocomplate-list="pressList"
-                :max-count="10"
-                :cur-count="searchPress.length"
-                :placeholder="`최대 10개까지 복수 분석가능`"
-                :type="kType.value"
-                :hide-selected-item="true"
-                @set-item="(val:any) => handleSearch('press_no', val)"
-              >
-                <template #prepend>
-                  <select
-                    v-model="processKeywordType"
-                    :class="`col-auto form-select w-auto ${processKeywordType}`"
                   >
-                    <option value="include">포함</option>
-                    <option value="exclude">제외</option>
-                  </select>
-                </template>
-              </SearchBarCustom>
-            </template>
-
-            <!---------- 선택한 언론사 목록 ---------->
-            <div class="row m-0 align-center" v-if="searchPress.length">
-              <div class="col row align-items-center m-0 ps-1">
-                <hr class="my-auto col me-2" />
-                <span
-                  class="col-auto badge rounded-pill font-size-11 ms-2 badge-soft-info"
-                >
-                  {{ searchPress.length }}개 적용
-                </span>
+                    {{ item.name }}
+                    <i
+                      class="mdi mdi-close-circle text-soft-secondary"
+                      :class="{
+                        'text-soft-secondary': item.type == 'include',
+                        'text-negative': item.type != 'include',
+                      }"
+                      style="margin-left: 4px"
+                    ></i>
+                  </span>
+                </div>
               </div>
-              <div class="col-auto ps-0">
-                <i
-                  :class="`bx bx-${
-                    showFilterList.press_no ? 'up' : 'down'
-                  }-arrow`"
-                  style="margin-left: 4px"
+            </div>
+          </div>
+          <div class="row m-0 text-start">
+            <div class="col-sm-auto text-sm-center" style="padding: 12px">
+              언론사
+            </div>
+            <div class="col px-1 px-sm-2 mb-0">
+              <template v-for="(kType, kIdx) in keywordTypeList">
+                <SearchBarCustom
+                  v-if="processKeywordType == kType.value"
+                  :key="kIdx"
+                  title="언론사"
+                  :id="`${kType.key}_press_no`"
+                  :default-selected="filterObj[`${kType.key}_press_no`]"
+                  :autocomplate-list="pressList"
+                  :max-count="10"
+                  :cur-count="searchPress.length"
+                  :placeholder="`최대 10개까지 복수 분석가능`"
+                  :type="kType.value"
+                  :hide-selected-item="true"
+                  @set-item="(val:any) => handleSearch('press_no', val)"
+                >
+                  <template #prepend>
+                    <select
+                      v-model="processKeywordType"
+                      :class="`col-auto form-select w-auto ${processKeywordType}`"
+                    >
+                      <option value="include">포함</option>
+                      <option value="exclude">제외</option>
+                    </select>
+                  </template>
+                </SearchBarCustom>
+              </template>
+
+              <!---------- 선택한 언론사 목록 ---------->
+              <div class="row m-0 align-center" v-if="searchPress.length">
+                <div class="col row align-items-center m-0 ps-1">
+                  <hr class="my-auto col me-2 m-0" />
+                </div>
+                <div
+                  class="col-auto ps-0"
                   @click="showFilterList.press_no = !showFilterList.press_no"
-                ></i>
-              </div>
-              <div
-                class="col-12 row justify-content-start m-0 mb-1 pe-0 g-1"
-                v-show="showFilterList.press_no"
-              >
-                <span
-                  v-for="(item, pIdx) in searchPress"
-                  :key="pIdx"
-                  class="col-auto badge rounded-pill font-size-11 me-2"
-                  :class="{
-                    'badge-soft-primary': item.type == 'include',
-                    'badge-soft-danger': item.type != 'include',
-                  }"
                 >
-                  {{ item.name }}
+                  <span class="col-auto font-size-11 ms-2 text-secondary">
+                    {{ searchPress.length }}개 적용
+                  </span>
                   <i
-                    class="bx bx-x-circle"
+                    :class="`bx bx-${
+                      showFilterList.press_no ? 'up' : 'down'
+                    }-arrow`"
                     style="margin-left: 4px"
-                    @click="removePress(item, pIdx)"
                   ></i>
-                </span>
+                </div>
+                <div
+                  class="col-12 row justify-content-start m-0 mb-1 pe-0 py-0 g-1"
+                  v-show="showFilterList.press_no"
+                >
+                  <span
+                    v-for="(item, pIdx) in searchPress"
+                    :key="pIdx"
+                    class="col-auto badge font-size-11 me-2 px-2 py-1"
+                    :class="{
+                      'badge-soft-secondary': item.type == 'include',
+                      'bg-soft-negative': item.type != 'include',
+                    }"
+                    @click="removePress(item, pIdx)"
+                  >
+                    <span
+                      style="max-width: 100px"
+                      class="overflow-text d-inline-block"
+                    >
+                      {{ item.name }}
+                    </span>
+                    <i
+                      class="mdi mdi-close-circle text-soft-secondary"
+                      :class="{
+                        'text-soft-secondary': item.type == 'include',
+                        'text-negative': item.type != 'include',
+                      }"
+                      style="margin-left: 4px"
+                    ></i>
+                  </span>
+                </div>
               </div>
             </div>
-          </dd>
-
-          <dt class="col-sm-2 py-2 text-sm-center">기간</dt>
-          <dd class="d-flex col-sm-10 px-1 px-sm-2 m-0 align-items-center py-1">
-            <div class="col">
-              <DatePicker
-                :class="'form-control date-picker'"
-                v-model="tempData.start_date"
-                :first-day-of-week="1"
-                format="YYYY-MM-DD"
-                lang="kr"
-                placeholder="시작일"
-                confirm
-                :upper-limit="tomorrow"
-                @update:model-value="
-                  filterObj.start_date = moment(tempData.start_date).format(
-                    'YYYY-MM-DD'
-                  )
-                "
-              ></DatePicker>
+          </div>
+          <div class="row m-0 text-start">
+            <div
+              class="col-sm-auto py-2 text-sm-center d-flex align-items-ccenter"
+              style="padding: 12px"
+            >
+              기간 &nbsp;&nbsp;
             </div>
-            <span class="p-1 p-sm-2"> ~ </span>
-            <div class="col">
-              <DatePicker
-                class="form-control col date-picker"
-                v-model="tempData.end_date"
-                :first-day-of-week="1"
-                lang="kr"
-                placeholder="종료일"
-                confirm
-                :upper-limit="tomorrow"
-                @update:model-value="
-                  filterObj.end_date = moment(tempData.end_date).format(
-                    'YYYY-MM-DD'
-                  )
-                "
-              ></DatePicker>
-            </div>
-          </dd>
-
-          <dt class="col-sm-2 py-2 text-sm-center">채널</dt>
-          <dd class="d-flex col-sm-10 px-1 px-sm-2 m-0 align-items-center py-1">
-            <div class="col py-1 d-flex">
+            <div
+              class="d-flex col px-1 px-sm-2 m-0 align-items-center py-1 flex-column flex-md-row"
+            >
               <div
-                class="col form-check form-switch font-size-13 mb-0 ms-1"
-                style="max-width: 100px"
+                class="col-12 col-md-auto me-2 d-flex pb-2 pb-md-0 ms-2 ms-md-0"
               >
-                <input
-                  class="form-check-input"
-                  type="checkbox"
-                  id="switch_news"
-                  name="filter_platform"
-                  :value="1"
-                  v-model="filterObj.platform"
-                />
-                <label class="form-check-label" for="switch_news"> 뉴스 </label>
+                <button
+                  class="btn btn-outline-dark me-2 col col-md-auto"
+                  :class="{ 'btn-dark ': selectedSearchDays == 7 }"
+                  @click="handleSearchDay(7)"
+                >
+                  1주일
+                </button>
+                <button
+                  class="btn btn-outline-dark me-2 col col-md-auto"
+                  :class="{ 'btn-dark ': selectedSearchDays == 30 }"
+                  @click="handleSearchDay(30)"
+                >
+                  1개월
+                </button>
+                <button
+                  class="btn btn-outline-dark col col-md-auto"
+                  :class="{ 'btn-dark ': selectedSearchDays == 90 }"
+                  @click="handleSearchDay(90)"
+                >
+                  3개월
+                </button>
+              </div>
+              <div class="col-12 col-md-auto d-flex">
+                <div class="col col-md-auto">
+                  <DatePicker
+                    :class="'  form-control date-picker'"
+                    v-model="tempData.start_date"
+                    :first-day-of-week="1"
+                    format="YYYY-MM-DD"
+                    lang="kr"
+                    placeholder="시작일"
+                    confirm
+                    :upper-limit="tomorrow"
+                    @update:model-value="
+                      handleUpdateDatePicker('start_date', tempData.start_date)
+                    "
+                  >
+                  </DatePicker>
+                </div>
+
+                <span class="p-1 p-sm-2"> ~ </span>
+                <div class="col col-md-auto">
+                  <DatePicker
+                    class="form-control col date-picker"
+                    v-model="tempData.end_date"
+                    :first-day-of-week="1"
+                    lang="kr"
+                    placeholder="종료일"
+                    confirm
+                    :upper-limit="tomorrow"
+                    @update:model-value="
+                      handleUpdateDatePicker('end_date', tempData.end_date)
+                    "
+                  ></DatePicker>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row m-0 text-start">
+            <div
+              class="col-sm-auto py-2 text-sm-center d-flex align-items-center"
+              style="padding: 12px"
+            >
+              채널 &nbsp;&nbsp;
+            </div>
+            <div
+              class="d-flex col px-1 px-sm-2 m-0 align-items-center py-1 flex-column flex-sm-row"
+            >
+              <div class="col-12 col-sm-auto py-1 d-flex align-items-center">
+                <label
+                  class="col col-sm-auto form-check-label px-2"
+                  for="switch_news"
+                >
+                  뉴스
+                </label>
+                <div
+                  class="form-check form-switch form-switch-md form-check-dark font-size-13 mb-0 mx-1"
+                >
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="switch_news"
+                    name="filter_platform"
+                    :value="1"
+                    v-model="filterObj.platform"
+                  />
+                </div>
               </div>
 
-              <div
-                class="col form-check form-switch font-size-13 mb-0"
-                style="max-width: 100px"
-              >
-                <input
-                  class="form-check-input"
-                  type="checkbox"
-                  id="switch_cafe"
-                  name="filter_platform"
-                  :value="2"
-                  v-model="filterObj.platform"
-                />
-                <label class="form-check-label" for="switch_cafe"> 카페 </label>
+              <div class="col-12 col-sm-auto py-1 d-flex align-items-center">
+                <label
+                  class="col col-sm-auto form-check-label px-2"
+                  for="switch_cafe"
+                >
+                  카페
+                </label>
+                <div
+                  class="form-check form-switch form-switch-md form-check-dark font-size-13 mb-0 mx-1"
+                >
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="switch_cafe"
+                    name="filter_platform"
+                    :value="2"
+                    v-model="filterObj.platform"
+                  />
+                </div>
               </div>
 
-              <div
-                class="col form-check form-switch font-size-13 mb-0"
-                style="max-width: 100px"
-              >
-                <input
-                  class="form-check-input"
-                  type="checkbox"
-                  id="switch_blog"
-                  name="filter_platform"
-                  :value="3"
-                  v-model="filterObj.platform"
-                />
-                <label class="form-check-label" for="switch_blog">
+              <div class="col-12 col-sm-auto py-1 d-flex align-items-center">
+                <label
+                  class="col col-sm-auto form-check-label px-2"
+                  for="switch_blog"
+                >
                   블로그
                 </label>
+                <div
+                  class="form-check form-switch form-switch-md form-check-dark font-size-13 mb-0 mx-1"
+                >
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="switch_blog"
+                    name="filter_platform"
+                    :value="3"
+                    v-model="filterObj.platform"
+                  />
+                </div>
               </div>
             </div>
-          </dd>
-        </dl>
+          </div>
+        </div>
+        <div class="d-flex justify-content-center">
+          <button
+            class="btn btn-outline-secondary ms-auto mt-2 col col-sm-auto"
+            style="width: 100px"
+            :disabled="loading"
+            @click="initFilter"
+          >
+            초기화
+          </button>
 
-        <button
-          class="btn btn-outline-secondary ms-auto mt-2"
-          style="width: 100px"
-          :disabled="loading"
-          @click="initFilter"
-        >
-          초기화
-        </button>
-
-        <button
-          class="btn btn-secondary ms-3 mt-2"
-          :disabled="loading"
-          style="width: 100px"
-          @click="
-            () => {
-              showLoading();
-              pagenation.isMax = false;
-              fetchSaveNewsList(true);
-            }
-          "
-        >
-          조회
-        </button>
+          <button
+            class="btn btn-dark ms-3 mt-2 col col-sm-auto me-auto"
+            :disabled="loading"
+            style="width: 100px"
+            @click="
+              () => {
+                showLoading();
+                pagenation.isMax = false;
+                fetchNewsList(true);
+              }
+            "
+          >
+            조회
+          </button>
+        </div>
       </div>
 
       <div class="mt-4 d-flex justify-content-end pe-3">
-        <div class="col-auto form-check form-switch font-size-13 mb-0 me-4">
+        <div
+          class="col-auto form-check form-switch form-switch-md form-check-positive font-size-13 mb-0 me-4"
+        >
           <input
             class="form-check-input"
             type="checkbox"
@@ -283,7 +362,9 @@
           <label class="form-check-label" for="switch_positive"> 긍정 </label>
         </div>
 
-        <div class="col-auto form-check form-switch font-size-13 mb-0 me-4">
+        <div
+          class="col-auto form-check form-switch form-switch-md form-check-negative font-size-13 mb-0 me-4"
+        >
           <input
             class="form-check-input"
             type="checkbox"
@@ -293,7 +374,9 @@
           <label class="form-check-label" for="switch_negative"> 부정 </label>
         </div>
 
-        <div class="col-auto form-check form-switch font-size-13 mb-0">
+        <div
+          class="col-auto form-check form-switch form-switch-md form-check-neutrality font-size-13 mb-0"
+        >
           <input
             class="form-check-input"
             type="checkbox"
@@ -386,13 +469,14 @@ const keywordTypeList = [
 ];
 const keywordType = ref("include");
 const processKeywordType = ref("include");
+const selectedSearchDays = ref(30);
 
 const filterObj = reactive<IFilterObj>({
   in_keyword: [],
   not_keyword: [],
   in_press_no: [],
   not_press_no: [],
-  start_date: moment().subtract(1, "M").format("YYYY-MM-DD"),
+  start_date: moment().subtract(30, "days").format("YYYY-MM-DD"),
   end_date: moment().format("YYYY-MM-DD"),
   platform: [1, 2, 3],
 });
@@ -650,13 +734,39 @@ const removePress = (item: any, index: number) => {
   curFilterObj.splice(press_no_idx, 1);
 };
 
+const handleUpdateDatePicker = (
+  type: "start_date" | "end_date",
+  date: Date
+) => {
+  filterObj[type] = moment(date).format("YYYY-MM-DD");
+  const diffDays = moment
+    .duration(moment(filterObj.end_date).diff(filterObj.start_date))
+    .asDays(); // 1
+
+  selectedSearchDays.value = [7, 30, 90].includes(diffDays) ? diffDays : 0;
+};
+const handleSearchDay = (day: number) => {
+  selectedSearchDays.value = day;
+  const today = moment().format("YYYY-MM-DD");
+  filterObj.start_date = moment().subtract(day, "days").format("YYYY-MM-DD");
+  filterObj.end_date = today;
+  tempData.end_date = new Date(filterObj.end_date);
+  tempData.start_date = new Date(filterObj.start_date);
+};
+
 refreshList();
 </script>
 <style lang="scss" scoped>
 .filter-wrap {
   $primary: #556ee6;
   $danger: #f46a6a;
-
+  $danger-card: #f68887;
+  .filter-list {
+    .row {
+      padding: 4px 0px;
+    }
+    background-color: #fff;
+  }
   span.badge.font-size-11 {
     i {
       vertical-align: bottom;
@@ -666,32 +776,11 @@ refreshList();
     text-align: center;
     letter-spacing: 1.5px;
     font-weight: 900;
-    &.include {
-      color: rgba($primary, 0.8);
-    }
+    // &.include {
+    //   color: rgba($primary, 0.8);
+    // }
     &.exclude {
       color: rgba($danger, 0.8);
-    }
-  }
-  dl {
-    border: 2px solid #e2e6e9;
-    border-radius: 4px;
-    background-color: #e2e6e9;
-    hr {
-      border-width: 2px;
-      border-color: #fff;
-    }
-
-    dt {
-      border-radius: 4px;
-    }
-    dd {
-      background-color: #fff;
-      hr {
-        border-width: 1px;
-        border-color: #999;
-        border-style: dashed;
-      }
     }
   }
 }

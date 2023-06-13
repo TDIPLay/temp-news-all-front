@@ -559,31 +559,32 @@
           variant="black"
           toggle-class="header-item"
           menu-class="dropdown-menu-end"
+          content-class="d-flex"
           v-if="currentUser"
         >
           <template v-slot:button-content>
-            <!-- <img
+            <div class="d-flex">
+              <!-- <img
               class="rounded-circle header-profile-user"
               src="@/assets/images/users/avatar-1.jpg"
               alt="Header Avatar"
             /> -->
-            <div
-              class="rounded-circle bg-primary header-profile-user me-1"
-              style="display: inline-block"
-            >
-              <span class="avatar-title rounded-circle">
-                <span class="font-size-16">
-                  {{ currentUser.firstStr }}
-                </span>
+              <div
+                class="rounded-circle text-primary header-profile-user me-1 d-flex align-items-center"
+              >
+                <i
+                  class="mdi mdi-account-circle avatar-title rounded-circle"
+                  style="font-size: 30px"
+                ></i>
+              </div>
+
+              <span class="d-none d-xl-flex ms-1 align-items-center">
+                <div style="max-width: 150px" class="overflow-text">
+                  {{ currentUser.name }}
+                </div>
+                <i class="mdi mdi-chevron-down ms-2"></i>
               </span>
             </div>
-
-            <span class="d-none d-xl-inline-block ms-1">
-              <div>
-                {{ currentUser.name }}
-              </div>
-            </span>
-            <i class="mdi mdi-chevron-down d-none d-xl-inline-block"></i>
           </template>
           <!-- item-->
           <!-- <b-dropdown-item>

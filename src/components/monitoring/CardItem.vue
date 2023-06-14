@@ -112,14 +112,14 @@
                       props.newsData.replySympathyPer)
                   "
                 >
-                  <div class="col-auto px-1 badge badge-soft-primary me-2">
+                  <div class="col-auto px-1 bg-soft-positive badge me-2">
                     <i class="mdi mdi-thumb-up-outline me-1"></i>
                     긍정 댓글
 
                     {{ props.newsData.replySympathyPer }}%
                   </div>
 
-                  <div class="col-auto px-1 badge badge-soft-danger">
+                  <div class="col-auto px-1 bg-soft-negative badge">
                     <i class="mdi mdi-thumb-down-outline me-1"></i>
                     부정 댓글
                     {{ props.newsData.replyNoneSympathyPer }}%

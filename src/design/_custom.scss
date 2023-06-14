@@ -327,7 +327,10 @@ $reporter: #f8cd61; /** 발행기자 **/
   background-color: $positive;
   color: #fff;
 }
-
+.bg-soft-positive {
+  background-color: rgba($positive, 0.2);
+  color: $positive;
+}
 .bg-negative {
   background-color: $negative;
   color: #fff;

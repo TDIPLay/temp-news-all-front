@@ -1,138 +1,190 @@
 <template>
   <b-modal
     v-model="showModal"
-    size="md"
+    size="lg"
     centered
-    title="키워드 그룹 관리"
+    title="키워드 그룹 설정"
     hide-footer
     @close="emit('close')"
     no-close-on-esc
     no-close-on-backdrop
+    body-class="p-0"
   >
-    <div class="card-body">
-      <div class="row m-0">
-        <!-- 키워드 그룹 추가 -->
-        <div class="card-title col-auto col-sm-12 text-start">
-          키워드 그룹명
-        </div>
-        <div class="tag_register mb-3">
-          <b-form-select
-            v-model="groupInfo.group_no"
-            size="sm"
-            :options="options.groupList"
-            text-field="group_name"
-            value-field="group_no"
-            class="form-control font-size-12"
-            placeholder="키워드 그룹을 선택해 주세요."
-            @update:model-value="handleGroupInfoSelect"
+    <div class="card-body py-0">
+      <div
+        class="d-column d-lg-flex"
+        style="max-height: 80vh; overflow-y: auto"
+        ref="groupInfoEl"
+      >
+        <div
+          class="col col-lg-5 py-3 border-bottom-lg-0 border-right-lg-2"
+          style="border-right: solid #eff2f7; border-bottom: 2px solid #eff2f7"
+        >
+          <div class="card-title col-auto col-sm-12 text-start px-3 mb-3">
+            키워드 그룹리스트
+          </div>
+
+          <div
+            class="font-size-13 fw-bold d-flex align-items-center text-start px-1 py-2"
+            :class="{
+              'text-primary': !groupInfo?.group_no || groupInfo?.group_no < 0,
+            }"
+            @click.stop="handleGroupInfoSelect(null)"
           >
-            <template #first>
-              <v-list-item
-                style="height: 20px"
-                @click="handleGroupInfoSelect(null)"
-              >
-                <i class="mdi mdi-plus-box font-size-14"></i>
-                새로운 키워드 그룹
-              </v-list-item>
-
-              <v-divider class="ma-0"></v-divider>
-            </template>
-          </b-form-select>
-        </div>
-        <div class="col mb-3">
-          <input
-            v-model="groupInfo.group_name"
-            maxlength="20"
-            placeholder="키워드 그룹명을 입력해주세요."
-            class="form-control font-size-12"
-          />
-        </div>
-
-        <div class="mt-3" v-if="groupItems.length">
-          <div class="card-title col-auto col-sm-12 text-start">
-            등록한 키워드
-            <span class="font-size-11"> ({{ groupItems.length }}) </span>
+            <i class="mdi mdi-plus-box font-size-18 mx-2"></i>
+            키워드 그룹 추가
           </div>
 
-          <div class="pb-3">
-            <span
-              v-for="(item, index) in groupItems"
-              :key="index"
-              class="col-auto badge rounded-pill font-size-11 badge-soft-secondary me-2"
+          <ul class="group_manage_modal px-0" style="max-height: 40vh">
+            <li
+              v-for="(group, gIdx) in options.groupList"
+              :key="gIdx"
+              class="row align-items-center m-0 py-1"
+              :class="{
+                'bg-body': gIdx % 2 == 0,
+                active: group.group_no == groupInfo?.group_no,
+              }"
+              @click.stop="handleGroupInfoSelect(group.group_no)"
             >
-              #{{ item.keyword }}
-              <i
-                style="cursor: pointer"
-                class="mdi mdi-close"
-                @click="removeKeyword(item.keyword_no)"
-              >
-              </i>
-            </span>
-          </div>
+              <div class="col-auto">
+                <i
+                  class="mdi font-size-18"
+                  :class="{
+                    'mdi-checkbox-marked-outline':
+                      group.group_no == groupInfo?.group_no,
+                    'mdi-checkbox-blank-outline':
+                      group.group_no != groupInfo?.group_no,
+                  }"
+                ></i>
+              </div>
+              <div class="col ps-0 overflow-text fw-bold">
+                {{ group.group_name }}
+                <span class="font-size-11 fw-light">
+                  ({{ group.keyword_list?.length || 0 }})
+                </span>
+              </div>
+              <div class="col-auto">
+                <button
+                  type="button"
+                  class="btn font-size-20 text-danger px-1 py-0"
+                  @click.stop="keywordGroupDelete(group.group_no)"
+                >
+                  <i class="bx bx bx-trash-alt"></i>
+                </button>
+              </div>
+            </li>
+          </ul>
         </div>
 
-        <div class="modal_inner_box">
+        <div class="col col-lg-7 p-3 d-flex flex-column" ref="groupInfoInputEl">
           <div class="card-title col-auto col-sm-12 text-start">
-            등록할 키워드
-            <span class="font-size-11">
-              ({{ newKeywords.length }} / {{ MAX_LENGTH - groupItems.length }})
-            </span>
+            {{
+              groupInfo?.group_no && groupInfo.group_no > 0
+                ? "키워드 그룹 수정"
+                : "신규 키워드 그룹 추가"
+            }}
           </div>
 
-          <div class="input_tag-wrap">
-            <div class="tag_register col">
-              <input
-                v-model="inputKeyword"
-                @keydown.tab="({ target }:Event) => setKeyword(getElValue(target))"
-                @focusout="({ target }:Event) => setKeyword(getElValue(target))"
-                @keydown.enter="({ target }:Event) => setKeyword(getElValue(target))"
-                type="search"
-                autocomplete="off"
-                maxlength="20"
-                class="form-control font-size-12"
-                placeholder="키워드를 입력해주세요."
-              />
+          <!-- 키워드 그룹 추가 -->
+          <div class="font-size-13 col-auto col-sm-12 text-start mt-3">
+            키워드 그룹명
+          </div>
+
+          <div class="col-auto mb-3">
+            <input
+              v-model="groupInfo.group_name"
+              maxlength="20"
+              placeholder="키워드 그룹명을 입력해주세요."
+              class="form-control font-size-12"
+            />
+          </div>
+
+          <div class="col-auto col-sm-12 mt-3" v-if="groupItems.length">
+            <div class="font-size-13 text-start">
+              등록한 키워드
+              <span class="font-size-11"> ({{ groupItems.length }}) </span>
+            </div>
+
+            <div class="pb-3">
+              <span
+                v-for="(item, index) in groupItems"
+                :key="index"
+                class="col-auto badge font-size-13 badge-soft-secondary me-2 mt-1"
+              >
+                #{{ item.keyword }}
+                <i
+                  class="bx bx-x-circle"
+                  style="margin-left: 4px"
+                  @click="removeKeyword(item.keyword_no)"
+                ></i>
+              </span>
+            </div>
+          </div>
+
+          <div class="col-auto col-sm-12 mt-3">
+            <div class="font-size-13 text-start">
+              등록할 키워드
+              <span class="font-size-11">
+                ({{ newKeywords.length }} /
+                {{ MAX_LENGTH - groupItems.length }})
+              </span>
+            </div>
+
+            <div class="input_tag-wrap">
+              <div class="tag_register col">
+                <input
+                  v-model="inputKeyword"
+                  @keydown.tab="({ target }:Event) => setKeyword(getElValue(target))"
+                  @focusout="({ target }:Event) => setKeyword(getElValue(target))"
+                  @keydown.enter="({ target }:Event) => setKeyword(getElValue(target))"
+                  type="search"
+                  autocomplete="off"
+                  maxlength="20"
+                  class="form-control font-size-12"
+                  placeholder="키워드를 입력해주세요."
+                />
+              </div>
+            </div>
+
+            <div
+              class="row justify-content-start pa-0 pb-1 g-1 m-0"
+              v-if="newKeywords.length"
+            >
+              <span
+                v-for="(item, kIdx) in newKeywords"
+                :key="kIdx"
+                class="col-auto badge font-size-13 badge-soft-secondary me-2 mt-1"
+              >
+                {{ item }}
+                <i
+                  class="bx bx-x-circle"
+                  style="margin-left: 4px"
+                  @click="removeItem(kIdx)"
+                ></i>
+              </span>
             </div>
           </div>
 
           <div
-            class="row justify-content-start pa-0 pb-1 g-1 m-0"
-            v-if="newKeywords.length"
+            class="d-flex m-0 justify-content-center p-3 align-items-end"
+            style="flex: 10000 1 0%"
           >
-            <span
-              v-for="(item, kIdx) in newKeywords"
-              :key="kIdx"
-              class="col-auto badge rounded-pill font-size-13 badge-soft-secondary me-2"
-            >
-              {{ item }}
-              <i
-                class="bx bx-x-circle"
-                style="margin-left: 4px"
-                @click="removeItem(kIdx)"
-              ></i>
-            </span>
-          </div>
-        </div>
-
-        <div
-          class="row m-0 justify-content-center align-items-center px-3 pt-3"
-        >
-          <div class="col-auto d-flex">
-            <button
-              v-if="!!groupInfo.group_no && groupInfo.group_no >= 0"
-              class="btn btn-outline-secondary px-4 me-2"
-              :class="{ disabled: loading }"
-              @click="deleteGroup()"
-            >
-              삭제
-            </button>
-            <button
-              class="btn btn-danger px-4"
-              :class="{ disabled: loading }"
-              @click="submit"
-            >
-              저장
-            </button>
+            <div class="col-auto">
+              <button
+                class="btn btn-outline-secondary px-4 me-2"
+                :class="{ disabled: loading }"
+                @click="emit('close')"
+              >
+                취소
+              </button>
+              <button
+                class="btn btn-dark px-4 ms-2"
+                :class="{ disabled: loading }"
+                @click="submit"
+              >
+                저장
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -151,6 +203,8 @@ import { useCommonStore } from "@/store/common";
 const openDialog = true;
 const { loading, showLoading, hideLoading } = useCommonStore();
 const { showNoti } = useCommonStore();
+const groupInfoEl = ref(null);
+const groupInfoInputEl = ref(null);
 const props = defineProps({
   id: {
     type: String || Number,
@@ -183,21 +237,18 @@ const inputKeyword = ref<string>("");
 const MAX_LENGTH = 10; // 등록 가능한 키워드 갯수
 
 /**@description: 키워드 그룹목록 조회 */
-const fetchKeywordGroupList = async () => {
+const fetchKeywordGroupList = async (group_no?: string | number) => {
+  options.groupList = [];
   const response = await KeywordAPI.getKeyWordGroups();
 
   const { data } = response;
 
-  options.groupList = [
-    {
-      group_name: "새로운 키워드 그룹",
-      group_no: -1,
-    },
-    ...(data ?? []),
-  ];
+  options.groupList = data ?? [];
 
-  if (props.id) {
-    handleGroupInfoSelect(props.id);
+  let slectGroupNo = group_no ?? props.id ?? null;
+
+  if (slectGroupNo) {
+    handleGroupInfoSelect(slectGroupNo);
   }
   // groupItems.value =
   // axiosService.get("v2/news/keywords").then((res) => {
@@ -206,6 +257,14 @@ const fetchKeywordGroupList = async () => {
 };
 
 const handleGroupInfoSelect = (group_no?: string | number) => {
+  // 스크롤 위치조정
+  if (groupInfoInputEl.value && groupInfoEl.value) {
+    const offset = (groupInfoInputEl.value as HTMLElement).offsetHeight;
+    (groupInfoEl.value as HTMLElement).scrollTo({
+      top: offset,
+      behavior: "smooth",
+    });
+  }
   groupItems.value = [];
   newKeywords.value = [];
   if (group_no && group_no < 0) {
@@ -273,13 +332,12 @@ const removeKeyword = async (removeKeywordNo: number) => {
   if (!removeKeywordNo) return;
 
   Swal.fire({
-    text: "선택된 키워드를 정말 삭제하시겠습니까?",
+    text: "1선택된 키워드를 정말 삭제하시겠습니까?",
     icon: "info",
     showCancelButton: true,
-    confirmButtonColor: "#34c38f",
-    cancelButtonColor: "#f46a6a",
-    confirmButtonText: "확인",
+    confirmButtonColor: "#050505",
     cancelButtonText: "취소",
+    confirmButtonText: "확인",
   }).then(async (res) => {
     if (res.value) {
       const index = groupItems.value.findIndex(
@@ -294,9 +352,15 @@ const removeKeyword = async (removeKeywordNo: number) => {
 
       if (result) {
         groupItems.value.splice(index, 1);
-      }
+        groupInfo.value = new ScrapKeywordGroup({
+          ...groupInfo,
+          keyword_list: [...groupItems.value],
+        });
 
-      emit("refresh");
+        fetchKeywordGroupList(groupInfo.value.group_no);
+
+        emit("refresh", true);
+      }
 
       showNoti({
         message: message,
@@ -395,17 +459,17 @@ const submit = async () => {
         }
       }
     );
-    return (prev = idx);
+    return idx;
   }, 0);
 
-  // res.then((r) => {
-  //   console.log("res>>", r);
-  //   emit("refresh");
+  // res.then((r: any) => {
+  //   console.log("1res>>", r);
+  //   // emit("refresh");
   // });
 
   // 새로고침은 바로
   await setTimeout(async () => {
-    // console.log("res>>", res);
+    console.log("2res>>", res);
     hideLoading();
 
     showNoti({
@@ -413,7 +477,17 @@ const submit = async () => {
       type: msgType,
     });
 
-    emit("refresh");
+    newKeywords.value = [];
+    emit("refresh", true);
+    if (!groupInfo.value?.group_no || Number(groupInfo.value?.group_no) < 0) {
+      groupInfo.value = new ScrapKeywordGroup();
+      groupItems.value = [];
+    }
+    fetchKeywordGroupList(
+      groupInfo.value?.group_no && Number(groupInfo.value?.group_no) > -1
+        ? groupInfo.value?.group_no
+        : undefined
+    );
 
     // 해당 키워드 스크랩
     await Promise.all([
@@ -422,7 +496,7 @@ const submit = async () => {
       }),
     ]);
 
-    emit("close");
+    // emit("close");
   }, 1000);
 };
 
@@ -431,27 +505,30 @@ const getElValue = (target?: any) => {
   return target ? (target as HTMLInputElement).value : "";
 };
 
-// 키워드 그룹 삭제
-const deleteGroup = async () => {
+const keywordGroupDelete = async (group_no: string) => {
   Swal.fire({
     text: "그룹의 하위 키워드도 함께 삭제 됩니다. 키워드 그룹을 삭제하시겠습니까?",
     icon: "info",
     showCancelButton: true,
-    confirmButtonColor: "#34c38f",
-    cancelButtonColor: "#f46a6a",
+    confirmButtonColor: "#050505",
     confirmButtonText: "확인",
     cancelButtonText: "취소",
   }).then(async (res) => {
     if (res.value) {
-      const resGroup = await KeywordAPI.deleteKeyWordGroup(
-        groupInfo.value.group_no
-      );
+      showLoading();
+
+      const resGroup = await KeywordAPI.deleteKeyWordGroup(group_no);
 
       const { result, message } = resGroup.data;
 
+      hideLoading();
+
       if (result) {
+        groupInfo.value = new ScrapKeywordGroup();
+        groupItems.value = [];
+        newKeywords.value = [];
         emit("refresh", true);
-        emit("close");
+        fetchKeywordGroupList();
       }
 
       showNoti({
@@ -470,4 +547,13 @@ nextTick(() => {
 
 <style lang="scss" scoped>
 $primary: #556ee6;
+
+.group_manage_modal li:hover,
+.group_manage_modal li.active {
+  color: $primary;
+  cursor: pointer;
+  .fw-bold {
+    font-weight: 800 !important;
+  }
+}
 </style>

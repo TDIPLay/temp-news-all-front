@@ -158,23 +158,23 @@
                 <div class="col row align-items-center m-0 ps-1">
                   <hr class="my-auto col me-2" />
                 </div>
-                <div class="col-auto ps-0">
-                  <span
-                    class="col-auto font-size-11 ms-2 text-secondary"
-                    @click="showFilterList.press_no = !showFilterList.press_no"
-                  >
+                <div
+                  class="col-auto ps-0 d-flex align-items-center"
+                  @click="showFilterList.keyword = !showFilterList.keyword"
+                >
+                  <span class="col-auto font-size-11 ms-2 text-secondary">
                     {{ searchKeyword.length }}개 적용
                   </span>
                   <i
-                    :class="`bx bx-${
-                      showFilterList.press_no ? 'up' : 'down'
-                    }-arrow`"
+                    :class="`bx bxs-${
+                      showFilterList.keyword ? 'up' : 'down'
+                    }-arrow text-secondary`"
                     style="margin-left: 4px"
                   ></i>
                 </div>
                 <div
                   class="col-12 row justify-content-start m-0 mb-1 pe-0 g-1"
-                  v-show="showFilterList.press_no"
+                  v-show="showFilterList.keyword"
                 >
                   <span
                     v-for="(item, pIdx) in searchKeyword"
@@ -238,16 +238,16 @@
                   <hr class="my-auto col me-2 m-0" />
                 </div>
                 <div
-                  class="col-auto ps-0"
+                  class="col-auto ps-0 d-flex align-items-center"
                   @click="showFilterList.press_no = !showFilterList.press_no"
                 >
                   <span class="col-auto font-size-11 ms-2 text-secondary">
                     {{ searchPress.length }}개 적용
                   </span>
                   <i
-                    :class="`bx bx-${
+                    :class="`bx bxs-${
                       showFilterList.press_no ? 'up' : 'down'
-                    }-arrow`"
+                    }-arrow text-secondary`"
                     style="margin-left: 4px"
                   ></i>
                 </div>

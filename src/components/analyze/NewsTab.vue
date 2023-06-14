@@ -2,33 +2,33 @@
   <div class="row g-1 g-md-2">
     <div class="col-md-4 card mb-1">
       <div class="card-box border p-3 py-md-4 py-3 d-flex align-items-center">
-        <h3 class="card-title text-start col">총 발행된 뉴스</h3>
+        <h3 class="card-title text-start col m-0">총 발행된 뉴스</h3>
 
-        <h3 class="font-size-13 fw-bold col-lg-auto">
+        <h3 class="font-size-18 fw-bold col-lg-auto text-news m-0">
           {{ newsRankInfo.totalCount.toLocaleString() }}
-          <span class="font-size-13">건</span>
+          <span class="font-size-13 text-dark">건</span>
         </h3>
       </div>
     </div>
 
     <div class="col-md-4 card mb-1">
       <div class="card-box border p-3 py-md-4 py-3 d-flex align-items-center">
-        <h3 class="card-title text-start col">발행 미디어</h3>
+        <h3 class="card-title text-start col m-0">발행 미디어</h3>
 
-        <h3 class="font-size-13 fw-bold col-lg-auto">
+        <h3 class="font-size-18 fw-bold col-lg-auto text-press m-0">
           {{ newsRankInfo.pressCount.toLocaleString() }}
-          <span class="font-size-13">개</span>
+          <span class="font-size-13 text-dark">개</span>
         </h3>
       </div>
     </div>
 
     <div class="col-md-4 card mb-1">
       <div class="card-box border p-3 py-md-4 py-3 d-flex align-items-center">
-        <h3 class="card-title text-start col">발행 기자</h3>
+        <h3 class="card-title text-start col m-0">발행 기자</h3>
 
-        <h3 class="font-size-13 fw-bold col-lg-auto">
+        <h3 class="font-size-18 fw-bold col-lg-auto text-reporter m-0">
           {{ newsRankInfo.reporterCount.toLocaleString() }}
-          <span class="font-size-13">명</span>
+          <span class="font-size-13 text-dark">명</span>
         </h3>
       </div>
     </div>
@@ -55,7 +55,7 @@
   <div class="py-3">
     <div class="card-title-index card-title text-start">기간별 종합 반응</div>
     <template v-if="newsRankInfo.daily_nlp && !currentLoading">
-      <DailyBarChart
+      <DailyChart
         v-if="newsRankInfo.daily_nlp?.series"
         :is-active="props.isActive"
         :data="newsRankInfo.daily_nlp"
@@ -104,19 +104,25 @@
         :key="kIdx"
         class="col-12 col-md-6"
       >
-        <div class="text-center">
+        <div class="text-center my-3">
           <span
-            class="badge font-size-13 fw-bolder px-3 py-1 mb-3"
+            class="card-title fw-bolder px-3 py-1"
             :class="{
-              'badge-soft-success': keywordType.key_code > 0,
-              'badge-soft-danger': keywordType.key_code < 0,
+              'text-positive': keywordType.key_code > 0,
+              'text-negative': keywordType.key_code < 0,
             }"
           >
             {{ keywordType.label }} 키워드
           </span>
         </div>
         <div class="pe-0 pe-sm-1 table-responsive">
-          <table class="table table-striped-odd mb-0">
+          <table
+            class="table table-striped-odd mb-0"
+            :class="{
+              'striped-positive': keywordType.key_code > 0,
+              'striped-negative': keywordType.key_code < 0,
+            }"
+          >
             <thead>
               <tr style="border-bottom: 3px solid #eff2f7">
                 <th class="">순위</th>
@@ -192,8 +198,8 @@
               }
             "
             :class="{
-              'btn-primary': !rankTop10.activeTabIdx,
-              'btn-outline-primary': !!rankTop10.activeTabIdx,
+              'btn-dark': !rankTop10.activeTabIdx,
+              'btn-outline-dark': !!rankTop10.activeTabIdx,
             }"
           >
             미디어
@@ -210,8 +216,8 @@
               }
             "
             :class="{
-              'btn-primary': !!rankTop10.activeTabIdx,
-              'btn-outline-primary': !rankTop10.activeTabIdx,
+              'btn-dark': !!rankTop10.activeTabIdx,
+              'btn-outline-dark': !rankTop10.activeTabIdx,
             }"
           >
             기자
@@ -220,7 +226,7 @@
       </div>
 
       <div class="pe-0 pe-sm-1 d-flex table-responsive">
-        <table class="table mb-0 col">
+        <table class="table mb-0 col table-striped-odd">
           <thead>
             <tr style="border-bottom: 3px solid #eff2f7">
               <th class="px-1 text-center" style="width: 40px">순위</th>
@@ -400,22 +406,22 @@ const chartData = [
     label: "긍정",
     key: "sympathy",
     key_code: 1,
-    type: "line",
-    color: "#34c38f",
+    type: "bar",
+    color: "#5ccfa4",
   },
   {
     label: "부정",
     key: "non_sympathy",
     key_code: -1,
-    type: "line",
-    color: "#f46a6a",
+    type: "bar",
+    color: "#f68887",
   },
   {
     label: "중립",
     key: "neutrality",
     key_code: 0,
-    type: "line",
-    color: "#f1b44c",
+    type: "bar",
+    color: "#f3c36f",
   },
 ];
 
@@ -424,16 +430,19 @@ const dailyCahrtSeries = [
     label: "발행된 뉴스",
     key: "news",
     type: "bar",
+    color: "#70c6e2",
   },
   {
     label: "발행 미디어",
     key: "press",
     type: "bar",
+    color: "#74c94b",
   },
   {
     label: "발행 기자",
     key: "repoter",
     type: "bar",
+    color: "#f8cd61",
   },
 ];
 const daily_xAxis = ref<string[]>([]);
@@ -598,6 +607,7 @@ const fetchNewsAnalysis = async () => {
         name: series.label,
         type: "line",
         key: series.key,
+        color: series.color,
         data: [] as any[],
       });
     });
@@ -752,21 +762,89 @@ $primary: #556ee6;
 }
 
 table tbody,
-.table-striped-odd > tbody {
-  tr:hover,
-  tr.active {
-    background-color: gba($primary, 0.1) !important;
-    --bs-table-accent-bg: gba($primary, 0.1) !important;
-    cursor: pointer;
+.table-striped-odd {
+  tbody {
+    tr {
+      &:nth-child(odd) {
+        background-color: rgba($gray, 0.03) !important;
+        --bs-table-accent-bg: rgba($gray, 0.03) !important;
+        td {
+          background-color: rgba($gray, 0.03) !important;
+        }
+      }
 
-    td {
-      background-color: rgba($primary, 0.1) !important;
+      &.active,
+      &:hover {
+        background-color: rgba($gray, 0.1) !important;
+        --bs-table-accent-bg: rgba($gray, 0.1) !important;
+        cursor: pointer;
+
+        td {
+          background-color: rgba($gray, 0.1) !important;
+        }
+        font-weight: 600;
+      }
     }
   }
 
-  tr.active {
-    color: rgba($primary, 0.8) !important;
-    font-weight: 600;
+  &.striped-positive {
+    /** 긍정 **/
+    $table-active-color: #5ccfa4;
+
+    tbody {
+      tr {
+        &:nth-child(odd) {
+          background-color: rgba($table-active-color, 0.03) !important;
+          --bs-table-accent-bg: rgba($table-active-color, 0.03) !important;
+          td {
+            background-color: rgba($table-active-color, 0.03) !important;
+          }
+        }
+
+        &.active,
+        &:hover {
+          background-color: rgba($table-active-color, 0.1) !important;
+          --bs-table-accent-bg: rgba($table-active-color, 0.1) !important;
+          cursor: pointer;
+
+          td {
+            background-color: rgba($table-active-color, 0.1) !important;
+          }
+          color: rgba($table-active-color, 0.8) !important;
+          font-weight: 600;
+        }
+      }
+    }
+  }
+
+  &.striped-negative {
+    /** 부정 **/
+    $table-active-color: #f68887;
+
+    tbody {
+      tr {
+        &:nth-child(odd) {
+          background-color: rgba($table-active-color, 0.03) !important;
+          --bs-table-accent-bg: rgba($table-active-color, 0.03) !important;
+          td {
+            background-color: rgba($table-active-color, 0.03) !important;
+          }
+        }
+
+        &.active,
+        &:hover {
+          background-color: rgba($table-active-color, 0.1) !important;
+          --bs-table-accent-bg: rgba($table-active-color, 0.1) !important;
+          cursor: pointer;
+
+          td {
+            background-color: rgba($table-active-color, 0.1) !important;
+          }
+          color: rgba($table-active-color, 0.8) !important;
+          font-weight: 600;
+        }
+      }
+    }
   }
 }
 .btn-group {

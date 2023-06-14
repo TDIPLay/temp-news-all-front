@@ -98,7 +98,7 @@ const setCahrtData = () => {
       },
       series: {
         type: "pie",
-        radius: props.data?.series_radius ?? ["25%", "70%"],
+        radius: props.data?.series_radius ?? ["35%", "70%"],
         center: props.data?.series_center ?? ["50%", "45%"],
         startAngle: props.data?.series_angle ?? 90,
         label: props.data?.series_label ?? {

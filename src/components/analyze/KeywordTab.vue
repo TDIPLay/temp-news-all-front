@@ -21,12 +21,8 @@
 
     <div class="row">
       <div class="col-12 col-md-6">
-        <div class="text-center">
-          <span
-            class="badge badge-soft-primary font-size-13 fw-bolder px-3 py-1 mb-3"
-          >
-            검색량
-          </span>
+        <div class="text-center my-3">
+          <span class="card-title text-gray fw-bolder px-3 py-1"> 검색량 </span>
         </div>
         <div class="pe-0 pe-sm-1 table-responsive">
           <table class="table table-striped mb-0">
@@ -63,10 +59,8 @@
       </div>
 
       <div class="col-12 col-md-6 mt-3 mt-md-0">
-        <div class="text-center">
-          <span
-            class="badge badge-soft-primary font-size-13 fw-bolder px-3 py-1 mb-3"
-          >
+        <div class="text-center my-3">
+          <span class="card-title text-gray fw-bolder px-3 py-1">
             누적 콘텐츠발행량
           </span>
         </div>
@@ -112,12 +106,8 @@
 
     <div class="row">
       <div class="col-12 col-md-6">
-        <div class="text-center">
-          <span
-            class="badge badge-soft-primary font-size-13 fw-bolder px-3 py-1 mb-3"
-          >
-            성별
-          </span>
+        <div class="text-center my-3">
+          <span class="card-title text-gray fw-bolder px-3 py-1"> 성별 </span>
         </div>
         <div class="pe-0 pe-sm-1 table-responsive">
           <table class="table table-striped mb-0">
@@ -158,18 +148,14 @@
       </div>
 
       <div class="col-12 col-md-6 mt-3 mt-md-0">
-        <div class="text-center">
-          <span
-            class="badge badge-soft-primary font-size-13 fw-bolder px-3 py-1 mb-3"
-          >
-            연령
-          </span>
+        <div class="text-center my-3">
+          <span class="card-title text-gray fw-bolder px-3 py-1"> 연령 </span>
         </div>
-        <div class="ps-0 ps-md-1 table-responsive">
+        <div class="ps-0 ps-md-1 d-flex table-responsive">
           <table class="table table-striped mb-0">
             <thead>
               <tr style="border-bottom: 3px solid #eff2f7">
-                <th>키워드</th>
+                <th style="min-width: 100px">키워드</th>
                 <th>10대</th>
                 <th>20대</th>
                 <th>30대</th>
@@ -183,7 +169,7 @@
                 :key="index"
                 class="rank-list-content"
               >
-                <th>{{ competition.keyword }}</th>
+                <td class="fw-bolder">{{ competition.keyword }}</td>
                 <td>
                   {{
                     competition.age_10
@@ -383,6 +369,7 @@ if (props.groupNo) {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
+$gray: #74788d;
 $primary: #556ee6;
 .no-data {
   width: 100%;
@@ -392,6 +379,93 @@ $primary: #556ee6;
     color: rgba($primary, 0.6);
     font-weight: bolder;
     font-size: 17px;
+  }
+}
+
+table tbody,
+.table-striped-odd {
+  tbody {
+    tr {
+      &:nth-child(odd) {
+        background-color: rgba($gray, 0.03) !important;
+        --bs-table-accent-bg: rgba($gray, 0.03) !important;
+        td {
+          background-color: rgba($gray, 0.03) !important;
+        }
+      }
+
+      &.active,
+      &:hover {
+        background-color: rgba($gray, 0.1) !important;
+        --bs-table-accent-bg: rgba($gray, 0.1) !important;
+        cursor: pointer;
+
+        td {
+          background-color: rgba($gray, 0.1) !important;
+        }
+        font-weight: 600;
+      }
+    }
+  }
+
+  &.striped-positive {
+    /** 긍정 **/
+    $table-active-color: #5ccfa4;
+
+    tbody {
+      tr {
+        &:nth-child(odd) {
+          background-color: rgba($table-active-color, 0.03) !important;
+          --bs-table-accent-bg: rgba($table-active-color, 0.03) !important;
+          td {
+            background-color: rgba($table-active-color, 0.03) !important;
+          }
+        }
+
+        &.active,
+        &:hover {
+          background-color: rgba($table-active-color, 0.1) !important;
+          --bs-table-accent-bg: rgba($table-active-color, 0.1) !important;
+          cursor: pointer;
+
+          td {
+            background-color: rgba($table-active-color, 0.1) !important;
+          }
+          color: rgba($table-active-color, 0.8) !important;
+          font-weight: 600;
+        }
+      }
+    }
+  }
+
+  &.striped-negative {
+    /** 부정 **/
+    $table-active-color: #f68887;
+
+    tbody {
+      tr {
+        &:nth-child(odd) {
+          background-color: rgba($table-active-color, 0.03) !important;
+          --bs-table-accent-bg: rgba($table-active-color, 0.03) !important;
+          td {
+            background-color: rgba($table-active-color, 0.03) !important;
+          }
+        }
+
+        &.active,
+        &:hover {
+          background-color: rgba($table-active-color, 0.1) !important;
+          --bs-table-accent-bg: rgba($table-active-color, 0.1) !important;
+          cursor: pointer;
+
+          td {
+            background-color: rgba($table-active-color, 0.1) !important;
+          }
+          color: rgba($table-active-color, 0.8) !important;
+          font-weight: 600;
+        }
+      }
+    }
   }
 }
 </style>

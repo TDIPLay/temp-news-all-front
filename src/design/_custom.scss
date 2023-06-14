@@ -284,9 +284,10 @@ table.table-striped-odd > tbody {
 }
 
 .card-title-index.card-title {
-  border-left: 5px solid rgba($color: $primary, $alpha: 0.9);
-  padding-left: 10px;
-  margin-top: 10px;
+  // border-left: 5px solid rgba($color: $dark, $alpha: 0.9);
+  border-top: 2px solid rgba($color: $gray-800, $alpha: 0.9);
+
+  padding-top: 10px;
   margin-bottom: 10px;
   font-weight: 900;
   color: #2a3042;
@@ -295,6 +296,20 @@ table.table-striped-odd > tbody {
 $positive: #5ccfa4; /** 긍정 **/
 $negative: #f68887; /** 부정 **/
 $neutrality: #f3c36f; /** 중립 **/
+
+$news: #70c6e2; /** 발행뉴스 **/
+$press: #74c94b; /** 발행미디어 **/
+$reporter: #f8cd61; /** 발행기자 **/
+
+.text-news {
+  color: $news;
+}
+.text-press {
+  color: $press;
+}
+.text-reporter {
+  color: $reporter;
+}
 
 .text-positive {
   color: $positive;

@@ -106,19 +106,25 @@
         :key="kIdx"
         class="col-12 col-md-6"
       >
-        <div class="text-center">
+        <div class="text-center my-3">
           <span
-            class="badge font-size-13 fw-bolder px-3 py-1 mb-3"
+            class="card-title fw-bolder px-3 py-1"
             :class="{
-              'badge-soft-success': keywordType.key_code > 0,
-              'badge-soft-danger': keywordType.key_code < 0,
+              'text-positive': keywordType.key_code > 0,
+              'text-negative': keywordType.key_code < 0,
             }"
           >
             {{ keywordType.label }} 키워드
           </span>
         </div>
         <div class="pe-0 pe-sm-1">
-          <table class="table table-striped-odd mb-0">
+          <table
+            class="table table-striped-odd mb-0"
+            :class="{
+              'striped-positive': keywordType.key_code > 0,
+              'striped-negative': keywordType.key_code < 0,
+            }"
+          >
             <thead>
               <tr style="border-bottom: 3px solid #eff2f7">
                 <th class="">순위</th>
@@ -178,19 +184,25 @@
         :key="kIdx"
         class="col-12 col-md-6"
       >
-        <div class="text-center">
+        <div class="text-center my-3">
           <span
-            class="badge font-size-13 fw-bolder px-3 py-1 mb-3"
+            class="card-title fw-bolder px-3 py-1"
             :class="{
-              'badge-soft-success': keywordType.key_code > 0,
-              'badge-soft-danger': keywordType.key_code < 0,
+              'text-positive': keywordType.key_code > 0,
+              'text-negative': keywordType.key_code < 0,
             }"
           >
             {{ keywordType.label }} 키워드
           </span>
         </div>
         <div class="pe-0 pe-sm-1">
-          <table class="table table-striped-odd mb-0">
+          <table
+            class="table table-striped-odd mb-0"
+            :class="{
+              'striped-positive': keywordType.key_code > 0,
+              'striped-negative': keywordType.key_code < 0,
+            }"
+          >
             <thead>
               <tr style="border-bottom: 3px solid #eff2f7">
                 <th class="">순위</th>
@@ -347,10 +359,12 @@ const platformType = [
   {
     label: "블로그",
     key: "blog",
+    color: "#70c6e2",
   },
   {
     label: "카페",
     key: "cafe",
+    color: "#74c94b",
   },
 ];
 const daily_nlp_series = ref<any[]>([]);
@@ -503,6 +517,7 @@ const fetchTrendAnalysis = async () => {
         type: "line",
         key: platform.key,
         data: [] as any[],
+        color: platform.color,
       });
     });
     // daily_nlp_xAxis.value = [];
@@ -636,21 +651,89 @@ $primary: #556ee6;
 }
 
 table tbody,
-.table-striped-odd > tbody {
-  tr:hover,
-  tr.active {
-    background-color: gba($primary, 0.1) !important;
-    --bs-table-accent-bg: gba($primary, 0.1) !important;
-    cursor: pointer;
+.table-striped-odd {
+  tbody {
+    tr {
+      &:nth-child(odd) {
+        background-color: rgba($gray, 0.03) !important;
+        --bs-table-accent-bg: rgba($gray, 0.03) !important;
+        td {
+          background-color: rgba($gray, 0.03) !important;
+        }
+      }
 
-    td {
-      background-color: rgba($primary, 0.1) !important;
+      &.active,
+      &:hover {
+        background-color: rgba($gray, 0.1) !important;
+        --bs-table-accent-bg: rgba($gray, 0.1) !important;
+        cursor: pointer;
+
+        td {
+          background-color: rgba($gray, 0.1) !important;
+        }
+        font-weight: 600;
+      }
     }
   }
 
-  tr.active {
-    color: rgba($primary, 0.8) !important;
-    font-weight: 600;
+  &.striped-positive {
+    /** 긍정 **/
+    $table-active-color: #5ccfa4;
+
+    tbody {
+      tr {
+        &:nth-child(odd) {
+          background-color: rgba($table-active-color, 0.03) !important;
+          --bs-table-accent-bg: rgba($table-active-color, 0.03) !important;
+          td {
+            background-color: rgba($table-active-color, 0.03) !important;
+          }
+        }
+
+        &.active,
+        &:hover {
+          background-color: rgba($table-active-color, 0.1) !important;
+          --bs-table-accent-bg: rgba($table-active-color, 0.1) !important;
+          cursor: pointer;
+
+          td {
+            background-color: rgba($table-active-color, 0.1) !important;
+          }
+          color: rgba($table-active-color, 0.8) !important;
+          font-weight: 600;
+        }
+      }
+    }
+  }
+
+  &.striped-negative {
+    /** 부정 **/
+    $table-active-color: #f68887;
+
+    tbody {
+      tr {
+        &:nth-child(odd) {
+          background-color: rgba($table-active-color, 0.03) !important;
+          --bs-table-accent-bg: rgba($table-active-color, 0.03) !important;
+          td {
+            background-color: rgba($table-active-color, 0.03) !important;
+          }
+        }
+
+        &.active,
+        &:hover {
+          background-color: rgba($table-active-color, 0.1) !important;
+          --bs-table-accent-bg: rgba($table-active-color, 0.1) !important;
+          cursor: pointer;
+
+          td {
+            background-color: rgba($table-active-color, 0.1) !important;
+          }
+          color: rgba($table-active-color, 0.8) !important;
+          font-weight: 600;
+        }
+      }
+    }
   }
 }
 .btn-group {

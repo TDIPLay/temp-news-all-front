@@ -12,10 +12,13 @@
       </PageHeader>
 
       <!-- 키워드 조회  필터 (포함, 불포함, 기간) -->
-      <div class="filter-wrap px-2 pt-3">
+      <div class="filter-wrap px-2">
         <div class="filter-list p-2">
           <div class="row m-0 text-start">
-            <div class="col-sm-auto py-2 text-sm-center" style="padding: 12px">
+            <div
+              class="col-sm-auto pb-0 pb-sm-2 px-2 px-sm-4 text-sm-center fw-bolder"
+              style="padding: 12px"
+            >
               키워드
             </div>
             <div class="col px-1 px-sm-2 mb-0">
@@ -93,7 +96,10 @@
             </div>
           </div>
           <div class="row m-0 text-start">
-            <div class="col-sm-auto text-sm-center" style="padding: 12px">
+            <div
+              class="col-sm-auto pb-0 pb-sm-2 px-2 px-sm-4 text-sm-center fw-bolder"
+              style="padding: 12px"
+            >
               언론사
             </div>
             <div class="col px-1 px-sm-2 mb-0">
@@ -178,7 +184,7 @@
           </div>
           <div class="row m-0 text-start">
             <div
-              class="col-sm-auto py-2 text-sm-center d-flex align-items-ccenter"
+              class="col-sm-auto pb-0 pb-sm-2 px-2 px-sm-4 text-sm-center fw-bolder d-flex align-items-center"
               style="padding: 12px"
             >
               기간 &nbsp;&nbsp;
@@ -249,7 +255,7 @@
           </div>
           <div class="row m-0 text-start">
             <div
-              class="col-sm-auto py-2 text-sm-center d-flex align-items-center"
+              class="col-sm-auto pb-0 pb-sm-2 px-2 px-sm-4 text-sm-center fw-bolder d-flex align-items-center"
               style="padding: 12px"
             >
               채널 &nbsp;&nbsp;

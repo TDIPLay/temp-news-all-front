@@ -50,6 +50,28 @@ const setCahrtData = () => {
         }
       : null;
     option.value = {
+      color: [
+        "#70c7e2",
+        "#f7cd61",
+        "#74c94b",
+        "#e66666",
+        "#bb5fdb",
+        "#5452d4",
+        "#da893e",
+        "#39d7b1",
+        "#eb7cc5",
+        "#835dd7",
+        "#4e9af1",
+        "#b2ad26",
+        "#17b35f",
+        "#f89055",
+        "#7d47bd",
+        "#7c3e10",
+        "#16a4ad",
+        "#27600d",
+        "#cd2814",
+        "#232749",
+      ],
       tooltip: {
         trigger: "axis",
         axisPointer: {
@@ -58,6 +80,7 @@ const setCahrtData = () => {
       },
       legend: {
         data: props.data.legend,
+        bottom: 0,
       },
       grid: {
         left: "5%",

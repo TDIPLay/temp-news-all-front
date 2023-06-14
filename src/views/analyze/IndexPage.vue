@@ -11,122 +11,152 @@
         </template>
       </PageHeader>
 
-      <div class="filter-wrap px-4">
-        <dl class="row align-items-center mb-0 text-start">
-          <dt class="col-sm-2 py-2 text-sm-center">키워드 그룹</dt>
-          <dd class="col-sm-10 p-1 px-sm-2 mb-0">
-            <select
-              v-model="tempSltGroupVal"
-              :class="`form-select keyword_group_select `"
-              @update:model-value="(val:string) => handleKeywordGroupClick(val)"
-            >
-              <option value="" disabled v-if="!tempSltGroupVal">
-                그룹을 선택해 주세요.
-              </option>
-              <option
-                v-for="(group, gIdx) in keywordsGroupList"
-                :key="gIdx"
-                :value="group.group_no"
-              >
-                {{ group.group_name }}
-              </option>
-            </select>
-          </dd>
-          <dt class="col-sm-2 py-2 text-sm-center">키워드</dt>
-          <dd class="col-sm-10 p-1 py-2 px-sm-2 mb-0">
+      <div class="filter-wrap px-2">
+        <div class="filter-list p-2">
+          <div class="row m-0 text-start">
             <div
-              class="col-12 row justify-content-start pa-0 pb-1 g-1 mt-0"
-              v-if="selectedKeywordGroup"
+              class="col-sm-auto pb-0 pb-sm-2 px-2 px-sm-4 text-sm-center fw-bolder"
+              style="padding: 12px"
             >
-              <span
-                v-for="(keyword, idx) in selectedKeywordGroup.keyword_list"
-                :key="idx"
-                class="col-auto badge rounded-pill font-size-11 ms-2"
-                :class="{
-                  'badge-soft-primary': selectedKeywordNoList.includes(
-                    keyword.keyword_no
-                  ),
-                  'badge-soft-secondary': !selectedKeywordNoList.includes(
-                    keyword.keyword_no
-                  ),
-                }"
-                @click="handleKeywordClick(keyword)"
-              >
-                {{ keyword.keyword }}
-                <i class="bx bx-x-circle" style="margin-left: 4px"></i>
-              </span>
+              키워드 그룹
             </div>
-            <h4
-              v-else
-              class="d-felx my-1 font-size-13 fw-bolder text-center align-items-center text-secondary"
+            <div class="col col-md-auto px-1 px-sm-2 mb-0">
+              <select
+                v-model="tempSltGroupVal"
+                :class="`form-select keyword_group_select  w-auto`"
+                @update:model-value="(val:string) => handleKeywordGroupClick(val)"
+              >
+                <option value="" disabled v-if="!tempSltGroupVal">
+                  그룹을 선택해 주세요.
+                </option>
+                <option
+                  v-for="(group, gIdx) in keywordsGroupList"
+                  :key="gIdx"
+                  :value="group.group_no"
+                >
+                  {{ group.group_name }}
+                </option>
+              </select>
+
+              <!---------- 키워드 그룹 키워드 목록 ---------->
+              <div class="row m-0 align-center" v-if="selectedKeywordGroup">
+                <div class="col-12 row justify-content-start m-0 mb-1 pe-0 g-1">
+                  <span
+                    v-for="(keyword, idx) in selectedKeywordGroup.keyword_list"
+                    :key="idx"
+                    class="col-auto btn font-size-11 me-2 px-2 py-1"
+                    :class="{
+                      'btn-dark': selectedKeywordNoList.includes(
+                        keyword.keyword_no
+                      ),
+                      'btn-outline-dark': !selectedKeywordNoList.includes(
+                        keyword.keyword_no
+                      ),
+                    }"
+                    @click="handleKeywordClick(keyword)"
+                  >
+                    {{ keyword.keyword }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row m-0 text-start">
+            <div
+              class="col-sm-auto pb-0 pb-sm-2 px-2 px-sm-4 text-sm-center fw-bolder d-flex align-items-center"
+              style="padding: 12px"
             >
-              키워드 그룹에 등록된 키워드가 없습니다.
-            </h4>
-          </dd>
-          <dt class="col-sm-2 py-2 text-sm-center">기간</dt>
-          <dd class="d-flex col-sm-10 px-1 px-sm-2 m-0 align-items-center py-1">
-            <div class="col">
-              <DatePicker
-                :class="'form-control date-picker'"
-                v-model="tempData.startDate"
-                :first-day-of-week="1"
-                format="YYYY-MM-DD"
-                lang="kr"
-                placeholder="시작일"
-                confirm
-                :upper-limit="today"
-                @update:model-value="
-                  searchDate.startDate = moment(tempData.startDate).format(
-                    'YYYY-MM-DD'
-                  )
-                "
+              기간 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </div>
+            <div
+              class="d-flex col px-1 px-sm-2 m-0 align-items-center py-1 flex-column flex-md-row"
+            >
+              <div
+                class="col-12 col-md-auto me-2 d-flex pb-2 pb-md-0 ms-2 ms-md-0"
               >
-              </DatePicker>
-            </div>
-            <span class="p-1 p-sm-2"> ~ </span>
-            <div class="col">
-              <DatePicker
-                class="form-control col date-picker"
-                v-model="tempData.endDate"
-                :first-day-of-week="1"
-                lang="kr"
-                placeholder="종료일"
-                confirm
-                :upper-limit="today"
-                @update:model-value="
-                  searchDate.endDate = moment(tempData.endDate).format(
-                    'YYYY-MM-DD'
-                  )
-                "
-              ></DatePicker>
-            </div>
-          </dd>
-        </dl>
+                <button
+                  class="btn btn-outline-dark me-2 col col-md-auto"
+                  :class="{ 'btn-dark ': selectedSearchDays == 7 }"
+                  @click="handleSearchDay(7)"
+                >
+                  1주일
+                </button>
+                <button
+                  class="btn btn-outline-dark me-2 col col-md-auto"
+                  :class="{ 'btn-dark ': selectedSearchDays == 30 }"
+                  @click="handleSearchDay(30)"
+                >
+                  1개월
+                </button>
+                <button
+                  class="btn btn-outline-dark col col-md-auto"
+                  :class="{ 'btn-dark ': selectedSearchDays == 90 }"
+                  @click="handleSearchDay(90)"
+                >
+                  3개월
+                </button>
+              </div>
+              <div class="col-12 col-md-auto d-flex">
+                <div class="col col-md-auto">
+                  <DatePicker
+                    :class="'  form-control date-picker'"
+                    v-model="tempData.startDate"
+                    :first-day-of-week="1"
+                    format="YYYY-MM-DD"
+                    lang="kr"
+                    placeholder="시작일"
+                    confirm
+                    :upper-limit="tomorrow"
+                    @update:model-value="
+                      handleUpdateDatePicker('startDate', tempData.start_date)
+                    "
+                  >
+                  </DatePicker>
+                </div>
 
-        <button
-          class="btn btn-outline-secondary ms-auto mt-2"
-          style="width: 100px"
-          :disabled="loading"
-          @click="initFilter"
-        >
-          초기화
-        </button>
+                <span class="p-1 p-sm-2"> ~ </span>
+                <div class="col col-md-auto">
+                  <DatePicker
+                    class="form-control col date-picker"
+                    v-model="tempData.endDate"
+                    :first-day-of-week="1"
+                    lang="kr"
+                    placeholder="종료일"
+                    confirm
+                    :upper-limit="tomorrow"
+                    @update:model-value="
+                      handleUpdateDatePicker('endDate', tempData.end_date)
+                    "
+                  ></DatePicker>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="d-flex justify-content-center">
+          <button
+            class="btn btn-outline-secondary ms-auto mt-2 col col-sm-auto"
+            style="width: 100px"
+            :disabled="loading"
+            @click="initFilter"
+          >
+            초기화
+          </button>
 
-        <button
-          class="btn btn-secondary ms-3 mt-2"
-          :disabled="!selectedKeywordGroup || loading"
-          style="width: 100px"
-          @click="
-            () => {
-              // 해당 로더는 표시 안됨
-              showLoading(false);
-              // fetchNewsRank(searchDate);
-              // fetchNewsRankTingSearch(searchDate);
-            }
-          "
-        >
-          조회
-        </button>
+          <button
+            class="btn btn-dark ms-3 mt-2 col col-sm-auto me-auto"
+            :disabled="!selectedKeywordGroup || loading"
+            style="width: 100px"
+            @click="
+              () => {
+                // 해당 로더는 표시 안됨
+                showLoading(false);
+              }
+            "
+          >
+            조회
+          </button>
+        </div>
       </div>
 
       <div class="analyze_tab d-flex mt-3 pt-3">
@@ -250,15 +280,17 @@ const tabMenuList = [
   },
 ];
 const today = new Date(moment().format("YYYY-MM-DD"));
+const selectedSearchDays = ref(30);
 const searchDate = reactive({
-  startDate: moment().subtract(1, "M").format("YYYY-MM-DD"),
+  startDate: moment()
+    .subtract(selectedSearchDays.value, "days")
+    .format("YYYY-MM-DD"),
   endDate: moment().subtract(1, "days").format("YYYY-MM-DD"),
 });
 const tempData = reactive({
   startDate: new Date(searchDate.startDate),
   endDate: new Date(searchDate.endDate),
 });
-const filterDisabledDates = [new Date()];
 
 const keywordsGroupList = ref<ScrapKeywordGroup[]>([]);
 const selectedKeywordGroup = ref<ScrapKeywordGroup>();
@@ -353,27 +385,45 @@ const handleKeywordGroupClick = async (group_no?: string) => {
     : [];
   // 로더 표시는 안하는 상태
   // 각각 탭에서 로더 표시 & 각각 탭에서 로딩 상태가 true 가 되면 데이터 조회
-  showLoading(false);
+  // showLoading(false);
 };
 
 /**@description: 키워드 그룹 > 키워드 선택시 */
 const handleKeywordClick = async (selectedItem: ScrapKeyword) => {
-  if (selectedKeywords.value.length === 1) {
+  const idx = selectedKeywordNoList.value.findIndex(
+    (item) => item === selectedItem.keyword_no
+  );
+  if (selectedKeywords.value.length === 1 && idx >= 0) {
     showNoti({
       message: "최소 1개 이상의 키워드를 선택해야합니다.",
     });
     return;
   }
 
-  const idx = selectedKeywordNoList.value.findIndex(
-    (item) => item === selectedItem.keyword_no
-  );
   if (idx < 0) {
     selectedKeywords.value.push(selectedItem);
   } else {
     selectedKeywords.value.splice(idx, 1);
   }
 };
+
+const handleUpdateDatePicker = (type: "startDate" | "endDate", date: Date) => {
+  searchDate[type] = moment(date).format("YYYY-MM-DD");
+  const diffDays = moment
+    .duration(moment(searchDate.endDate).diff(searchDate.startDate))
+    .asDays(); // 1
+
+  selectedSearchDays.value = [7, 30, 90].includes(diffDays) ? diffDays : 0;
+};
+const handleSearchDay = (day: number) => {
+  selectedSearchDays.value = day;
+  const today = moment().format("YYYY-MM-DD");
+  searchDate.startDate = moment().subtract(day, "days").format("YYYY-MM-DD");
+  searchDate.endDate = today;
+  tempData.endDate = new Date(searchDate.endDate);
+  tempData.startDate = new Date(searchDate.startDate);
+};
+
 const init = async () => {
   await fetchKeywordGroupList();
   await handleKeywordGroupClick();
@@ -390,6 +440,16 @@ $danger: #f46a6a;
 }
 
 .filter-wrap {
+  $primary: #556ee6;
+  $danger: #f46a6a;
+  $danger-card: #f68887;
+  .filter-list {
+    .row {
+      padding: 4px 0px;
+    }
+    background-color: #fff;
+  }
+
   span.badge.font-size-11 {
     i {
       vertical-align: bottom;
@@ -399,49 +459,27 @@ $danger: #f46a6a;
     text-align: center;
     letter-spacing: 1.5px;
     font-weight: 900;
-    &.include {
-      color: rgba($primary, 0.8);
-    }
+    // &.include {
+    //   color: rgba($primary, 0.8);
+    // }
     &.exclude {
       color: rgba($danger, 0.8);
-    }
-  }
-  dl {
-    border: 2px solid #e2e6e9;
-    border-radius: 4px;
-    background-color: #e2e6e9;
-    hr {
-      border-width: 2px;
-      border-color: #fff;
-    }
-
-    dt {
-      border-radius: 4px;
-    }
-    dd {
-      background-color: #fff;
-      hr {
-        border-width: 1px;
-        border-color: #999;
-        border-style: dashed;
-      }
     }
   }
 }
 .analyze_tab {
   ul.nav-pills {
-    border-bottom: 1px solid rgba($primary, 0.2);
+    border-bottom: 1px solid #fff;
     .nav-item {
       font-weight: 600;
-      font-size: 13px;
+      font-size: 15px;
       background-color: rgba(gray, 0.1);
       .nav-link {
         color: rgba(gray, 0.7);
         &.active {
-          background-color: rgba($primary, 0.1);
+          background-color: #fff;
           font-weight: 900;
-          color: $primary;
-          border-top: 3px solid rgba($primary, 0.8);
+          color: #000;
         }
       }
     }

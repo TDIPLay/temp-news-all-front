@@ -39,7 +39,8 @@
                   >
                     {{ props.newsData.scoreTypeText }} 반응
                   </span>
-                  <div
+                  <!-- 긍부정 키워드 우선 안보이게  -->
+                  <!-- <div
                     v-if="
                       !!props.newsData.nlp_keyword &&
                       props.newsData.nlp_keyword.length > 0
@@ -58,7 +59,7 @@
                     >
                       #{{ k }}
                     </span>
-                  </div>
+                  </div> -->
                 </div>
                 <div
                   class="col-auto ms-3 pe-0 save-icon align-self-end"
@@ -67,9 +68,11 @@
                 >
                   <i
                     color="primary"
-                    :class="` font-size-24 mdi mdi-bookmark${
-                      !active ? '-outline' : ''
-                    }`"
+                    class="font-size-24 mdi"
+                    :class="{
+                      'mdi-bookmark-outline text-secondary': !active,
+                      'mdi-bookmark text-danger': active,
+                    }"
                   ></i>
                 </div>
               </div>
@@ -333,7 +336,6 @@ $danger: #f46a6a;
     border-color: rgba($primary, 0.6) !important;
   }
   .save-icon {
-    color: $primary;
     transition: all 0.4s;
     margin-top: -8px;
     &:hover {

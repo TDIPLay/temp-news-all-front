@@ -1,18 +1,17 @@
 <template>
   <div class="home">
     <MainLayout :footer-hide="true">
-      <PageHeader>
-        <template #title>
-          <div class="row m-0">
-            <div class="col">
-              <span class="fw-bolder font-size-25"> </span>
-            </div>
-          </div>
-        </template>
-      </PageHeader>
+      <div class="row m-0 text-start justify-content-center">
+        <img
+          src="https://metavey.co.kr/images/metavey-newsletter.png"
+          loading="lazy"
+          border="0"
+          usemap="#image-map"
+          alt="메타베이 뉴스레터"
+          class="col-auto mx-auto p-0"
+        />
 
-      <div class="row m-0 mt-4 text-start justify-content-center">
-        <div class="col-auto">
+        <!-- <div class="col-auto">
           <img
             src="@/assets/images/logo/metavey_logo.png"
             class="mb-3 mb-md-10"
@@ -35,11 +34,11 @@
         <div class="col self-center d-flex jutify-content-sm-center">
           <img
             src="@/assets/images/logo/metavey_main.png"
-            style="min-width: 420px; width: 100%; max-width: 700px"
+            style="width: 100%; max-width: 700px"
           />
-        </div>
+        </div> -->
       </div>
-      <div
+      <!-- <div
         class="row m-0 my-2 px-2 p-md-10 justify-content-center justify-content-md-start"
       >
         <div class="col-auto">
@@ -63,7 +62,7 @@
             <span> 설문 의뢰하기</span>
           </button>
         </div>
-      </div>
+      </div> -->
     </MainLayout>
   </div>
 </template>

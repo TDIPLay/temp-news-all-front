@@ -23,9 +23,12 @@ export const useFetch = () => {
   const selectedBriefing = ref<Briefing>(new Briefing());
   const isEditable = computed(() => Number(selectedBriefing.value.status) < 2);
 
+  const selectedSearchDays = ref(30);
   const filterObj = reactive<IFilterObj>({
     search_text: "",
-    start_date: moment().subtract(1, "M").format("YYYY-MM-DD"),
+    start_date: moment()
+      .subtract(selectedSearchDays.value, "d")
+      .format("YYYY-MM-DD"),
     end_date: moment().format("YYYY-MM-DD"),
   });
   const tempData = reactive({
@@ -260,7 +263,11 @@ export const useFetch = () => {
   /**@description: 검색 필터 초기화 */
   const initFilter = () => {
     filterObj.search_text = "";
-    filterObj.start_date = moment().subtract(1, "M").format("YYYY-MM-DD");
+    selectedSearchDays.value = 30;
+
+    filterObj.start_date = moment()
+      .subtract(selectedSearchDays.value, "d")
+      .format("YYYY-MM-DD");
     filterObj.end_date = moment().format("YYYY-MM-DD");
 
     tempData.start_date = new Date(filterObj.start_date);
@@ -315,6 +322,26 @@ export const useFetch = () => {
     }
   };
 
+  const handleUpdateDatePicker = (
+    type: "start_date" | "end_date",
+    date: Date
+  ) => {
+    filterObj[type] = moment(date).format("YYYY-MM-DD");
+    const diffDays = moment
+      .duration(moment(filterObj.end_date).diff(filterObj.start_date))
+      .asDays(); // 1
+
+    selectedSearchDays.value = [7, 30, 90].includes(diffDays) ? diffDays : 0;
+  };
+  const handleSearchDay = (day: number) => {
+    selectedSearchDays.value = day;
+    const today = moment().format("YYYY-MM-DD");
+    filterObj.start_date = moment().subtract(day, "days").format("YYYY-MM-DD");
+    filterObj.end_date = today;
+    tempData.end_date = new Date(filterObj.end_date);
+    tempData.start_date = new Date(filterObj.start_date);
+  };
+
   /**@description: 기사 추가 */
   const selectedBrefingAddReport = (data: any) => {
     const { group_no, report } = data;
@@ -343,7 +370,10 @@ export const useFetch = () => {
     pagenation,
     saveNewsDateFilter,
     saveNewsGroups,
+    selectedSearchDays,
 
+    handleUpdateDatePicker,
+    handleSearchDay,
     fetchSaveNewsList,
     openPreviewPage,
     fetchBriefingList,

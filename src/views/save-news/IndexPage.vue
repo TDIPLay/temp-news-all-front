@@ -355,16 +355,16 @@
         </div>
       </div>
 
-      <div class="mt-4 d-flex justify-content-end pe-3">
-        <div class="col-auto py-1 d-flex align-items-center">
+      <div class="mt-4 mb-2 d-flex justify-content-end pe-2">
+        <div class="col-auto d-flex align-items-center">
           <label
-            class="col col-sm-auto form-check-label px-2"
+            class="col col-sm-auto form-check-label pe-2"
             for="switch_positive"
           >
             긍정
           </label>
           <div
-            class="form-check form-switch form-switch-md form-check-dark font-size-13 mb-0 mx-1"
+            class="form-check form-switch form-switch-md form-check-positive mb-0 mx-1"
           >
             <input
               class="form-check-input"
@@ -375,41 +375,44 @@
             />
           </div>
         </div>
-
-        <div
-          class="col-auto form-check form-switch form-switch-md form-check-positive font-size-13 mb-0 me-4"
-        >
-          <input
-            class="form-check-input"
-            type="checkbox"
-            id="switch_positive"
-            v-model="contentFilterObj.positive"
-          />
-          <label class="form-check-label" for="switch_positive"> 긍정 </label>
+        <div class="col-auto d-flex align-items-center">
+          <label
+            class="col col-sm-auto form-check-label pe-2"
+            for="switch_negative"
+          >
+            부정
+          </label>
+          <div
+            class="form-check form-switch form-switch-md form-check-negative mb-0 mx-1"
+          >
+            <input
+              class="form-check-input"
+              type="checkbox"
+              id="switch_negative"
+              name="filter_platform"
+              v-model="contentFilterObj.negative"
+            />
+          </div>
         </div>
 
-        <div
-          class="col-auto form-check form-switch form-switch-md form-check-negative font-size-13 mb-0 me-4"
-        >
-          <input
-            class="form-check-input"
-            type="checkbox"
-            id="switch_negative"
-            v-model="contentFilterObj.negative"
-          />
-          <label class="form-check-label" for="switch_negative"> 부정 </label>
-        </div>
-
-        <div
-          class="col-auto form-check form-switch form-switch-md form-check-neutrality font-size-13 mb-0"
-        >
-          <input
-            class="form-check-input"
-            type="checkbox"
-            id="switch_neutrality"
-            v-model="contentFilterObj.neutrality"
-          />
-          <label class="form-check-label" for="switch_neutrality"> 중립 </label>
+        <div class="col-auto d-flex align-items-center">
+          <label
+            class="col col-sm-auto form-check-label pe-2"
+            for="switch_neutrality"
+          >
+            중립
+          </label>
+          <div
+            class="form-check form-switch form-switch-md form-check-neutrality mb-0 ms-1"
+          >
+            <input
+              class="form-check-input"
+              type="checkbox"
+              id="switch_neutrality"
+              name="filter_platform"
+              v-model="contentFilterObj.neutrality"
+            />
+          </div>
         </div>
       </div>
 
@@ -534,16 +537,21 @@ const filteredNewsList = computed(() => {
 });
 /**@description: 검색 필터 초기화 */
 const initFilter = () => {
-  filterObj.in_keyword =
-    filterObj.not_keyword =
-    filterObj.in_press_no =
-    filterObj.not_press_no =
-      [];
-  filterObj.start_date = moment().subtract(1, "M").format("YYYY-MM-DD");
+  filterObj.in_keyword = [];
+  filterObj.not_keyword = [];
+  filterObj.in_press_no = [];
+  filterObj.not_press_no = [];
+  filterObj.platform = [1, 2, 3];
+  selectedSearchDays.value = 7;
+  filterObj.start_date = moment()
+    .subtract(selectedSearchDays.value, "d")
+    .format("YYYY-MM-DD");
   filterObj.end_date = moment().format("YYYY-MM-DD");
   tempData.start_date = new Date(filterObj.start_date);
   tempData.end_date = new Date(filterObj.end_date);
-  filterObj.platform = [1, 2, 3];
+
+  searchKeyword.value = [];
+  searchPress.value = [];
 };
 
 /**@description: 언론사 목록 조회 */

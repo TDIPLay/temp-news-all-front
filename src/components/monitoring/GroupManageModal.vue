@@ -35,7 +35,11 @@
             키워드 그룹 추가
           </div>
 
-          <ul class="group_manage_modal px-0" style="max-height: 40vh">
+          <ul
+            class="group_manage_modal px-0"
+            style="max-height: 40vh"
+            v-if="!options.groupList.length"
+          >
             <li
               v-for="(group, gIdx) in options.groupList"
               :key="gIdx"
@@ -74,6 +78,19 @@
               </div>
             </li>
           </ul>
+
+          <div
+            v-else
+            class="row justify-content-center align-items-center m-0"
+            style="height: 300px"
+          >
+            <h4 class="card-title col-auto text-center">
+              <i class="mdi mdi-alert-outline mx-2 font-size-25"></i>
+              <div class="pt-2 font-size-13">
+                키워드 그룹이 존재하지 않습니다.
+              </div>
+            </h4>
+          </div>
         </div>
 
         <div class="col col-lg-7 p-3 d-flex flex-column" ref="groupInfoInputEl">
@@ -236,7 +253,6 @@ const MAX_LENGTH = 10; // 등록 가능한 키워드 갯수
 /**@description: 키워드 그룹목록 조회 */
 const fetchKeywordGroupList = async (group_no?: string | number) => {
   options.groupList = [];
-  console.log("1 키워드 그룹목록 조회 ", group_no);
   const response = await KeywordAPI.getKeyWordGroups();
 
   const { data } = response;
@@ -248,14 +264,9 @@ const fetchKeywordGroupList = async (group_no?: string | number) => {
   if (slectGroupNo) {
     handleGroupInfoSelect(slectGroupNo);
   }
-  // groupItems.value =
-  // axiosService.get("v2/news/keywords").then((res) => {
-  //   groupItems.value = res.data.keywords;
-  // });
 };
 
 const handleGroupInfoSelect = (group_no?: string | number) => {
-  console.log("2 키워드 그룹선택 ", group_no);
   groupInfo.value = new ScrapKeywordGroup({
     group_no: -1,
   });
@@ -350,7 +361,11 @@ const removeKeyword = async (removeKeywordNo: number) => {
       if (result) {
         groupItems.value.splice(index, 1);
         fetchKeywordGroupList(groupInfo.value.group_no);
-        if (props.id == groupInfo.value?.group_no) {
+
+        if (
+          Number(props.id) == Number(groupInfo.value?.group_no) &&
+          !groupItems.value.length
+        ) {
           emit("refresh", true);
         } else {
           emit("refresh-group", {
@@ -399,8 +414,10 @@ const submit = async () => {
 
   let msg = "";
   let msgType = "";
-
-  // 키워드 등록
+  const isNew =
+    !props.id &&
+    (!groupInfo.value.group_no || Number(groupInfo.value.group_no) == -1);
+  // 키워드그룹 등록
   if (!groupInfo.value.group_no || Number(groupInfo.value.group_no) == -1) {
     // 키워드 그룹 등록
 
@@ -443,7 +460,6 @@ const submit = async () => {
   }
 
   if (!groupInfo.value.group_no) {
-    console.log("!groupInfo.value.group_no");
     hideLoading();
   }
 
@@ -462,28 +478,18 @@ const submit = async () => {
     return idx;
   }, 0);
 
-  // res.then((r: any) => {
-  //   console.log("1res>>", r);
-  //   // emit("refresh");
-  // });
-
   // 새로고침은 바로
   await setTimeout(async () => {
-    console.log("2res>>", res);
-    hideLoading();
-
     showNoti({
       message: msg,
       type: msgType,
     });
 
-    newKeywords.value = [];
-
-    if (props.id == groupInfo.value?.group_no) {
+    if (Number(props.id) == Number(groupInfo.value?.group_no)) {
       emit("refresh", true);
     } else {
       emit("refresh-group", {
-        group_no: groupInfo.value?.group_no,
+        group_no: isNew ? groupInfo.value?.group_no : props.id,
       });
     }
 
@@ -503,7 +509,10 @@ const submit = async () => {
       newKeywords.value.map(async (keyword) => {
         await KeywordAPI.scrapKeyWord(keyword);
       }),
-    ]);
+    ]).then(() => {
+      newKeywords.value = [];
+      hideLoading();
+    });
 
     // emit("close");
   }, 1000);
@@ -537,7 +546,7 @@ const keywordGroupDelete = async (group_no: string) => {
         groupItems.value = [];
         newKeywords.value = [];
 
-        if (props.id == groupInfo.value?.group_no) {
+        if (Number(props.id) == Number(groupInfo.value?.group_no)) {
           emit("refresh", true);
         } else {
           emit("refresh-group", {

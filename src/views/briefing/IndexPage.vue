@@ -7,97 +7,108 @@
             <div class="col">
               <span class="fw-bolder font-size-25">브리핑</span>
             </div>
+            <div class="col-auto">
+              <div class="flex-shrink-0"></div>
+            </div>
           </div>
         </template>
+        <template #right>
+          <router-link to="/briefing/edit" class="btn btn-primary me-1">
+            <i class="mdi mdi-plus me-1"> </i>
+            새로운 브리핑
+          </router-link>
+        </template>
       </PageHeader>
-      <div class="row">
-        <div class="col-lg-12">
-          <div class="card">
-            <div class="card-body filter-wrap border-bottom">
-              <div class="d-flex align-items-center mb-3">
-                <h5 class="mb-0 card-title flex-grow-1"></h5>
-                <div class="flex-shrink-0">
-                  <router-link to="/briefing/edit" class="btn btn-primary me-1">
-                    <i class="mdi mdi-plus me-1"> </i>
-                    새로운 브리핑
-                  </router-link>
+
+      <div class="filter-wrap px-2 py-3">
+        <div class="filter-list p-2">
+          <div class="row m-0 text-start">
+            <div
+              class="col-sm-auto pb-0 pb-sm-2 px-2 px-sm-4 text-sm-center fw-bolder d-flex align-items-center"
+              style="padding: 12px"
+            >
+              기간 &nbsp;&nbsp;
+            </div>
+            <div
+              class="d-flex col px-1 px-sm-2 m-0 align-items-center py-1 flex-column flex-md-row"
+            >
+              <div
+                class="col-12 col-md-auto me-2 d-flex pb-2 pb-md-0 ms-2 ms-md-0"
+              >
+                <button
+                  class="btn btn-outline-dark me-2 col col-md-auto"
+                  :class="{ 'btn-dark ': selectedSearchDays == 7 }"
+                  @click="handleSearchDay(7)"
+                >
+                  1주일
+                </button>
+                <button
+                  class="btn btn-outline-dark me-2 col col-md-auto"
+                  :class="{ 'btn-dark ': selectedSearchDays == 30 }"
+                  @click="handleSearchDay(30)"
+                >
+                  1개월
+                </button>
+                <button
+                  class="btn btn-outline-dark col col-md-auto"
+                  :class="{ 'btn-dark ': selectedSearchDays == 90 }"
+                  @click="handleSearchDay(90)"
+                >
+                  3개월
+                </button>
+              </div>
+              <div class="col-12 col-md-auto d-flex">
+                <div class="col col-md-auto">
+                  <DatePicker
+                    :class="'  form-control date-picker'"
+                    v-model="tempData.start_date"
+                    :first-day-of-week="1"
+                    format="YYYY-MM-DD"
+                    lang="kr"
+                    placeholder="시작일"
+                    confirm
+                    :upper-limit="tomorrow"
+                    @update:model-value="
+                      handleUpdateDatePicker('start_date', tempData.start_date)
+                    "
+                  >
+                  </DatePicker>
+                </div>
+
+                <span class="p-1 p-sm-2"> ~ </span>
+                <div class="col col-md-auto">
+                  <DatePicker
+                    class="form-control col date-picker"
+                    v-model="tempData.end_date"
+                    :first-day-of-week="1"
+                    lang="kr"
+                    placeholder="종료일"
+                    confirm
+                    :upper-limit="tomorrow"
+                    @update:model-value="
+                      handleUpdateDatePicker('end_date', tempData.end_date)
+                    "
+                  ></DatePicker>
                 </div>
               </div>
-
-              <dl class="row align-items-center m-0 text-start">
-                <dt class="col-sm-2 py-2 text-sm-center">기간</dt>
-                <dd
-                  class="d-flex col-sm-10 px-1 px-sm-2 m-0 align-items-center py-1"
-                >
-                  <div class="col">
-                    <DatePicker
-                      :class="'form-control date-picker'"
-                      v-model="tempData.start_date"
-                      :first-day-of-week="1"
-                      format="YYYY-MM-DD"
-                      lang="kr"
-                      placeholder="시작일"
-                      confirm
-                      :upper-limit="today"
-                      @update:model-value="
-                        filterObj.start_date = moment(
-                          tempData.start_date
-                        ).format('YYYY-MM-DD')
-                      "
-                    ></DatePicker>
-                  </div>
-                  <span class="p-1 p-sm-2 px-sm-1 px-md-2"> ~ </span>
-                  <div class="col">
-                    <DatePicker
-                      class="form-control col date-picker"
-                      v-model="tempData.end_date"
-                      :first-day-of-week="1"
-                      lang="kr"
-                      placeholder="종료일"
-                      confirm
-                      :upper-limit="today"
-                      @update:model-value="
-                        filterObj.end_date = moment(tempData.end_date).format(
-                          'YYYY-MM-DD'
-                        )
-                      "
-                    ></DatePicker>
-                  </div>
-                </dd>
-
-                <dt class="col-sm-2 py-2 text-sm-center">검색</dt>
-                <dd class="col-sm-10 px-1 px-sm-2 m-0 align-items-center py-1">
-                  <input
-                    type="search"
-                    class="form-control"
-                    v-model="filterObj.search_text"
-                    placeholder="검색어를 입력해 주세요."
-                    @keydown.enter="
-                      async () => {
-                        showLoading();
-                        pagenation.isMax = false;
-                        await fetchBriefingList();
-                        await setFilteredList();
-                      }
-                    "
-                  />
-                </dd>
-              </dl>
-
-              <button
-                class="btn btn-outline-secondary ms-auto mt-2"
-                style="width: 100px"
-                :disabled="loading"
-                @click="init"
-              >
-                초기화
-              </button>
-
-              <button
-                class="btn btn-secondary ms-3 mt-2"
-                :disabled="loading"
-                style="width: 100px"
-                @click="
+            </div>
+          </div>
+          <div class="row m-0 text-start pb-3">
+            <div
+              class="col-sm-auto pb-0 pb-sm-2 px-2 px-sm-4 text-sm-center fw-bolder d-flex align-items-center"
+              style="padding: 12px"
+            >
+              검색 &nbsp;&nbsp;
+            </div>
+            <div
+              class="d-flex col px-1 px-sm-2 m-0 align-items-center py-1 flex-column flex-sm-row"
+            >
+              <input
+                type="search"
+                class="form-control"
+                v-model="filterObj.search_text"
+                placeholder="검색어를 입력해 주세요."
+                @keydown.enter="
                   async () => {
                     showLoading();
                     pagenation.isMax = false;
@@ -105,11 +116,42 @@
                     await setFilteredList();
                   }
                 "
-              >
-                조회
-              </button>
+              />
             </div>
-            <div class="card-body px-0">
+          </div>
+        </div>
+        <div class="d-flex justify-content-center">
+          <button
+            class="btn btn-outline-secondary ms-auto mt-2 col col-sm-auto"
+            style="width: 100px"
+            :disabled="loading"
+            @click="init"
+          >
+            초기화
+          </button>
+
+          <button
+            class="btn btn-dark ms-3 mt-2 col col-sm-auto me-auto"
+            :disabled="loading"
+            style="width: 100px"
+            @click="
+              async () => {
+                showLoading();
+                pagenation.isMax = false;
+                await fetchBriefingList();
+                await setFilteredList();
+              }
+            "
+          >
+            조회
+          </button>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="card">
+            <div class="card-body p-0 pt-2">
               <div class="table-responsive">
                 <table
                   class="table align-middle dt-responsive nowrap w-100 table-check table_hover"
@@ -257,11 +299,14 @@ const tbColumns = [
 const {
   briefingList,
   filterObj,
+  selectedSearchDays,
   tempData,
   pagenation,
 
   fetchBriefingList,
   handleDeleteDistibute,
+  handleUpdateDatePicker,
+  handleSearchDay,
   initFilter,
 } = useFetch();
 
@@ -290,42 +335,17 @@ init();
 .filter-wrap {
   $primary: #556ee6;
   $danger: #f46a6a;
+  $danger-card: #f68887;
+  .filter-list {
+    .row {
+      padding: 4px 0px;
+    }
+    background-color: #fff;
+  }
 
   span.badge.font-size-11 {
     i {
       vertical-align: bottom;
-    }
-  }
-  select {
-    text-align: center;
-    letter-spacing: 1.5px;
-    font-weight: 900;
-    &.include {
-      color: rgba($primary, 0.8);
-    }
-    &.exclude {
-      color: rgba($danger, 0.8);
-    }
-  }
-  dl {
-    border: 2px solid #e2e6e9;
-    border-radius: 4px;
-    background-color: #e2e6e9;
-    hr {
-      border-width: 2px;
-      border-color: #fff;
-    }
-
-    dt {
-      border-radius: 4px;
-    }
-    dd {
-      background-color: #fff;
-      hr {
-        border-width: 1px;
-        border-color: #999;
-        border-style: dashed;
-      }
     }
   }
 }

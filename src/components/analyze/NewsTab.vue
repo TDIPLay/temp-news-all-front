@@ -183,7 +183,9 @@
   <div class="py-3 row">
     <div class="col-12 col-md-5 text-start">
       <div class="card-title text-start d-flex">
-        <div class="card-title-index card-title col me-3 my-1">
+        <div
+          class="card-title-index card-title col me-3 my-1 border-top-0 pt-0"
+        >
           미디어 및 기자 순위
         </div>
         <div class="col btn-group btn-group-sm ms-auto" role="group">

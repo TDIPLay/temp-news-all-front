@@ -462,41 +462,65 @@
           </button>
         </div>
       </div>
-      <div class="mt-4 d-flex justify-content-end pe-3">
-        <div
-          class="col-auto form-check form-switch form-switch-md form-check-positive font-size-13 mb-0 me-4"
-        >
-          <input
-            class="form-check-input"
-            type="checkbox"
-            id="switch_positive"
-            v-model="contentFilterObj.positive"
-          />
-          <label class="form-check-label" for="switch_positive"> 긍정 </label>
+
+      <div class="mt-4 mb-2 d-flex justify-content-end pe-2">
+        <div class="col-auto d-flex align-items-center">
+          <label
+            class="col col-sm-auto form-check-label pe-2"
+            for="switch_positive"
+          >
+            긍정
+          </label>
+          <div
+            class="form-check form-switch form-switch-md form-check-positive mb-0 mx-1"
+          >
+            <input
+              class="form-check-input"
+              type="checkbox"
+              id="switch_positive"
+              name="filter_platform"
+              v-model="contentFilterObj.positive"
+            />
+          </div>
+        </div>
+        <div class="col-auto d-flex align-items-center">
+          <label
+            class="col col-sm-auto form-check-label pe-2"
+            for="switch_negative"
+          >
+            부정
+          </label>
+          <div
+            class="form-check form-switch form-switch-md form-check-negative mb-0 mx-1"
+          >
+            <input
+              class="form-check-input"
+              type="checkbox"
+              id="switch_negative"
+              name="filter_platform"
+              v-model="contentFilterObj.negative"
+            />
+          </div>
         </div>
 
-        <div
-          class="col-auto form-check form-switch form-switch-md form-check-negative font-size-13 mb-0 me-4"
-        >
-          <input
-            class="form-check-input"
-            type="checkbox"
-            id="switch_negative"
-            v-model="contentFilterObj.negative"
-          />
-          <label class="form-check-label" for="switch_negative"> 부정 </label>
-        </div>
-
-        <div
-          class="col-auto form-check form-switch form-switch-md form-check-neutrality font-size-13 mb-0"
-        >
-          <input
-            class="form-check-input"
-            type="checkbox"
-            id="switch_neutrality"
-            v-model="contentFilterObj.neutrality"
-          />
-          <label class="form-check-label" for="switch_neutrality"> 중립 </label>
+        <div class="col-auto d-flex align-items-center">
+          <label
+            class="col col-sm-auto form-check-label pe-2"
+            for="switch_neutrality"
+          >
+            중립
+          </label>
+          <div
+            class="form-check form-switch form-switch-md form-check-neutrality mb-0 ms-1"
+          >
+            <input
+              class="form-check-input"
+              type="checkbox"
+              id="switch_neutrality"
+              name="filter_platform"
+              v-model="contentFilterObj.neutrality"
+            />
+          </div>
         </div>
       </div>
       <div class="row m-0 mt-2">
@@ -671,7 +695,6 @@ const showFilterList = reactive({
   keyword: true,
   press_no: true,
 }); // 필터 펼침 여부
-const openKeywordGroups = ref<string[]>([]);
 const pressList = ref<OptionItemProps[]>([]);
 const keywordsGroupList = ref<ScrapKeywordGroup[]>([]);
 const selectedKeywordGroup = ref<ScrapKeywordGroup>();
@@ -744,6 +767,8 @@ const initFilter = () => {
 
 /**@description: 언론사 목록 조회 */
 const fetchPressList = async () => {
+  pressList.value = [];
+
   const response = await ModulesAPI.getPressList();
 
   const { press_list } = response?.data ?? [];
@@ -758,6 +783,8 @@ const fetchPressList = async () => {
 
 /**@description: 키워드 그룹 목록 조회 */
 const fetchKeywordGroupList = async (group_no?: string, isFetch = false) => {
+  keywordsGroupList.value = [];
+
   const response = await KeywordAPI.getKeyWordGroups();
 
   const { data } = response;
@@ -767,7 +794,6 @@ const fetchKeywordGroupList = async (group_no?: string, isFetch = false) => {
       (item: any) => new ScrapKeywordGroup(item)
     );
   }
-  openKeywordGroups.value = [];
 
   if (keywordsGroupList.value.length > 0) {
     let sltGroup = group_no
@@ -813,78 +839,6 @@ const handleKeywordGroupClick = async (group_no: string) => {
     pagenation.isMax = false;
   }
 };
-/**@description: 키워드 그룹 선택시 */
-const handleKeywordGroupClick2 = async (group_no: string, useProps = false) => {
-  showKeywordGroupModal.list = false;
-  const keywordGrooup = keywordsGroupList.value.find(
-    (item) => item.group_no === group_no
-  );
-
-  if (
-    keywordGrooup &&
-    !openKeywordGroups.value.includes(keywordGrooup.group_no)
-  ) {
-    openKeywordGroups.value = [keywordGrooup.group_no];
-  } else {
-    openKeywordGroups.value = [];
-  }
-
-  // 동일한 조건이면 return
-  if (
-    keywordGrooup &&
-    selectedKeywordGroup.value?.group_no === group_no &&
-    filterObj.keyword_no.length === keywordGrooup.keyword_list.length
-  )
-    return;
-
-  pagenation.current = 1;
-  pagenation.isMax = false;
-  newsList.value = [];
-
-  selectedKeywordGroup.value = keywordGrooup;
-  tempSltGroupVal.value = keywordGrooup?.group_no ?? "";
-
-  showLoading();
-  filterObj.keyword_no =
-    selectedKeywordGroup.value?.keyword_list.map((item) => item.keyword_no) ??
-    [];
-
-  if (useProps) {
-    // console.log(props);
-    const searchParams = props.searchParams
-      ? JSON.parse(props.searchParams)
-      : null;
-
-    if (searchParams && searchParams.keyword_no) {
-      filterObj.keyword_no = [...searchParams.keyword_no];
-    }
-
-    if (searchParams && searchParams.start_date) {
-      filterObj.start_date = searchParams.start_date;
-      tempData.start_date = new Date(searchParams.start_date);
-    }
-    if (searchParams && searchParams.end_date) {
-      filterObj.end_date = searchParams.end_date;
-      tempData.end_date = new Date(searchParams.end_date);
-    }
-    if (searchParams && searchParams.nlp_score) {
-      filterObj.nlp_score = [...searchParams.nlp_score];
-    }
-    if (searchParams && searchParams.nlp_keyword) {
-      filterObj.nlp_keyword = [...searchParams.nlp_keyword];
-    }
-    if (searchParams && searchParams.in_press_no) {
-      filterObj.in_press_no = [...searchParams.in_press_no];
-    }
-    if (searchParams && searchParams.repoter) {
-      filterObj.repoter = [...searchParams.repoter];
-    }
-
-    history.replaceState({}, "", location.pathname);
-  }
-
-  await fetchNewsList();
-};
 
 /**@description: 키워드 선택시 */
 const handleKeywordClick = async (group_no: string, keyword_no: string) => {
@@ -908,8 +862,6 @@ const handleKeywordClick = async (group_no: string, keyword_no: string) => {
   if (selectedKeywordGroup.value.group_no !== group_no) {
     filterObj.keyword_no = [];
   }
-
-  openKeywordGroups.value = [group_no];
 
   const keywordGrooup = keywordsGroupList.value.find(
     (item) => item.group_no === group_no
@@ -1110,21 +1062,21 @@ const handleSearch = async (key: string, data: any) => {
 
 /**@description: 초기화 및 데이터 재 조회 */
 const refreshList = (clear = false) => {
-  // 더보기로 이동한 경우
+  // 더보기로 이동한 경우 키워드 그룹 정보 있는 경우
   let group_no = props.groupNo ? props.groupNo : undefined;
 
+  // 선택한 키워드 그룹 제거
   if (clear) {
     selectedKeywordGroup.value = undefined;
   }
 
+  // 선택한 키워드 그룹이 있는경우
   if (selectedKeywordGroup.value) {
     group_no = selectedKeywordGroup.value
       ? selectedKeywordGroup.value?.group_no
       : group_no;
   }
 
-  keywordsGroupList.value = [];
-  pressList.value = [];
   // topNewsList.value = [];
   Promise.all([
     fetchPressList(),
@@ -1168,8 +1120,6 @@ const refreshList = (clear = false) => {
       history.replaceState({}, "", location.pathname);
     }
   });
-
-  // fetchTopNewsList();
 };
 
 /**@description: 필터 키워드 제거 */

@@ -129,6 +129,7 @@ export const useFetch = () => {
     if (selectedBriefing.value.briefing_no === item.briefing_no) return;
     selectedBriefing.value = new Briefing(item);
   };
+
   const initSelectedData = () => {
     selectedBriefing.value = new Briefing();
   };
@@ -228,8 +229,8 @@ export const useFetch = () => {
   };
 
   // 배포신청서 삭제
-  const handleDeleteDistibute = async (briefing_no: string) => {
-    Swal.fire({
+  const handleDeleteBriefing = async (briefing_no: string) => {
+    return await Swal.fire({
       text: "브리핑을 식제하시겠습니까?",
       icon: "info",
       showCancelButton: true,
@@ -242,21 +243,21 @@ export const useFetch = () => {
         showLoading();
         const response = await BriefingAPI.deleteBriefing(briefing_no);
         const { result, message } = response.data;
-
         hideLoading();
 
         if (result) {
           if (selectedBriefing.value?.briefing_no == briefing_no) {
             selectedBriefing.value = new Briefing();
           }
-
-          router.back();
         }
 
         showNoti({
           message: message,
         });
+
+        return result;
       }
+      return false;
     });
   };
 
@@ -381,7 +382,7 @@ export const useFetch = () => {
     handleDistributeClick,
     initSelectedData,
     submit,
-    handleDeleteDistibute,
+    handleDeleteBriefing,
     initFilter,
     refreshList,
     changeDateType,

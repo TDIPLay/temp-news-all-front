@@ -463,12 +463,17 @@ const fetchTrendAnalysis = async () => {
     cafe_chart.total = cafe_total_count ?? 0;
 
     // 긍 부정 차트
-    blog_chart.sympathy_keyword_rank = [...blog_sympathy_keyword_rank] ?? [];
+    blog_chart.sympathy_keyword_rank = blog_sympathy_keyword_rank
+      ? [...blog_sympathy_keyword_rank]
+      : [];
     blog_chart.non_sympathy_keyword_rank =
       [...blog_non_sympathy_keyword_rank] ?? [];
-    cafe_chart.sympathy_keyword_rank = [...cafe_sympathy_keyword_rank] ?? [];
-    cafe_chart.non_sympathy_keyword_rank =
-      [...cafe_non_sympathy_keyword_rank] ?? [];
+    cafe_chart.sympathy_keyword_rank = cafe_sympathy_keyword_rank
+      ? [...cafe_sympathy_keyword_rank]
+      : [];
+    cafe_chart.non_sympathy_keyword_rank = cafe_non_sympathy_keyword_rank
+      ? [...cafe_non_sympathy_keyword_rank]
+      : [];
 
     const blog_chart_temp: any[] = [];
     const cafe_chart_temp: any[] = [];

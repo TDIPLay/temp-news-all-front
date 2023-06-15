@@ -203,7 +203,7 @@
                             variant="soft-danger"
                             class="btn-sm ms-2"
                             @click.stop="
-                              handleDeleteDistibute(briefing.briefing_no)
+                              deleteBriefingClick(briefing.briefing_no)
                             "
                           >
                             <i class="mdi mdi-delete-outline"></i>
@@ -304,7 +304,7 @@ const {
   pagenation,
 
   fetchBriefingList,
-  handleDeleteDistibute,
+  handleDeleteBriefing,
   handleUpdateDatePicker,
   handleSearchDay,
   initFilter,
@@ -314,7 +314,6 @@ const today = new Date();
 const filteredBriefingList = ref<Briefing[]>([]);
 const setFilteredList = () => {
   let searchText = filterObj.search_text;
-
   filteredBriefingList.value = briefingList.value.filter((item: any) => {
     return (searchText ? item.briefing_title.indexOf(searchText) > -1 : true) &&
       item.reg_date_format >= filterObj.start_date &&
@@ -323,7 +322,14 @@ const setFilteredList = () => {
       : null;
   });
 };
+const deleteBriefingClick = async (briefing_no: string) => {
+  const res = await handleDeleteBriefing(briefing_no);
 
+  if (res) {
+    await fetchBriefingList();
+    await setFilteredList();
+  }
+};
 const init = async () => {
   await initFilter();
   await fetchBriefingList();

@@ -255,7 +255,7 @@
                             variant="soft-danger"
                             class="btn-sm ms-2"
                             @click.stop="
-                              handleDeleteDistibute(distribute.dis_no)
+                              deleteDistributeClick(distribute.dis_no)
                             "
                           >
                             <i class="mdi mdi-delete-outline"></i>
@@ -375,7 +375,7 @@ const {
   selectedSearchDays,
 
   fetchDistributeList,
-  handleDeleteDistibute,
+  handleDeleteDistribute,
   initFilter,
   handleFilterStatus,
   handleUpdateDatePicker,
@@ -398,7 +398,14 @@ const setFilteredList = () => {
       : null;
   });
 };
+const deleteDistributeClick = async (dis_no: string) => {
+  const res = await handleDeleteDistribute(dis_no);
 
+  if (res) {
+    await fetchDistributeList();
+    await setFilteredList();
+  }
+};
 const init = async () => {
   await initFilter();
   await fetchDistributeList();

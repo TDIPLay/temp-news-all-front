@@ -34,7 +34,10 @@ import { computed } from "@vue/reactivity";
 const { notiMsg, closeNoti } = useCommonStore();
 
 const text = computed(() => {
-  return notiMsg?.msg.replace(/\\n | \n | \r/g, "<br/>") || "";
+  let msg = notiMsg?.msg.replace(/\\n/gi, "<br/>") || "";
+  msg = msg.replace(/\n/gi, "<br/>");
+  msg = msg.replace(/\r/gi, "<br/>");
+  return msg || "";
 });
 const snackbar = computed(() => {
   return notiMsg?.active || false;

@@ -259,10 +259,10 @@ export const useFetch = () => {
   };
 
   // 배포신청서 삭제
-  const handleDeleteDistibute = async (distribute_no: string) => {
+  const handleDeleteDistribute = async (distribute_no: string) => {
     const dis_no = distribute_no;
 
-    Swal.fire({
+    return await Swal.fire({
       text: "보도자료를 식제하시겠습니까?",
       icon: "info",
       showCancelButton: true,
@@ -282,14 +282,15 @@ export const useFetch = () => {
           if (selectedDistribute.value?.dis_no == dis_no) {
             selectedDistribute.value = new DistributeNews();
           }
-
-          router.back();
         }
 
         showNoti({
           message: message,
         });
+
+        return result;
       }
+      return false;
     });
   };
 
@@ -387,7 +388,7 @@ export const useFetch = () => {
     submit,
     handleSelectStatusChange,
     handleSelectStatus,
-    handleDeleteDistibute,
+    handleDeleteDistribute,
     initFilter,
     refreshList,
     handleFilterStatus,

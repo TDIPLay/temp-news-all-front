@@ -38,7 +38,7 @@
           <ul
             class="group_manage_modal px-0"
             style="max-height: 40vh"
-            v-if="!options.groupList.length"
+            v-if="options.groupList.length"
           >
             <li
               v-for="(group, gIdx) in options.groupList"
@@ -340,7 +340,7 @@ const removeKeyword = async (removeKeywordNo: number) => {
   if (!removeKeywordNo) return;
 
   Swal.fire({
-    text: "1선택된 키워드를 정말 삭제하시겠습니까?",
+    text: "선택된 키워드를 정말 삭제하시겠습니까?",
     icon: "info",
     showCancelButton: true,
     confirmButtonColor: "#050505",

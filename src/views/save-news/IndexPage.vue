@@ -346,7 +346,7 @@
               () => {
                 showLoading();
                 pagenation.isMax = false;
-                fetchNewsList(true);
+                fetchSaveNewsList(true);
               }
             "
           >

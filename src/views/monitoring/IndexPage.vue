@@ -5,7 +5,7 @@
         <template #title>
           <div class="row m-0">
             <div class="col">
-              <span class="fw-bolder font-size-18">
+              <span class="fw-bolder font-size-25">
                 {{ pageInfo.title }}
               </span>
             </div>
@@ -535,6 +535,9 @@
       :id="selectedKeywordGroup ? selectedKeywordGroup.group_no : ''"
       @close="showKeywordGroupModal.info = false"
       @refresh="(isClear = false) => refreshList(isClear)"
+      @refresh-group="
+        ({ group_no }:any) => fetchKeywordGroupList(group_no)
+      "
     />
     <b-modal
       v-model="showKeywordGroupModal.list"
@@ -722,23 +725,22 @@ const initFilter = () => {
   filterObj.keyword_no =
     selectedKeywordGroup.value?.keyword_list.map((item) => item.keyword_no) ??
     [];
-  filterObj.in_keyword =
-    filterObj.not_keyword =
-    filterObj.in_press_no =
-    filterObj.not_press_no =
-      [];
+  filterObj.in_keyword = [];
+  filterObj.not_keyword = [];
+  filterObj.in_press_no = [];
+  filterObj.not_press_no = [];
   filterObj.platform = [1, 2, 3];
-  filterObj.start_date = moment().subtract(7, "d").format("YYYY-MM-DD");
+  selectedSearchDays.value = 7;
+  filterObj.start_date = moment()
+    .subtract(selectedSearchDays.value, "d")
+    .format("YYYY-MM-DD");
   filterObj.end_date = moment().format("YYYY-MM-DD");
   tempData.start_date = new Date(filterObj.start_date);
   tempData.end_date = new Date(filterObj.end_date);
+
+  searchKeyword.value = [];
+  searchPress.value = [];
 };
-/**@description: 키워드 그룹 하단 - 필터링 된 키워드 목록*/
-const filteredSelectedKeywords = computed(() => {
-  return selectedKeywordGroup.value?.keyword_list.filter((item) =>
-    filterObj.keyword_no.includes(item.keyword_no)
-  );
-});
 
 /**@description: 언론사 목록 조회 */
 const fetchPressList = async () => {
@@ -755,7 +757,7 @@ const fetchPressList = async () => {
 };
 
 /**@description: 키워드 그룹 목록 조회 */
-const fetchKeywordGroupList = async (group_no?: string) => {
+const fetchKeywordGroupList = async (group_no?: string, isFetch = false) => {
   const response = await KeywordAPI.getKeyWordGroups();
 
   const { data } = response;
@@ -768,15 +770,51 @@ const fetchKeywordGroupList = async (group_no?: string) => {
   openKeywordGroups.value = [];
 
   if (keywordsGroupList.value.length > 0) {
-    handleKeywordGroupClick(
-      group_no ? group_no : keywordsGroupList.value[0].group_no,
-      !!props.searchParams
-    );
+    let sltGroup = group_no
+      ? group_no
+      : !selectedKeywordGroup.value?.group_no
+      ? keywordsGroupList.value[0].group_no
+      : undefined;
+
+    if (sltGroup) {
+      handleKeywordGroupClick(sltGroup);
+
+      if (isFetch) {
+        pagenation.current = 1;
+        pagenation.isMax = false;
+        newsList.value = [];
+        fetchNewsList();
+      }
+    }
+    // handleKeywordGroupClick(
+    //   group_no ? group_no : keywordsGroupList.value[0].group_no,
+    //
+    // );
   }
 };
 
+const handleKeywordGroupClick = async (group_no: string) => {
+  const keywordGrooup = keywordsGroupList.value.find(
+    (item) => item.group_no === group_no
+  );
+
+  selectedKeywordGroup.value = keywordGrooup;
+  tempSltGroupVal.value = keywordGrooup?.group_no ?? "";
+  filterObj.keyword_no =
+    selectedKeywordGroup.value?.keyword_list.map((item) => item.keyword_no) ??
+    [];
+  // 동일한 조건이면 return
+  if (
+    keywordGrooup &&
+    selectedKeywordGroup.value?.group_no === group_no &&
+    filterObj.keyword_no.length === keywordGrooup.keyword_list.length
+  ) {
+    pagenation.current = 1;
+    pagenation.isMax = false;
+  }
+};
 /**@description: 키워드 그룹 선택시 */
-const handleKeywordGroupClick = async (group_no: string, useProps = false) => {
+const handleKeywordGroupClick2 = async (group_no: string, useProps = false) => {
   showKeywordGroupModal.list = false;
   const keywordGrooup = keywordsGroupList.value.find(
     (item) => item.group_no === group_no
@@ -891,6 +929,8 @@ const handleKeywordClick = async (group_no: string, keyword_no: string) => {
 
 /**@description: 기사 목록 조회 */
 const fetchNewsList = async (init = false) => {
+  showLoading();
+
   timeLoading.value = true;
   if (init) {
     pagenation.current = 1;
@@ -1091,9 +1131,43 @@ const refreshList = (clear = false) => {
     fetchKeywordGroupList(
       selectedKeywordGroup.value
         ? selectedKeywordGroup.value?.group_no
-        : group_no
+        : group_no,
+      true
     ),
-  ]);
+  ]).then(() => {
+    if (props.searchParams) {
+      const searchParams = props.searchParams
+        ? JSON.parse(props.searchParams)
+        : null;
+
+      if (searchParams && searchParams.keyword_no) {
+        filterObj.keyword_no = [...searchParams.keyword_no];
+      }
+
+      if (searchParams && searchParams.start_date) {
+        filterObj.start_date = searchParams.start_date;
+        tempData.start_date = new Date(searchParams.start_date);
+      }
+      if (searchParams && searchParams.end_date) {
+        filterObj.end_date = searchParams.end_date;
+        tempData.end_date = new Date(searchParams.end_date);
+      }
+      if (searchParams && searchParams.nlp_score) {
+        filterObj.nlp_score = [...searchParams.nlp_score];
+      }
+      if (searchParams && searchParams.nlp_keyword) {
+        filterObj.nlp_keyword = [...searchParams.nlp_keyword];
+      }
+      if (searchParams && searchParams.in_press_no) {
+        filterObj.in_press_no = [...searchParams.in_press_no];
+      }
+      if (searchParams && searchParams.repoter) {
+        filterObj.repoter = [...searchParams.repoter];
+      }
+
+      history.replaceState({}, "", location.pathname);
+    }
+  });
 
   // fetchTopNewsList();
 };

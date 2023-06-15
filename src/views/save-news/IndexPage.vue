@@ -5,7 +5,7 @@
         <template #title>
           <div class="row m-0">
             <div class="col">
-              <span class="fw-bolder font-size-18"> 저장 뉴스 </span>
+              <span class="fw-bolder font-size-25"> 저장 뉴스 </span>
             </div>
           </div>
         </template>
@@ -356,6 +356,26 @@
       </div>
 
       <div class="mt-4 d-flex justify-content-end pe-3">
+        <div class="col-auto py-1 d-flex align-items-center">
+          <label
+            class="col col-sm-auto form-check-label px-2"
+            for="switch_positive"
+          >
+            긍정
+          </label>
+          <div
+            class="form-check form-switch form-switch-md form-check-dark font-size-13 mb-0 mx-1"
+          >
+            <input
+              class="form-check-input"
+              type="checkbox"
+              id="switch_positive"
+              name="filter_platform"
+              v-model="contentFilterObj.positive"
+            />
+          </div>
+        </div>
+
         <div
           class="col-auto form-check form-switch form-switch-md form-check-positive font-size-13 mb-0 me-4"
         >

@@ -79,7 +79,7 @@
         <div class="col col-lg-7 p-3 d-flex flex-column" ref="groupInfoInputEl">
           <div class="card-title col-auto col-sm-12 text-start">
             {{
-              groupInfo?.group_no && groupInfo.group_no > 0
+              groupInfo?.group_no && Number(groupInfo.group_no) > 0
                 ? "키워드 그룹 수정"
                 : "신규 키워드 그룹 추가"
             }}
@@ -215,6 +215,7 @@ const props = defineProps({
 const emit = defineEmits<{
   (e: "close", value?: any): void;
   (e: "refresh", value?: any): void;
+  (e: "refresh-group", value?: any): void;
 }>();
 
 const options = reactive<{
@@ -225,11 +226,7 @@ const options = reactive<{
 
 const showModal = ref(false);
 // 그룹 정보
-const groupInfo = ref<ScrapKeywordGroup>(
-  new ScrapKeywordGroup({
-    group_no: -1,
-  })
-);
+const groupInfo = ref<ScrapKeywordGroup>(new ScrapKeywordGroup());
 const groupItems = ref<ScrapKeyword[]>([]); // 키워드 그룹에 속한 키워드
 
 const newKeywords = ref<string[]>([]);
@@ -239,6 +236,7 @@ const MAX_LENGTH = 10; // 등록 가능한 키워드 갯수
 /**@description: 키워드 그룹목록 조회 */
 const fetchKeywordGroupList = async (group_no?: string | number) => {
   options.groupList = [];
+  console.log("1 키워드 그룹목록 조회 ", group_no);
   const response = await KeywordAPI.getKeyWordGroups();
 
   const { data } = response;
@@ -257,6 +255,12 @@ const fetchKeywordGroupList = async (group_no?: string | number) => {
 };
 
 const handleGroupInfoSelect = (group_no?: string | number) => {
+  console.log("2 키워드 그룹선택 ", group_no);
+  groupInfo.value = new ScrapKeywordGroup({
+    group_no: -1,
+  });
+  groupItems.value = [];
+  newKeywords.value = [];
   // 스크롤 위치조정
   if (groupInfoInputEl.value && groupInfoEl.value) {
     const offset = (groupInfoInputEl.value as HTMLElement).offsetHeight;
@@ -265,14 +269,7 @@ const handleGroupInfoSelect = (group_no?: string | number) => {
       behavior: "smooth",
     });
   }
-  groupItems.value = [];
-  newKeywords.value = [];
-  if (group_no && group_no < 0) {
-    groupInfo.value = new ScrapKeywordGroup({
-      group_no: -1,
-    });
-    groupItems.value = [];
-  } else {
+  if (group_no && Number(group_no) > 0) {
     const group = group_no
       ? options.groupList.find((item) => item.group_no === group_no)
       : null;
@@ -352,14 +349,14 @@ const removeKeyword = async (removeKeywordNo: number) => {
 
       if (result) {
         groupItems.value.splice(index, 1);
-        groupInfo.value = new ScrapKeywordGroup({
-          ...groupInfo,
-          keyword_list: [...groupItems.value],
-        });
-
         fetchKeywordGroupList(groupInfo.value.group_no);
-
-        emit("refresh", true);
+        if (props.id == groupInfo.value?.group_no) {
+          emit("refresh", true);
+        } else {
+          emit("refresh-group", {
+            group_no: groupInfo.value?.group_no,
+          });
+        }
       }
 
       showNoti({
@@ -404,7 +401,7 @@ const submit = async () => {
   let msgType = "";
 
   // 키워드 등록
-  if (Number(groupInfo.value.group_no) == -1) {
+  if (!groupInfo.value.group_no || Number(groupInfo.value.group_no) == -1) {
     // 키워드 그룹 등록
 
     const resGroup = await KeywordAPI.createKeyWordGroup({
@@ -445,7 +442,10 @@ const submit = async () => {
     }
   }
 
-  if (!groupInfo.value.group_no) return;
+  if (!groupInfo.value.group_no) {
+    console.log("!groupInfo.value.group_no");
+    hideLoading();
+  }
 
   // let n = 0;
   // 그룹 정보 있는 경우 키워드 등록
@@ -478,11 +478,20 @@ const submit = async () => {
     });
 
     newKeywords.value = [];
-    emit("refresh", true);
+
+    if (props.id == groupInfo.value?.group_no) {
+      emit("refresh", true);
+    } else {
+      emit("refresh-group", {
+        group_no: groupInfo.value?.group_no,
+      });
+    }
+
     if (!groupInfo.value?.group_no || Number(groupInfo.value?.group_no) < 0) {
       groupInfo.value = new ScrapKeywordGroup();
       groupItems.value = [];
     }
+
     fetchKeywordGroupList(
       groupInfo.value?.group_no && Number(groupInfo.value?.group_no) > -1
         ? groupInfo.value?.group_no
@@ -527,7 +536,15 @@ const keywordGroupDelete = async (group_no: string) => {
         groupInfo.value = new ScrapKeywordGroup();
         groupItems.value = [];
         newKeywords.value = [];
-        emit("refresh", true);
+
+        if (props.id == groupInfo.value?.group_no) {
+          emit("refresh", true);
+        } else {
+          emit("refresh-group", {
+            group_no: groupInfo.value?.group_no,
+          });
+        }
+
         fetchKeywordGroupList();
       }
 

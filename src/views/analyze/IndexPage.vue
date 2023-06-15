@@ -5,7 +5,7 @@
         <template #title>
           <div class="row m-0">
             <div class="col">
-              <span class="fw-bolder font-size-18"> 집계 분석</span>
+              <span class="fw-bolder font-size-25"> 집계 분석</span>
             </div>
           </div>
         </template>
@@ -474,8 +474,13 @@ $danger: #f46a6a;
       font-weight: 600;
       font-size: 15px;
       background-color: rgba(gray, 0.1);
+      border-right: 1px solid #d1d1d1;
+      &:last-child {
+        border-right: 0px;
+      }
       .nav-link {
         color: rgba(gray, 0.7);
+        border-radius: 0;
         &.active {
           background-color: #fff;
           font-weight: 900;

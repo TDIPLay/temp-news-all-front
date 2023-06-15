@@ -5,7 +5,7 @@
         <template #title>
           <div class="row m-0 align-items-center">
             <div class="col">
-              <span class="fw-bolder font-size-18">브리핑 작성</span>
+              <span class="fw-bolder font-size-25">브리핑 작성</span>
             </div>
           </div>
         </template>

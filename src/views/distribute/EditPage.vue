@@ -5,7 +5,7 @@
         <template #title>
           <div class="row m-0">
             <div class="col">
-              <span class="fw-bolder font-size-18">뉴스 보도</span>
+              <span class="fw-bolder font-size-25">뉴스 보도</span>
             </div>
           </div>
         </template>

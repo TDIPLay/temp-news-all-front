@@ -30,11 +30,11 @@
                   class="col text-start px-0 py-2 d-flex overflow-text align-items-center"
                 >
                   <span
-                    class="col-auto badge fw-bolder font-size-11 me-2 px-2"
+                    class="col-auto badge fw-bolder font-size-11 me-2 px-3 py-1"
                     :class="{
-                      'badge-soft-danger': props.newsData.scoreTypeCode < 0,
-                      'badge-soft-success': props.newsData.scoreTypeCode > 0,
-                      'badge-soft-warning': props.newsData.scoreTypeCode == 0,
+                      'bg-negative': props.newsData.scoreTypeCode < 0,
+                      'bg-positive': props.newsData.scoreTypeCode > 0,
+                      'bg-neutrality': props.newsData.scoreTypeCode == 0,
                     }"
                   >
                     {{ props.newsData.scoreTypeText }} 반응
@@ -120,7 +120,7 @@
               >
                 <div class="col-md-auto px-0 pb-md-0 pb-2">
                   <span
-                    class="badge fw-bolder font-size-11 badge-soft-secondary me-2"
+                    class="badge fw-bolder font-size-11 badge-soft-secondary me-2 px-2 py-1"
                   >
                     # {{ props.newsData.keyword }}
                   </span>

@@ -99,7 +99,7 @@
             :href="`#${props.type}_group_collapse_${gIndex}`"
             @click="handleKeywordGroupAccordion(keywordsGroup.group_no)"
           >
-            <i class="mdi mdi-pound me-1 text-primary"></i>
+            <i class="mdi mdi-pound me-1 text-dark"></i>
             {{ keywordsGroup.group_name }}
             <span class="text-caption text-blue ms-1">
               ({{
@@ -137,8 +137,8 @@
               class="btn py-1 px-2 mb-2 me-2"
               :class="
                 curAlarmInfo.keyword_no.includes(item.keyword_no)
-                  ? 'btn-primary'
-                  : 'btn-outline-primary'
+                  ? 'btn-dark'
+                  : 'btn-outline-dark'
               "
               :style="item.keyword.length > 8 ? 'width: 260px' : ''"
               @click="handleSelectKeyword(item.keyword_no)"
@@ -159,7 +159,6 @@ import { useCommonStore } from "@/store/common";
 import CommonTimePicker from "@/components/common/CommonTimePicker.vue";
 
 import { ref, watch } from "vue";
-import { over } from "lodash";
 const { showNoti } = useCommonStore();
 
 const props = defineProps({
@@ -244,21 +243,24 @@ if (props.alarmInfo) {
 </script>
 
 <style lang="scss" scoped>
+$dark: #1f1f1f;
+$dark-1: rgba($dark, 0.5);
 $primary: #556ee6;
 $primary-1: rgba($primary, 0.5);
+
 .alarm_info_warp > div {
   border-left: 2px solid;
   border-image-slice: 1;
   padding-left: 12px;
   border-width: 5px;
-  border-image-source: linear-gradient(to bottom, $primary, $primary-1, #fff);
+  border-image-source: linear-gradient(to bottom, $dark, $dark-1, #fff);
 }
 .show-acc {
   padding: 8px;
   height: 120px !important;
   overflow: auto !important;
-  border-top: 2px solid $primary-1;
-  background-color: rgba($primary, 0.05);
+  border-top: 2px solid $dark-1;
+  background-color: rgba($dark, 0.05);
 }
 .hide-acc {
   height: 0;

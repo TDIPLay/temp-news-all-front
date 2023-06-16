@@ -4,11 +4,11 @@
       <div class="row justify-content-center">
         <div class="col-md-8 col-lg-6 col-xl-5">
           <div class="card overflow-hidden">
-            <div class="bg-soft bg-primary">
+            <div class="bg-soft bg-dark">
               <div class="row">
                 <div class="col-7">
-                  <div class="text-primary p-4 text-start">
-                    <h5 class="text-primary">
+                  <div class="text-dark p-4 text-start">
+                    <h5 class="text-dark fw-bolder">
                       {{ !isComplated ? "Welcome !" : "가입을 축하합니다." }}
                     </h5>
                     <p>Sign in to continue to Jeongeum.</p>
@@ -194,7 +194,7 @@
                     </label>
                   </div>
                   <button
-                    class="btn btn-outline-primary col-auto py-0 px-2 font-size-11"
+                    class="btn btn-outline-dark col-auto py-0 px-2 font-size-11"
                     style="height: 24px"
                     type="button"
                     @click="modalActive(item.text)"
@@ -208,7 +208,7 @@
                   type="submit"
                   :disabled="loading"
                   @click="submit"
-                  class="btn btn-primary btn-block"
+                  class="btn btn-dark btn-block py-2"
                 >
                   회원가입
                 </button>
@@ -250,7 +250,7 @@
                           type="submit"
                           :disabled="loading"
                           @click="goLogin"
-                          class="btn btn-primary btn-block px-5"
+                          class="btn btn-dark btn-block px-5"
                         >
                           로그인
                         </button>
@@ -276,7 +276,7 @@
         Do have an account?
         <a
           @click="goLogin"
-          class="fw-medium text-primary"
+          class="fw-medium text-dark"
           href="javascript:void(0)"
         >
           Login now

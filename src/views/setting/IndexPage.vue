@@ -13,10 +13,7 @@
 
       <div class="row m-0 mt-4 text-start justify-content-center">
         <div class="col">
-          <ul
-            class="nav nav-pills nav-justified d-flex d-sm-inline-flex"
-            role="tablist"
-          >
+          <ul class="nav nav-pills nav-justified d-flex" role="tablist">
             <li class="nav-item" role="presentation">
               <button
                 class="nav-link py-3 font-size-15"
@@ -87,7 +84,7 @@
 
                 <div class="col-auto">
                   <button
-                    class="btn btn-outline-primary px-4"
+                    class="btn btn-outline-dark px-4"
                     :class="{
                       active: !!userAlarmInfo.kakao,
                       deactivate: !userAlarmInfo.kakao,
@@ -124,7 +121,7 @@
 
                 <div class="col-auto">
                   <button
-                    class="btn btn-outline-primary px-4"
+                    class="btn btn-outline-dark px-4"
                     :class="{
                       active: !!userAlarmInfo.mail,
                       deactivate: !userAlarmInfo.mail,
@@ -149,7 +146,7 @@
 
               <div class="submit-btn align-center d-flex my-4">
                 <button
-                  :class="`mx-auto btn btn-primary  px-4`"
+                  :class="`mx-auto btn btn-dark  px-4`"
                   type="button"
                   :disabled="!isUpdateUserAlarm"
                   @click="submitUserAlarmInfo()"
@@ -174,7 +171,6 @@ import MainLayout from "@/layouts/MainLayout.vue";
 
 import UserInfoTab from "@/components/setting/UserInfoTab.vue";
 import AlarmInfoTab from "@/components/setting/AlarmInfoTab.vue";
-import CommonTimePicker from "@/components/common/CommonTimePicker.vue";
 
 import { useCommonStore } from "@/store/common";
 import { CommonUtils } from "@/utils/CommonUtils";
@@ -391,11 +387,26 @@ $primary: #556ee6;
 .border-bottom {
   border-width: 2px !important;
 }
-.nav-link {
-  font-weight: 600;
-  color: rgba(gray, 0.7);
-  background-color: rgba(gray, 0.1);
-  padding-left: 56px;
-  padding-right: 56px;
+
+ul.nav-pills {
+  border-bottom: 1px solid #fff;
+  .nav-item {
+    font-weight: 600;
+    font-size: 15px;
+    background-color: rgba(gray, 0.1);
+    border-right: 1px solid #d1d1d1;
+    &:last-child {
+      border-right: 0px;
+    }
+    .nav-link {
+      color: rgba(gray, 0.7);
+      border-radius: 0;
+      &.active {
+        background-color: #fff;
+        font-weight: 900;
+        color: #000;
+      }
+    }
+  }
 }
 </style>

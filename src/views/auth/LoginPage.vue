@@ -4,11 +4,11 @@
       <div class="row justify-content-center">
         <div class="col-md-8 col-lg-6 col-xl-5">
           <div class="card overflow-hidden">
-            <div class="bg-soft bg-primary">
+            <div class="bg-soft bg-dark">
               <div class="row">
                 <div class="col-7">
-                  <div class="text-primary p-4 text-start">
-                    <h5 class="text-primary">Welcome Back !</h5>
+                  <div class="text-dark p-4 text-start">
+                    <h5 class="text-dark card-title">Welcome Back !</h5>
                     <p>Sign in to continue to Skote.</p>
                   </div>
                 </div>
@@ -103,7 +103,7 @@
                     type="submit"
                     :disabled="loading"
                     @click="submit"
-                    class="btn btn-primary btn-block"
+                    class="btn btn-dark btn-block py-2 card-title"
                   >
                     로그인
                   </button>

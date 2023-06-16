@@ -1,9 +1,51 @@
 <template>
   <div class="home">
     <MainLayout :footer-hide="true">
-      <div class="row m-0 text-start justify-content-center">
+      <div
+        class="row m-0 text-start justify-content-center mx-auto align-items-center"
+        style="max-width: 960px"
+      >
         <img
-          src="https://metavey.co.kr/images/metavey-newsletter.png"
+          src="@/assets/img/metavey/intro_top.png"
+          loading="lazy"
+          border="0"
+          usemap="#image-map"
+          alt="메타베이 뉴스레터"
+          class="col p-0"
+        />
+
+        <div class="col row p-5">
+          <p class="col-12 fs-3 card-title text-primary fw-bolder py-3 px-0">
+            메타베이에서 고객 인사이트를 발견하세요!
+          </p>
+          <ul class="col m-0 p-0">
+            <ol class="fs-5 p-1">
+              <span class="fw-bolder me-2">담당자 문의하기</span>
+              신해영 팀장
+            </ol>
+            <ol class="fs-5 p-1">
+              <i class="mdi mdi-phone-outline fw-bolder fs-4 me-2"></i>
+              010-9266-7483 | 02-3487-5010
+            </ol>
+            <ol class="fs-5 p-1">
+              <i class="mdi mdi-email-outline fw-bolder fs-4 me-2"></i>
+              metavey@metavey.co.kr
+            </ol>
+          </ul>
+          <div class="col col-12 col-md-auto p-0 py-4">
+            <img
+              src="@/assets/img/metavey/intro_btn.png"
+              loading="lazy"
+              border="0"
+              alt="메타베이 문의하기"
+              class="col p-0"
+              @click="openNewTab"
+            />
+          </div>
+        </div>
+
+        <img
+          src="@/assets/img/metavey/intro_bottom.png"
           loading="lazy"
           border="0"
           usemap="#image-map"
@@ -73,6 +115,10 @@ import moment from "moment";
 
 import PageHeader from "@/components/layouts/page-header.vue";
 import MainLayout from "@/layouts/MainLayout.vue";
+
+const openNewTab = () => {
+  window.open("https://metavey.co.kr");
+};
 </script>
 <style lang="scss" scoped>
 .filter-wrap {

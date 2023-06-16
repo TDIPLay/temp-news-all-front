@@ -1,6 +1,11 @@
 <template>
-  <div class="white_box py-0 mx-1 mb-4" style="background: #fff">
-    <div class="container-white_box py-3 pb-sm-3" style="max-width: 600px">
+  <div class="py-0 mx-1 mb-4" style="background: #fff">
+    <div class="card-title-index card-title text-start">기본 정보</div>
+
+    <div
+      class="p-2 p-sm-3 p-md-4 py-0 pt-sm-1 pt-md-2"
+      style="max-width: 600px"
+    >
       <div
         class="py-0 col mt-3 d-flex flex-column flex-md-row align-items-start align-items-md-center"
       >
@@ -71,15 +76,44 @@
         </div>
       </div>
     </div>
+
+    <!-- <div class="card-title-index card-title text-start">결제 정보</div>
+    <div
+      class="p-2 p-sm-3 p-md-4 py-0 pt-sm-1 pt-md-2"
+      style="max-width: 600px"
+    >
+      <div
+        class="py-0 col mt-3 d-flex flex-column flex-md-row align-items-start align-items-md-center"
+      >
+        <h4 class="card-title col-auto my-0 me-4">플랜</h4>
+        <h4 class="card-title my-0" style="padding: 0.47rem 0.75rem">
+          <template v-if="!isPaiyed">
+            <span class="badge badge-soft-primary font-size-13 px-2">
+              {{ planType }}
+            </span>
+
+            <button
+              class="btn btn-outline-primary ms-3 py-1"
+              @click="showSubscriptionModal = true"
+            >
+              유료 구독
+            </button>
+          </template>
+          <template v-else> </template>
+        </h4>
+      </div>
+    </div> -->
   </div>
   <div class="submit-btn align-center d-flex">
     <button
-      class="btn btn-primary px-4 mx-auto"
+      class="btn btn-dark px-4 mx-auto"
       type="button"
       @click="submitUserInfo()"
     >
       정보 저장
     </button>
+
+    <SubscriptionModal v-if="showSubscriptionModal" />
   </div>
 </template>
 
@@ -87,9 +121,11 @@
 import { UserAPI } from "@/api/user";
 import { UserInfo } from "@/models/User";
 import { useCommonStore } from "@/store/common";
-import { computed } from "@vue/reactivity";
-import { ref } from "vue";
-const { loading, showLoading, hideLoading, showNoti } = useCommonStore();
+import { useSessionStore } from "@/store/session";
+import { ref, computed } from "vue";
+import SubscriptionModal from "./SubscriptionModal.vue";
+const { showLoading, hideLoading, showNoti } = useCommonStore();
+const { user, setUserInfo } = useSessionStore();
 
 const props = defineProps({
   userInfo: {
@@ -98,6 +134,11 @@ const props = defineProps({
   },
 });
 const curUserInfo = ref<UserInfo>();
+const isPaiyed = ref(false);
+const planType = computed(() => {
+  return isPaiyed.value ? "스탠다드" : "무료 버전";
+});
+const showSubscriptionModal = ref(false);
 
 if (props.userInfo) {
   curUserInfo.value = new UserInfo(props.userInfo);
@@ -130,6 +171,13 @@ const submitUserInfo = async () => {
     if (data) {
       if (data.result) {
         curUserInfo.value = new UserInfo(curUserInfo.value);
+        console.log(user.name);
+        if (curUserInfo.value.name !== user.name) {
+          setUserInfo({
+            ...user,
+            name: curUserInfo.value.name,
+          });
+        }
       }
 
       showNoti({

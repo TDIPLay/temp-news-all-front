@@ -539,11 +539,11 @@
         <!-- 회원 정보 긴랙 -->
         <b-dropdown right variant="black" toggle-class="header-item">
           <template v-slot:button-content>
-            <img
+            <!-- <img
               class="rounded-circle header-profile-user"
               src="@/assets/images/users/avatar-1.jpg"
               alt="Header Avatar"
-            />
+            /> -->
             <span class="d-none d-xl-inline-block ms-1">{{
               $t("navbar.dropdown.henry.text")
             }}</span>

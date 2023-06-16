@@ -9,7 +9,7 @@
     <div class="date_filter-option">
       <div class="date_filter-date position-relative">
         <button
-          class="btn btn-outline-primary"
+          class="btn btn-soft-dark btn-outline-dark"
           type="menu"
           id="dropdownSendMail"
           :aria-haspopup="show"
@@ -75,10 +75,7 @@
               >
                 취소
               </button>
-              <button
-                class="col-auto btn btn-primary ms-2"
-                @click="handleOkBtn"
-              >
+              <button class="col-auto btn btn-dark ms-2" @click="handleOkBtn">
                 적용
               </button>
             </div>
@@ -232,7 +229,7 @@ if (props.value) {
 </script>
 
 <style lang="scss" scoped>
-$primary: #556ee6;
+$dark: #1f1f1f;
 $gray: #74788d;
 .custom-time-picker-content {
   .title-text {
@@ -245,10 +242,10 @@ $gray: #74788d;
     &.active {
       // color: #ef4118;
       font-weight: bold;
-      background-color: rgba($primary, 0.2);
+      background-color: rgba($dark, 0.2);
     }
     &:hover {
-      background-color: rgba($primary, 0.2);
+      background-color: rgba($dark, 0.2);
     }
   }
 }
